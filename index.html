@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Omar Mesalam | Security Research & Writeups</title>
+    <title>Omar Mosalam | Security Research & Writeups</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/jpeg" href="./PhotoForBlog.jpeg">    
     <!-- Icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">    
     <style>
         :root {
             --bg-dark: #12161f;
@@ -84,7 +84,7 @@
             padding: 0 20px;
         }
 
-        /* Hero Banner Section (القسم العلوي المطلوب) */
+        /* Hero Banner Section */
         .hero-banner {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -215,7 +215,7 @@
 
         .post-title a:hover { color: var(--accent-green); }
 
-        .post-excerpt {
+        .post-excerpt, .post-description {
             color: var(--text-sub);
             font-size: 0.9rem;
             margin-bottom: 12px;
@@ -244,73 +244,95 @@
     <!-- Header Navbar -->
     <header class="navbar">
         <div class="nav-container">
-            <a href="#" class="logo"><span class="logo-accent">&gt;</span> Omar Mesalam</a>
-          <nav class="nav-links">
-    <a href="index.html" class="active">/home</a>
-    <a href="https://github.com/mesalam-340" target="_blank" rel="noopener noreferrer">
-        GitHub <i class="fa-solid fa-arrow-up-right-from-square"></i>
-    </a>
-</nav>
+            <a href="#" class="logo"><span class="logo-accent">&gt;</span> Omar Mosalam</a>
+            <nav class="nav-links">
+                <a href="index.html" class="active">/home</a>
+                <a href="https://github.com/mesalam-340" target="_blank" rel="noopener noreferrer">
+                    GitHub <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+            </nav>
         </div>
     </header>
 
     <div class="container">
         
-        <!-- Hero Section (مكان الدايرة الحمرا والخطوط) -->
+        <!-- Hero Section -->
         <section class="hero-banner">
-            <!-- الصورة مكان الدايرة الحمرا -->
             <div class="hero-avatar-container">
-                <img src="./PhotoForBlog.jpeg" alt="Omar Mesalam" class="hero-avatar">
+                <img src="./PhotoForBlog.jpeg" alt="Omar Mosalam" class="hero-avatar">
             </div>
 
-            <!-- الاسم والبيانات مكان الخط العريض والخطوط الصغيره -->
             <div class="hero-info">
-                <h1 class="hero-name">Omar Mesalam</h1>
+                <h1 class="hero-name">Omar Mosalam</h1>
                 <p class="hero-sub">Cybersecurity Specialist | Penetration Tester & Security Researcher</p>
                 
                 <div class="tags-wrapper">
                     <span class="tech-tag">Penetration Testing</span>
                     <span class="tech-tag">Web Security</span>
                     <span class="tech-tag">Bug Bounty</span>
-<span class="tech-tag">Network Security</span>                </div>
+                    <span class="tech-tag">Network Security</span>
+                </div>
 
-               <div class="hero-contacts">
-    <span><i class="fa-solid fa-location-dot"></i> Cairo, Egypt</span>
-    <span><i class="fa-brands fa-x-twitter"></i> <a href="https://x.com/Mesalam_340" target="_blank">Twitter</a></span>
-    <span><i class="fa-brands fa-linkedin"></i> <a href="https://www.linkedin.com/in/omarmesalam" target="_blank">LinkedIn</a></span>
-    <span><i class="fa-solid fa-envelope"></i> <a href="mailto:omarmeslam2@gmail.com">Contact Me</a></span>
-</div>
+                <div class="hero-contacts">
+                    <span><i class="fa-solid fa-location-dot"></i> Cairo, Egypt</span>
+                    <span><i class="fa-brands fa-x-twitter"></i> <a href="https://x.com/Mesalam_340" target="_blank">Twitter</a></span>
+                    <span><i class="fa-brands fa-linkedin"></i> <a href="https://www.linkedin.com/in/omarmesalam" target="_blank">LinkedIn</a></span>
+                    <span><i class="fa-solid fa-envelope"></i> <a href="mailto:omarmeslam2@gmail.com">Contact Me</a></span>
+                </div>
             </div>
         </section>
 
-      <!-- Writeups Section -->
+        <!-- Writeups Section -->
         <main>
             <h2 class="section-title"><i class="fa-solid fa-terminal"></i> Latest Writeups</h2>
             
             <div class="posts-grid">
+
+                <!-- Metasploitable 2 Writeup (جديد) -->
+                <article class="post-card">
+                    <div class="post-content">
+                        <div class="post-meta">
+                            <span class="badge">[Network Security - VAPT]</span>
+                            <span class="post-category"><i class="fa-solid fa-flag"></i> CTF Writeup</span>
+                        </div>
+                        
+                        <h3 class="post-title">
+                            <a href="posts/metasploitable2-writeup.html">Metasploitable 2 - Walkthrough & Exploitation</a>
+                        </h3>
+                        
+                        <p class="post-description">
+                            A detailed penetration testing walkthrough covering enumeration, service exploitation, and root access on Metasploitable 2.
+                        </p>
+                        
+                        <a href="posts/metasploitable2-writeup.html" class="read-more">
+                            Read Writeup <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </article>
+
                 <!-- Voyage CTF Writeup -->
-<article class="post-card">
-    <div class="post-content">
-        <div class="post-meta">
-          <span class="badge">[Web Security - Network Security]</span>
-            <span class="post-category"><i class="fa-solid fa-flag"></i> CTF Writeup</span>
-        </div>
-        
-        <h3 class="post-title">
-            <a href="posts/Voyage-CTF-TryHackMe.html">Voyage CTF - TryHackMe Writeup</a>
-        </h3>
-        
-        <p class="post-description">
-            A comprehensive walkthrough covering enumeration, web exploitation, and privilege escalation techniques used to solve the Voyage machine on TryHackMe.
-        </p>
-        
-        
-        <a href="posts/Voyage-CTF-TryHackMe.html" class="read-more">
-            Read Writeup <i class="fa-solid fa-arrow-right"></i>
-        </a>
-    </div>
-</article>
-               <!-- Card 2 -->
+                <article class="post-card">
+                    <div class="post-content">
+                        <div class="post-meta">
+                            <span class="badge">[Web Security - Network Security]</span>
+                            <span class="post-category"><i class="fa-solid fa-flag"></i> CTF Writeup</span>
+                        </div>
+                        
+                        <h3 class="post-title">
+                            <a href="posts/Voyage-CTF-TryHackMe.html">Voyage CTF - TryHackMe Writeup</a>
+                        </h3>
+                        
+                        <p class="post-description">
+                            A comprehensive walkthrough covering enumeration, web exploitation, and privilege escalation techniques used to solve the Voyage machine on TryHackMe.
+                        </p>
+                        
+                        <a href="posts/Voyage-CTF-TryHackMe.html" class="read-more">
+                            Read Writeup <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Race Condition Card -->
                 <article class="post-card">
                     <div class="post-meta">
                         <span class="badge">[Web Security]</span>
@@ -322,8 +344,11 @@
                     <p class="post-excerpt">
                         A real-world writeup demonstrating how race conditions were leveraged to bypass subscription member limits and cause Broken Access Control in group management.
                     </p>
-                    <a href="posts/race-condition-business-logic.html" class="read-more">Read Writeup &rarr;</a>
+                    <a href="posts/race-condition-business-logic.html" class="read-more">
+                        Read Writeup <i class="fa-solid fa-arrow-right"></i>
+                    </a>
                 </article>
+
             </div>
             
         </main>
