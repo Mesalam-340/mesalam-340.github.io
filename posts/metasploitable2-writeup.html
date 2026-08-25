@@ -192,7 +192,11 @@
 
 <!-- PORT 21 -->
 <h2><span class="port-tag">PORT 21</span> FTP (vsFTPd 2.3.4)</h2>
-<p>i Think I will give a look For My methology. With first look for this version i think it very old</p>
+<p>i Think I will give a look For My methology</p>
+  <div class="img-container">
+                    <img src="images/sploit2.png" alt="Proof of Concept Image 3">
+                </div>
+  <p>With first look for this version i think it very old</p>
 
 <div class="terminal">
 <div class="terminal-header">Terminal — Banner Grabbing</div>
@@ -210,7 +214,9 @@
 </ul>
 
 <p>We need to do some Enum too</p>
-
+<div class="img-container">
+                    <img src="images/sploit3.png" alt="Proof of Concept Image 3">
+                </div>
 <div class="callout callout-warning">
   <strong>Vulnerability Discovered:</strong> CVE-2011-2523 (vsFTPd 2.3.4 Backdoor Execution).
 </div>
@@ -225,9 +231,17 @@ Results: uid=0(root) gid=0(root)
 <p><strong>Anonymous FTP Check:</strong><br>
 <code>ftp-anon: Anonymous FTP login allowed (FTP code 230)</code><br>
 Thats mean There is anonymous login on this port. Now we testing the website for anonymous and it success ✅</p>
-
-<p>Now we will running msfconsole for found the CVE. Its amazing now we will thow the options they require for do exploit</p>
-
+<div class="img-container">
+                    <img src="images/sploit4.png" alt="Proof of Concept Image 3">
+                </div>
+<p>Now we will running msfconsole for found the CVE </p>
+  <div class="img-container">
+                    <img src="images/sploit5.png" alt="Proof of Concept Image 3">
+                </div>
+  <p>Its amazing now we will thow the options they require for do exploit</p>
+<div class="img-container">
+                    <img src="images/sploit6.png" alt="Proof of Concept Image 3">
+                </div>
 <div class="callout callout-success">
   Now we take root on system from this service ✅
 </div>
@@ -267,10 +281,16 @@ SSH-2.0-OpenSSH_4.7p1 Debian-8ubuntu1
 
 <p>We now know that there are weaknesses in the encryption and keys, and this service is often outdated and vulnerable to many vulnerabilities, including DoS vulnerabilities, but this is not our ultimate goal.</p>
 
-<p>Now we find UsersEnumeration vulnereability. This seemingly minor vulnerability might be the key to gaining initial access. Now that I know there's a user named Root, my mind will go to the BruteForce.</p>
+<p>Now we find UsersEnumeration vulnereability </p>
+  <div class="img-container">
+                    <img src="images/sploit7.png" alt="Proof of Concept Image 3">
+                </div>
+ <p> This seemingly minor vulnerability might be the key to gaining initial access. Now that I know there's a user named Root, my mind will go to the BruteForce.</p>
 
 <p>It seems there's no password that works with root, so we'll try all the names and passwords.</p>
-
+<div class="img-container">
+                    <img src="images/sploit8.png" alt="Proof of Concept Image 3">
+                </div>
 <div class="callout callout-success">
   And now we can say that we have succeeded in obtaining root privileges from This service ✅
 </div>
@@ -295,6 +315,9 @@ Result:
 <p><strong>Meaning:</strong> Telnet does not support encryption. Credentials, commands, and session data may be transmitted in cleartext. This is a security weakness / insecure service configuration.</p>
 
 <p>Now we will try to connect to Telnet with command <code>telnet 192.168.68.129</code>.</p>
+  <div class="img-container">
+                    <img src="images/sploit9.png" alt="Proof of Concept Image 3">
+                </div>
 
 <div class="callout callout-success">
   Now we Have a shell from telnet with credentials <code>msfadmin/msfadmin</code> ✅
@@ -392,14 +415,20 @@ HTTP
 </div>
 
 <p>Since we are conducting penetration testing at the network level, we will also look for vulnerabilities at the server level.</p>
-
+<div class="img-container">
+                    <img src="images/sploit10.png" alt="Proof of Concept Image 3">
+                </div>
 <div class="callout callout-success">
   Now we have found the vulnerability through Metasploit and obtained a shell ✅
 </div>
 
 <!-- PORT 111 -->
 <h2><span class="port-tag">PORT 111</span> rpcbind / NFS</h2>
-<p>Now we have service rpc with version 2 (RPC #100000). Excellent, this result is very important because it revealed the RPC attack surface on the device:</p>
+<p>Now we have service rpc with version 2 (RPC #100000)</p>
+  <div class="img-container">
+                    <img src="images/sploit11.png" alt="Proof of Concept Image 3">
+                </div>
+  <p>Excellent, this result is very important because it revealed the RPC attack surface on the device:</p>
 
 <div class="tree">
 RPC Services
@@ -417,7 +446,9 @@ Export list for 192.168.68.129:
 </div>
 
 <p>This NFS misconfiguration is very dangerous because sharing <code>/</code> in full greatly expands access, and may allow the client to read system files, and possibly write as well depending on the export options.</p>
-
+<div class="img-container">
+                    <img src="images/sploit12.png" alt="Proof of Concept Image 3">
+                </div>
 <p><strong>Meanings:</strong></p>
 <ul>
   <li><strong>Read:</strong> You can read.</li>
@@ -429,7 +460,9 @@ Export list for 192.168.68.129:
 </ul>
 
 <p>Therefore, the export is not just read-only; Nmap sees modification, write, and delete permissions on the exported file. This makes misconfiguration extremely dangerous.</p>
-
+<div class="img-container">
+                    <img src="images/sploit13.png" alt="Proof of Concept Image 3">
+                </div>
 <div class="callout callout-success">
   <strong>The result we demonstrated:</strong><br>
   - An external attacker without credentials can mount the <code>/</code> file system via NFS ✅<br>
@@ -439,6 +472,9 @@ Export list for 192.168.68.129:
 
 <!-- PORT 139 / 445 -->
 <h2><span class="port-tag">PORT 139/445</span> NetBIOS-SSN / SMB</h2>
+  <div class="img-container">
+                    <img src="images/sploit14.png" alt="Proof of Concept Image 3">
+                </div>
 <div class="tree">
 139/tcp → SMB/NetBIOS
 445/tcp → SMB
@@ -478,36 +514,71 @@ Anonymous login successful
 
 <p><strong>First result:</strong> <code>Anonymous login successful</code> — This means the server allowed anonymous/guest SMB authentication.</p>
 <p><strong>The most important one:</strong> <code>tmp (oh noes!)</code> — This share is called tmp, and its content and comments warrant further investigation.</p>
-
+<div class="img-container">
+                    <img src="images/sploit15.png" alt="Proof of Concept Image 3">
+                </div>
 <p>Okay, so we have accessed an SMB share called tmp using Anonymous access, and this is practical confirmation that the anonymous account is not only able to see the share, but is also able to read its contents.</p>
 
 <!-- PORT 513 -->
 <h2><span class="port-tag">PORT 513</span> Login (Rlogin)</h2>
-<p>This is Rlogin, which is a remote login protocol. Now lets try to acces with user root and no password. Nothing is easier than that, really.</p>
+<p>This is Rlogin, which is a remote login protocol. Now lets try to acces with user root and no password</p>
+  <div class="img-container">
+                    <img src="images/sploit16.png" alt="Proof of Concept Image 3">
+                </div>
+  <p></p>Nothing is easier than that, really.</p>
 
 <!-- PORT 199 -->
 <h2><span class="port-tag">PORT 199</span> Java-RMI</h2>
 <p>First, try to find out what this service is and what its purpose is, and then search for vulnerabilities in Metasploit.</p>
+  <div class="img-container">
+                    <img src="images/sploit17.png" alt="Proof of Concept Image 3">
+                </div>
 <div class="callout callout-success">Shell ✅</div>
 
 <!-- PORT 3306 -->
 <h2><span class="port-tag">PORT 3306</span> MySQL</h2>
+  <div class="img-container">
+                    <img src="images/sploit18.png" alt="Proof of Concept Image 3">
+                </div>
 <p>Here, we performed Remote MySQL authentication on the target, and the connection was successful without needing a password ✅</p>
 
 <!-- PORT 3632 -->
 <h2><span class="port-tag">PORT 3632</span> distccd</h2>
 <p>First, I searched for this service on Metasploit to look for any vulnerabilities related to this vulnerability, and I found a single vulnerability and tried to exploit it.</p>
+  <div class="img-container">
+                    <img src="images/sploit19.png" alt="Proof of Concept Image 3">
+                </div>
 <div class="callout callout-success">Finally, we succeeded in gain a session ✅</div>
 
 <!-- PORT 5432 -->
 <h2><span class="port-tag">PORT 5432</span> PostgreSQL</h2>
-<p>Now that we have a service and its version, we can start searching for it in Metasploit. Now we found the vulnerability that allowed us to login with credentials. We have now used the discovered credentials for login.</p>
+<p>Now that we have a service and its version</p>
+  <p>we can start searching for it in Metasploit</p>
+  <div class="img-container">
+                    <img src="images/sploit20.png" alt="Proof of Concept Image 3">
+                </div>
+  <p>Now we found the vulnerability that allowed us to login with credentials</p>
+  <div class="img-container">
+                    <img src="images/sploit21.png" alt="Proof of Concept Image 3">
+                </div>
+  <p>  We have now used the discovered credentials for login.</p>
+  <div class="img-container">
+                    <img src="images/sploit22.png" alt="Proof of Concept Image 3">
+                </div>
 <div class="callout callout-success">We gain shell successfully ✅</div>
 
 <!-- PORT 5900 -->
 <h2><span class="port-tag">PORT 5900</span> VNC</h2>
-<p>First, we will search for vulnerabilities or credentials for this service. We have now found the password for this service, and it is "password".</p>
+<p>First, we will search for vulnerabilities or credentials for this service</p>
+  <div class="img-container">
+                    <img src="images/sploit23.png" alt="Proof of Concept Image 3">
+                </div>
+  <p>We have now found the password for this service, and it is "password".</p>
+  <div class="img-container">
+                    <img src="images/sploit24.png" alt="Proof of Concept Image 3">
+                </div>
 <div class="callout callout-success">Now we gain a shell from this service ✅</div>
+  
 
 <!-- PORT 6667 -->
 <h2><span class="port-tag">PORT 6667</span> IRC (UnrealIRCD)</h2>
@@ -523,18 +594,30 @@ Matching Modules
    -  ----                                        ---------------  ----       -----  -----------
    0  exploit/unix/irc/unreal_ircd_3281_backdoor  2010-06-12       excellent  No     UnrealIRCD 3.2.8.1 Backdoor Command Execution
 </div>
+  <div class="img-container">
+                    <img src="images/sploit25.png" alt="Proof of Concept Image 3">
+                </div>
 
 <div class="callout callout-success">We gain a root acces on the server from this service ✅</div>
 
 <!-- PORT 8180 -->
 <h2><span class="port-tag">PORT 8180</span> HTTP / Tomcat</h2>
 <p>Now we will attempt enumeration and try to find vulnerabilities in the Tomcat version to obtain a session through Metasploit.</p>
+  <div class="img-container">
+                    <img src="images/sploit26.png" alt="Proof of Concept Image 3">
+                </div>
 <div class="callout callout-success">After much research and many failed attempts, I finally got a session ✅</div>
 
 <!-- PORT 8787 -->
 <h2><span class="port-tag">PORT 8787</span> DRB</h2>
 <p>After many attempts, and after discovering that this service has an RCE vulnerability but couldn't find it in Metasploit (I found it through SearchSploit), I tried to add it to Metasploit and then attempt to exploit it to our advantage on the infected machine.</p>
+  <div class="img-container">
+                    <img src="images/sploit27.png" alt="Proof of Concept Image 3">
+                </div>
 <div class="callout callout-success">Finally, it was exploited to obtain a root Shell ✅</div>
+  <div style="font-size: 7.5pt; color: #8b949e; font-style: italic; margin-bottom: 15px; font-family: 'JetBrains Mono', monospace;">
+  Dedicated to Mr. Limbo 
+</div>
 
 </body>
 </html>
