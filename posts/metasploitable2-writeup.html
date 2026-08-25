@@ -37,6 +37,19 @@
     background-color: #0d1117;
   }
 
+  /* Image Resizing & Centering */
+  .img-container {
+    text-align: center;
+    margin: 12px 0;
+  }
+
+  .img-container img {
+    max-width: 50%; /* تم تصغير حجم الصور إلى النصف */
+    height: auto;
+    border-radius: 6px;
+    border: 1px solid #30363d;
+  }
+
   /* Header Section */
   .header-container {
     border-bottom: 2px solid #30363d;
@@ -339,7 +352,7 @@ Result:
 <div class="terminal">
 <span class="prompt">┌──(root㉿omar)-[/home/mesalam]</span>
 <span class="prompt">└─#</span> nmap -sV -p 25 192.168.68.129
-PORT   STATE SERVICE VERSION
+PORT    STATE SERVICE VERSION
 25/tcp open  smtp    Postfix smtpd
 MAC Address: 00:0C:29:25:52:4D (VMware)
 Service Info: Host: metasploitable.localdomain
@@ -350,7 +363,7 @@ Service Info: Host: metasploitable.localdomain
 <div class="terminal">
 <span class="prompt">┌──(root㉿omar)-[/home/mesalam]</span>
 <span class="prompt">└─#</span> nmap -p 25 --script smtp-commands,smtp-enum-users,smtp-open-relay 192.168.68.129
-PORT   STATE SERVICE
+PORT    STATE SERVICE
 25/tcp open  smtp
 |_smtp-commands: metasploitable.localdomain, PIPELINING, SIZE 10240000, VRFY, ETRN, STARTTLS, ENHANCEDSTATUSCODES, 8BITMIME, DSN
 | smtp-enum-users:
@@ -365,7 +378,7 @@ PORT   STATE SERVICE
 <span class="prompt">└─#</span> smtp-user-enum -M VRFY -t 192.168.68.129 -u msfadmin
 
 ----------------------------------------------------------
-|                   Scan Information                       |
+|                    Scan Information                     |
 ----------------------------------------------------------
 Mode ..................... VRFY
 Target TCP port .......... 25
@@ -402,16 +415,16 @@ HTTP
 <span class="prompt">└─#</span> nikto -h http://192.168.68.129/
 80/tcp
  └── Apache 2.2.8
-      ├── PHP 5.2.4
-      ├── WebDAV
-      ├── /phpinfo.php    --> information disclosure
-      ├── /phpMyAdmin/
-      ├── /doc/          → directory listing
-      ├── /test/        → directory listing
-      ├── /icons/       → directory listing
-      ├── TRACE enabled
-      ├── MultiViews
-      └── #wp-config.php# → potential credential disclosure
+     ├── PHP 5.2.4
+     ├── WebDAV
+     ├── /phpinfo.php    --> information disclosure
+     ├── /phpMyAdmin/
+     ├── /doc/           → directory listing
+     ├── /test/          → directory listing
+     ├── /icons/         → directory listing
+     ├── TRACE enabled
+     ├── MultiViews
+     └── #wp-config.php# → potential credential disclosure
 </div>
 
 <p>Since we are conducting penetration testing at the network level, we will also look for vulnerabilities at the server level.</p>
@@ -432,10 +445,10 @@ HTTP
 
 <div class="tree">
 RPC Services
-├── NFS       → 2049
-├── mountd    → 56732 / 59240
-├── nlockmgr  → 38662 / 46870
-└── status    → 40651 / 38082
+├── NFS        → 2049
+├── mountd     → 56732 / 59240
+├── nlockmgr   → 38662 / 46870
+└── status     → 40651 / 38082
 </div>
 
 <div class="terminal">
@@ -590,8 +603,8 @@ msf exploit(unix/webapp/twiki_history) > search UnrealIRCd
 Matching Modules
 ================
 
-   #  Name                                        Disclosure Date  Rank       Check  Description
-   -  ----                                        ---------------  ----       -----  -----------
+   #  Name                                         Disclosure Date  Rank       Check  Description
+   -  ----                                         ---------------  ----       -----  -----------
    0  exploit/unix/irc/unreal_ircd_3281_backdoor  2010-06-12       excellent  No     UnrealIRCD 3.2.8.1 Backdoor Command Execution
 </div>
   <div class="img-container">
