@@ -211,16 +211,24 @@
             <div class="article-body">
                 
                 <h2>Initial Discovery 🔍</h2>
-                <p>During a security assessment on a web application, I analyzed a feature specifically designed to send invitations for users to join a group.</p>
-                <p>After cleaning up the request structure and removing unnecessary parameters, I began testing potential manipulation vectors on the endpoint.</p>
+                <p>During a test on one of the websites, I found a feature that allows the group owner to add people to the group</p>
+                <p>I noticed that the application handles the email in two different ways:
+
+If the email already has an account on the platform, it gets added to the group directly.
+If the email doesn't have an account, the application sends an invitation instead.
+
+After cleaning up the request and keeping only the important parameters, I started testing different things on this feature.</p>
                 <div class="img-container">
                     <img src="images/invi1.png" alt="Proof of Concept Image 3">
                 </div>
 
-                <h2>Payload Modification 🧪</h2>
-                <p>Initially, I tested scenarios like Host Header Injection and multi-email parameters, but then focused on how the application handles user states in the client UI.</p>
-                <p>I attempted to modify the request body to see if the application would treat an unconfirmed invited email as an active user:</p>
+                <h2>Payload Modification </h2>
+                <p>At first, I tried a few things like Host Header Injection and sending multiple emails in the same request</p>
+                <p>Then I thought:
 
+What if I can make an email that doesn't have an account look like an existing user to the application?</p>
+<p>So I tried changing the request to:</p>
+                
 <div class="code-block">
 <pre>{
   "email": "example@gmail.com",
@@ -229,20 +237,25 @@
 }</pre>
 </div>
 
-                <p>The server responded with a <code>200 OK</code>. This was a clear indicator that the application might be handling state updates improperly across the front-end and back-end boundary.</p>
+                <p>The request was accepted with <code>200 OK</code>.However, changing these values in the request didn't actually change anything on the backend.
+
+So I started looking at the response instead.</p>
 
                 <h2>Response Tampering & Bypass ⚡</h2>
-                <p>Although changing parameters in the request didn't immediately update the back-end database state, I decided to test modifying the API response returned to the client.</p>
+                <p>I intercepted the response coming back from the backend and removed the field that was telling the frontend that the email was an invited/unregistered user.</p>
                 <div class="img-container">
                     <img src="images/invi2.png" alt="Proof of Concept Image 3">
                 </div>
-                <p>If the front-end application relies strictly on API response payload verification rather than back-end database confirmation, tampering with the response payload would bypass the invitation logic.</p>
+                <p>After sending the modified response back to the application, something interesting happened.</p>
                 
-                <p>I intercepted and stripped out the restriction flags from the server response returned to the web browser application.</p>
+                <p>The frontend no longer treated the email as an unregistered user that needed an invitation. Instead, it treated it like an existing user on the platform.</p>
 
                 <div class="conclusion-box">
                     <p><strong>Result & Impact:</strong></p>
-                    <p>Upon returning to the user interface, the user target of the invitation was instantly promoted to a full active group member. The requirement for the target user to receive, accept, or confirm an email invitation was completely bypassed.</p>
+                    <p>I went back to the group management page and the email was now shown as a normal group member.</p>
+                    <p>The interesting part is that this email didn't actually have an account on the platform.</p> 
+                    <p>Normally, the application should have sent an invitation and waited for the user to create/accept the invitation.</p>
+                    <p>Instead, by manipulating the response, I was able to bypass this invitation flow and make an unregistered email appear as an existing group member.</p>
                 </div>
                 <div class="img-container">
                     <img src="images/invi3.png" alt="Proof of Concept Image 3">
