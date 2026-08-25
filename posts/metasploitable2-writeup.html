@@ -1,286 +1,374 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Metasploitable 2 - Network Pentest Writeup</title>
-<style>
-  @page {
-    size: A4;
-    margin: 16mm 14mm 16mm 14mm;
-    background-color: #0d1117;
-    @bottom-right {
-      content: "Page " counter(page) " of " counter(pages);
-      font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
-      font-size: 8pt;
-      color: #8b949e;
-    }
-    @bottom-left {
-      content: "Metasploitable 2 - Network Penetration Testing Writeup";
-      font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
-      font-size: 8pt;
-      color: #8b949e;
-    }
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metasploitable 2 - Network Pentest Writeup | Omar Mesalam</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #12161f;
+            --card-bg: rgba(22, 28, 39, 0.85);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --accent-green: #10b981;
+            --accent-blue: #58a6ff;
+            --accent-red: #ff7b72;
+            --accent-yellow: #f2cc60;
+            --accent-purple: #d2a8ff;
+            --accent-glow: rgba(16, 185, 129, 0.15);
+            --text-main: #f1f5f9;
+            --text-sub: #94a3b8;
+            --font-code: 'Fira Code', monospace;
+            --font-sans: 'Inter', sans-serif;
+        }
 
-  *, *::before, *::after {
-    box-sizing: border-box;
-  }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  body {
-    margin: 0;
-    padding: 24px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 9.5pt;
-    line-height: 1.5;
-    color: #c9d1d9;
-    background-color: #0d1117;
-  }
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            line-height: 1.8;
+            padding-bottom: 60px;
+        }
 
-  /* Image Resizing & Centering */
-  .img-container {
-    text-align: center;
-    margin: 12px 0;
-  }
+        .navbar {
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 0;
+            background: rgba(18, 22, 31, 0.9);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(8px);
+        }
 
-  .img-container img {
-    max-width: 50%; /* تم تصغير حجم الصور إلى النصف */
-    height: auto;
-    border-radius: 6px;
-    border: 1px solid #30363d;
-  }
+        .nav-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-  /* Header Section */
-  .header-container {
-    border-bottom: 2px solid #30363d;
-    padding-bottom: 15px;
-    margin-bottom: 20px;
-  }
+        .logo {
+            font-family: var(--font-code);
+            font-weight: 700;
+            color: var(--text-main);
+            text-decoration: none;
+        }
 
-  .repo-title {
-    font-size: 20pt;
-    font-weight: 700;
-    color: #58a6ff;
-    margin: 0;
-    font-family: 'JetBrains Mono', 'Fira Code', monospace;
-  }
+        .logo-accent { color: var(--accent-green); }
 
-  /* Headings */
-  h1, h2, h3 {
-    color: #f0f6fc;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    page-break-after: avoid;
-  }
+        .back-btn {
+            color: var(--accent-green);
+            text-decoration: none;
+            font-family: var(--font-code);
+            font-size: 0.9rem;
+        }
 
-  h2 {
-    font-size: 13pt;
-    border-bottom: 1px solid #21262d;
-    padding-bottom: 6px;
-    margin-top: 22px;
-    margin-bottom: 12px;
-    color: #58a6ff;
-    display: table;
-    width: 100%;
-  }
+        .article-container {
+            max-width: 850px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
 
-  h2 .port-tag {
-    background-color: #1f6feb;
-    color: #ffffff;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9.5pt;
-    margin-right: 8px;
-  }
+        .article-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
 
-  h3 {
-    font-size: 10.5pt;
-    color: #d2a8ff;
-    margin-top: 14px;
-    margin-bottom: 6px;
-  }
+        .article-header {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
 
-  p {
-    margin-top: 0;
-    margin-bottom: 10px;
-    color: #c9d1d9;
-  }
+        .article-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 12px;
+        }
 
-  /* Terminal / Code Blocks */
-  .terminal {
-    background-color: #161b22;
-    border: 1px solid #30363d;
-    border-radius: 6px;
-    padding: 10px 12px;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 8.5pt;
-    line-height: 1.45;
-    color: #e6edf3;
-    margin: 10px 0 14px 0;
-    white-space: pre-wrap;
-    word-break: break-all;
-  }
+        .article-meta {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            font-family: var(--font-code);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
 
-  .terminal-header {
-    background-color: #21262d;
-    margin: -10px -12px 10px -12px;
-    padding: 4px 10px;
-    border-bottom: 1px solid #30363d;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 7.5pt;
-    color: #8b949e;
-    display: table;
-    width: calc(100% + 24px);
-  }
+        .badge { color: var(--accent-green); }
 
-  .prompt { color: #3fb950; font-weight: bold; }
-  .path { color: #58a6ff; }
-  .output { color: #8b949e; }
-  .highlight { color: #f2cc60; }
-  .vulnerability { color: #ff7b72; font-weight: bold; }
+        .impact-highlights {
+            background: rgba(16, 185, 129, 0.05);
+            border-left: 4px solid var(--accent-green);
+            padding: 15px 20px;
+            margin: 25px 0;
+            border-radius: 0 8px 8px 0;
+        }
 
-  /* Status Boxes / Callouts */
-  .callout {
-    padding: 10px 12px;
-    border-radius: 6px;
-    margin: 10px 0 14px 0;
-    font-size: 9pt;
-  }
+        .impact-highlights-warning {
+            background: rgba(242, 204, 96, 0.05);
+            border-left: 4px solid var(--accent-yellow);
+            padding: 15px 20px;
+            margin: 25px 0;
+            border-radius: 0 8px 8px 0;
+        }
 
-  .callout-success {
-    background-color: rgba(46, 160, 67, 0.1);
-    border: 1px solid rgba(46, 160, 67, 0.4);
-    color: #3fb950;
-  }
+        .impact-highlights ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
 
-  .callout-info {
-    background-color: rgba(56, 139, 253, 0.1);
-    border: 1px solid rgba(56, 139, 253, 0.4);
-    color: #58a6ff;
-  }
+        .impact-highlights li {
+            font-family: var(--font-code);
+            font-size: 0.93rem;
+            color: #e2e8f0;
+            margin-bottom: 5px;
+        }
 
-  .callout-warning {
-    background-color: rgba(210, 153, 34, 0.1);
-    border: 1px solid rgba(210, 153, 34, 0.4);
-    color: #d29922;
-  }
+        .article-body h2 {
+            font-size: 1.3rem;
+            font-family: var(--font-code);
+            color: var(--accent-green);
+            margin: 35px 0 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
 
-  /* Lists */
-  ul, ol {
-    margin-top: 0;
-    margin-bottom: 10px;
-    padding-left: 20px;
-  }
+        .port-tag {
+            background-color: var(--accent-green);
+            color: #0d1117;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: var(--font-code);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
 
-  li {
-    margin-bottom: 4px;
-  }
+        .article-body h3 {
+            font-size: 1.05rem;
+            font-family: var(--font-code);
+            color: var(--accent-purple);
+            margin: 20px 0 10px 0;
+        }
 
-  /* Tree Diagram */
-  .tree {
-    font-family: 'Courier New', monospace;
-    background-color: #161b22;
-    border: 1px solid #30363d;
-    border-radius: 6px;
-    padding: 10px;
-    color: #79c0ff;
-    font-size: 8.5pt;
-    margin: 10px 0;
-  }
-</style>
+        .article-body p {
+            color: #cbd5e1;
+            font-size: 0.98rem;
+            margin-bottom: 18px;
+        }
+
+        .terminal-box {
+            background: #0d1117;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px 20px;
+            font-family: var(--font-code);
+            font-size: 0.88rem;
+            color: #c9d1d9;
+            margin: 20px 0;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .prompt { color: var(--accent-green); font-weight: bold; }
+        .highlight { color: var(--accent-yellow); }
+        .vulnerability { color: var(--accent-red); font-weight: bold; }
+
+        .tree-box {
+            font-family: var(--font-code);
+            background-color: #0d1117;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            color: var(--accent-blue);
+            font-size: 0.88rem;
+            margin: 20px 0;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        .img-container {
+            margin: 25px 0;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .img-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+        }
+
+        .conclusion-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            font-family: var(--font-code);
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            font-style: italic;
+        }
+
+        code {
+            font-family: var(--font-code);
+            background: rgba(255, 255, 255, 0.06);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-green);
+            font-size: 0.9em;
+        }
+
+        ul, ol {
+            margin-bottom: 18px;
+            padding-left: 20px;
+            color: #cbd5e1;
+        }
+
+        li { margin-bottom: 6px; }
+
+        @media (max-width: 600px) {
+            .article-box { padding: 20px; }
+            .article-title { font-size: 1.4rem; }
+        }
+    </style>
 </head>
 <body>
 
-<div class="header-container">
-  <div class="repo-title">Metasploitable 2 — Network Pentest Writeup</div>
-</div>
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo"><span class="logo-accent">&gt;</span> Omar Mesalam_</a>
+            <a href="../index.html" class="back-btn">&larr; Back to Writeups</a>
+        </div>
+    </header>
 
-<p>Now we have an Ip for machine and we need to do Network pentest for this machine. Now we will scan the ip of this machine to know what services in running on.</p>
-<div class="img-container">
-                    <img src="images/sploit1.png" alt="Proof of Concept Image 3">
+    <div class="article-container">
+        <article class="article-box">
+            
+            <header class="article-header">
+                <h1 class="article-title">Metasploitable 2 — Network Penetration Testing Writeup</h1>
+                <div class="article-meta">
+                    <span class="badge">Omar Mesalam</span>
+                    <span>• Network Pentest</span>
+                    <span>• Vulnerability Assessment & Exploitation</span>
                 </div>
-<p>Now we need to test this services</p>
+            </header>
 
-<!-- PORT 21 -->
-<h2><span class="port-tag">PORT 21</span> FTP (vsFTPd 2.3.4)</h2>
-<p>i Think I will give a look For My methology</p>
-  <div class="img-container">
-                    <img src="images/sploit2.png" alt="Proof of Concept Image 3">
+            <div class="article-body">
+                
+                <p>Now we have an IP for machine and we need to do Network pentest for this machine. Now we will scan the IP of this machine to know what services are running on.</p>
+                
+                <div class="img-container">
+                    <img src="images/sploit1.png" alt="Proof of Concept Image 1">
                 </div>
-  <p>With first look for this version i think it very old</p>
+                
+                <p>Now we need to test these services.</p>
 
-<div class="terminal">
-<div class="terminal-header">Terminal — Banner Grabbing</div>
-<span class="prompt">┌──(root㉿omar)-[/home/mesalam]</span>
+                <!-- PORT 21 -->
+                <h2><span class="port-tag">PORT 21</span> FTP (vsFTPd 2.3.4)</h2>
+                <p>I think I will give a look for my methodology.</p>
+                
+                <div class="img-container">
+                    <img src="images/sploit2.png" alt="Proof of Concept Image 2">
+                </div>
+                
+                <p>With a first look at this version, I think it is very old.</p>
+
+                <div class="terminal-box"><span class="prompt">┌──(root㉿omar)-[/home/mesalam]</span>
 <span class="prompt">└─#</span> nc -nv 192.168.68.129 21
 (UNKNOWN) [192.168.68.129] 21 (ftp) open
-220 (vsFTPd 2.3.4)
-</div>
+220 (vsFTPd 2.3.4)</div>
 
-<p>Now we know Three things:</p>
-<ul>
-  <li><strong>1.</strong> This service is running FTP</li>
-  <li><strong>2.</strong> The software of it is vsFTPd</li>
-  <li><strong>3.</strong> The Version is 2.3.4</li>
-</ul>
+                <p>Now we know three things:</p>
+                <ul>
+                    <li><strong>1.</strong> This service is running FTP</li>
+                    <li><strong>2.</strong> The software is vsFTPd</li>
+                    <li><strong>3.</strong> The version is 2.3.4</li>
+                </ul>
 
-<p>We need to do some Enum too</p>
-<div class="img-container">
+                <p>We need to do some enumeration too.</p>
+                
+                <div class="img-container">
                     <img src="images/sploit3.png" alt="Proof of Concept Image 3">
                 </div>
-<div class="callout callout-warning">
-  <strong>Vulnerability Discovered:</strong> CVE-2011-2523 (vsFTPd 2.3.4 Backdoor Execution).
-</div>
 
-<div class="terminal">
-<div class="terminal-header">Exploitation Execution</div>
-Shell command: id
-Results: uid=0(root) gid=0(root)
-</div>
-<p>And we enable to execute commands on tha target</p>
+                <div class="impact-highlights-warning">
+                    <strong>Vulnerability Discovered:</strong> CVE-2011-2523 (vsFTPd 2.3.4 Backdoor Execution).
+                </div>
 
-<p><strong>Anonymous FTP Check:</strong><br>
-<code>ftp-anon: Anonymous FTP login allowed (FTP code 230)</code><br>
-Thats mean There is anonymous login on this port. Now we testing the website for anonymous and it success ✅</p>
-<div class="img-container">
-                    <img src="images/sploit4.png" alt="Proof of Concept Image 3">
-                </div>
-<p>Now we will running msfconsole for found the CVE </p>
-  <div class="img-container">
-                    <img src="images/sploit5.png" alt="Proof of Concept Image 3">
-                </div>
-  <p>Its amazing now we will thow the options they require for do exploit</p>
-<div class="img-container">
-                    <img src="images/sploit6.png" alt="Proof of Concept Image 3">
-                </div>
-<div class="callout callout-success">
-  Now we take root on system from this service ✅
-</div>
+                <div class="terminal-box">Shell command: id
+Results: uid=0(root) gid=0(root)</div>
 
-<!-- PORT 22 -->
-<h2><span class="port-tag">PORT 22</span> SSH (OpenSSH 4.7p1)</h2>
-<div class="terminal">
-<div class="terminal-header">Terminal — SSH Banner Analysis</div>
-<span class="prompt">┌──(root㉿omar)-[/home/mesalam]</span>
+                <p>And we are able to execute commands on the target.</p>
+
+                <p><strong>Anonymous FTP Check:</strong><br>
+                <code>ftp-anon: Anonymous FTP login allowed (FTP code 230)</code><br>
+                That means there is anonymous login on this port. Now we are testing the service for anonymous access and it succeeded ✅</p>
+                
+                <div class="img-container">
+                    <img src="images/sploit4.png" alt="Proof of Concept Image 4">
+                </div>
+
+                <p>Now we will run msfconsole to find the CVE exploitation module.</p>
+                
+                <div class="img-container">
+                    <img src="images/sploit5.png" alt="Proof of Concept Image 5">
+                </div>
+                
+                <p>It's amazing! Now we will show the options required to exploit it.</p>
+                
+                <div class="img-container">
+                    <img src="images/sploit6.png" alt="Proof of Concept Image 6">
+                </div>
+
+                <div class="impact-highlights">
+                    <ul>
+                        <li>Now we take root on system from this service ✅</li>
+                    </ul>
+                </div>
+
+                <!-- PORT 22 -->
+                <h2><span class="port-tag">PORT 22</span> SSH (OpenSSH 4.7p1)</h2>
+                
+                <div class="terminal-box"><span class="prompt">┌──(root㉿omar)-[/home/mesalam]</span>
 <span class="prompt">└─#</span> nc 192.168.68.129 22
-SSH-2.0-OpenSSH_4.7p1 Debian-8ubuntu1
-</div>
+SSH-2.0-OpenSSH_4.7p1 Debian-8ubuntu1</div>
 
-<p>Now what we have from this enumeration:</p>
-<ul>
-  <li><code>SSH-2.0</code> — The server supports SSH protocol version 2</li>
-  <li><code>OpenSSH</code> — The SSH server software is OpenSSH</li>
-  <li><code>4.7p1</code> — The OpenSSH version</li>
-  <li><code>Debian-8ubuntu1</code> — Package/build information from the Linux distribution</li>
-</ul>
+                <p>Now what we have from this enumeration:</p>
+                <ul>
+                    <li><code>SSH-2.0</code> — The server supports SSH protocol version 2</li>
+                    <li><code>OpenSSH</code> — The SSH server software is OpenSSH</li>
+                    <li><code>4.7p1</code> — The OpenSSH version</li>
+                    <li><code>Debian-8ubuntu1</code> — Package/build information from the Linux distribution</li>
+                </ul>
 
-<p>Now lets try some enum too with ssh-audit tool:</p>
+                <p>Now let's try some enumeration with the <code>ssh-audit</code> tool:</p>
 
-<div class="terminal">
-<div class="terminal-header">ssh-audit 192.168.1.10 Output</div>
-<span class="highlight">Key Findings:</span>
+                <div class="terminal-box"><span class="highlight">Key Findings:</span>
 - OpenSSH 4.7p1 (Very old OpenSSH version. Worth checking for known vulnerabilities)
 - <span class="vulnerability">Weak Key Exchange (KEX):</span> diffie-hellman-group1-sha1 (1024-bit DH modulus. Vulnerable to Logjam and uses weak SHA-1)
 - <span class="vulnerability">Weak Host Key Algorithms:</span> ssh-dss (1024-bit, deprecated), ssh-rsa (relies on SHA-1, deprecated in modern OpenSSH)
@@ -289,92 +377,93 @@ SSH-2.0-OpenSSH_4.7p1 Debian-8ubuntu1
 
 <span class="highlight">Potential Connection Throttling Issue:</span>
 - SSH accepted approximately 397 connections/sec during audit.
-- Flagged potential exposure to DHEat DoS (CVE-2002-20001).
-</div>
+- Flagged potential exposure to DHEat DoS (CVE-2002-20001).</div>
 
-<p>We now know that there are weaknesses in the encryption and keys, and this service is often outdated and vulnerable to many vulnerabilities, including DoS vulnerabilities, but this is not our ultimate goal.</p>
+                <p>We now know that there are weaknesses in the encryption and keys, and this service is outdated and vulnerable to many weaknesses including DoS, but this is not our ultimate goal.</p>
 
-<p>Now we find UsersEnumeration vulnereability </p>
-  <div class="img-container">
-                    <img src="images/sploit7.png" alt="Proof of Concept Image 3">
+                <p>Now we find a User Enumeration vulnerability.</p>
+                
+                <div class="img-container">
+                    <img src="images/sploit7.png" alt="Proof of Concept Image 7">
                 </div>
- <p> This seemingly minor vulnerability might be the key to gaining initial access. Now that I know there's a user named Root, my mind will go to the BruteForce.</p>
+                
+                <p>This seemingly minor vulnerability might be the key to gaining initial access. Now that I know there's a user named Root, my mind goes to BruteForce.</p>
 
-<p>It seems there's no password that works with root, so we'll try all the names and passwords.</p>
-<div class="img-container">
-                    <img src="images/sploit8.png" alt="Proof of Concept Image 3">
+                <p>It seems there's no default password that works with root directly, so we'll try credentials harvesting across users.</p>
+                
+                <div class="img-container">
+                    <img src="images/sploit8.png" alt="Proof of Concept Image 8">
                 </div>
-<div class="callout callout-success">
-  And now we can say that we have succeeded in obtaining root privileges from This service ✅
-</div>
 
-<!-- PORT 23 -->
-<h2><span class="port-tag">PORT 23</span> Telnet (Linux telnetd)</h2>
-<h3>Service Enumeration</h3>
-<div class="terminal">
-<span class="prompt">#</span> nmap -sV -p 23 sploit.io
-Result: 23/tcp open telnet Linux telnetd
-</div>
-<p><strong>Meaning:</strong> Port 23/TCP is open. Service is Telnet. Server is running Linux telnetd. Nmap did not identify an exact telnetd version.</p>
+                <div class="impact-highlights">
+                    <ul>
+                        <li>And now we can say that we have succeeded in obtaining root privileges from this service ✅</li>
+                    </ul>
+                </div>
 
-<h3>Telnet Encryption Check</h3>
-<div class="terminal">
-<span class="prompt">#</span> nmap -p 23 --script telnet-encryption,telnet-ntlm-info sploit.io
+                <!-- PORT 23 -->
+                <h2><span class="port-tag">PORT 23</span> Telnet (Linux telnetd)</h2>
+                <h3>Service Enumeration</h3>
+                
+                <div class="terminal-box"><span class="prompt">#</span> nmap -sV -p 23 sploit.io
+Result: 23/tcp open telnet Linux telnetd</div>
+                
+                <p><strong>Meaning:</strong> Port 23/TCP is open. Service is Telnet. Server is running Linux telnetd. Nmap did not identify an exact telnetd version.</p>
+
+                <h3>Telnet Encryption Check</h3>
+                
+                <div class="terminal-box"><span class="prompt">#</span> nmap -p 23 --script telnet-encryption,telnet-ntlm-info sploit.io
 Result:
 23/tcp open telnet
 | telnet-encryption:
-|_ Telnet server does not support encryption
-</div>
-<p><strong>Meaning:</strong> Telnet does not support encryption. Credentials, commands, and session data may be transmitted in cleartext. This is a security weakness / insecure service configuration.</p>
+|_ Telnet server does not support encryption</div>
+                
+                <p><strong>Meaning:</strong> Telnet does not support encryption. Credentials, commands, and session data are transmitted in cleartext.</p>
 
-<p>Now we will try to connect to Telnet with command <code>telnet 192.168.68.129</code>.</p>
-  <div class="img-container">
-                    <img src="images/sploit9.png" alt="Proof of Concept Image 3">
+                <p>Now we will try to connect to Telnet using <code>telnet 192.168.68.129</code>.</p>
+                
+                <div class="img-container">
+                    <img src="images/sploit9.png" alt="Proof of Concept Image 9">
                 </div>
 
-<div class="callout callout-success">
-  Now we Have a shell from telnet with credentials <code>msfadmin/msfadmin</code> ✅
-</div>
+                <div class="impact-highlights">
+                    <ul>
+                        <li>Now we have a shell from telnet with credentials <code>msfadmin/msfadmin</code> ✅</li>
+                    </ul>
+                </div>
 
-<!-- PORT 25 -->
-<h2><span class="port-tag">PORT 25</span> SMTP (Postfix ESMTP)</h2>
-<p>Lets start with Banner grabbing:</p>
+                <!-- PORT 25 -->
+                <h2><span class="port-tag">PORT 25</span> SMTP (Postfix ESMTP)</h2>
+                <p>Let's start with Banner Grabbing:</p>
 
-<div class="terminal">
-<span class="prompt">┌──(root㉿omar)-[/home/mesalam]</span>
+                <div class="terminal-box"><span class="prompt">┌──(root㉿omar)-[/home/mesalam]</span>
 <span class="prompt">└─#</span> nc -nv 192.168.68.129 25
 (UNKNOWN) [192.168.68.129] 25 (smtp) open
-220 metasploitable.localdomain ESMTP Postfix (Ubuntu)
-</div>
+220 metasploitable.localdomain ESMTP Postfix (Ubuntu)</div>
 
-<p>And do some detections for port and the version:</p>
+                <p>And run detailed detection for port and service version:</p>
 
-<div class="terminal">
-<span class="prompt">┌──(root㉿omar)-[/home/mesalam]</span>
+                <div class="terminal-box"><span class="prompt">┌──(root㉿omar)-[/home/mesalam]</span>
 <span class="prompt">└─#</span> nmap -sV -p 25 192.168.68.129
 PORT    STATE SERVICE VERSION
 25/tcp open  smtp    Postfix smtpd
 MAC Address: 00:0C:29:25:52:4D (VMware)
-Service Info: Host: metasploitable.localdomain
-</div>
+Service Info: Host: metasploitable.localdomain</div>
 
-<p>With some enumeration:</p>
+                <p>Executing enumeration scripts:</p>
 
-<div class="terminal">
-<span class="prompt">┌──(root㉿omar)-[/home/mesalam]</span>
+                <div class="terminal-box"><span class="prompt">┌──(root㉿omar)-[/home/mesalam]</span>
 <span class="prompt">└─#</span> nmap -p 25 --script smtp-commands,smtp-enum-users,smtp-open-relay 192.168.68.129
 PORT    STATE SERVICE
 25/tcp open  smtp
 |_smtp-commands: metasploitable.localdomain, PIPELINING, SIZE 10240000, VRFY, ETRN, STARTTLS, ENHANCEDSTATUSCODES, 8BITMIME, DSN
 | smtp-enum-users:
 |_  Method RCPT returned a unhandled status code.
-|_smtp-open-relay: Server doesn't seem to be an open relay, all tests failed
-</div>
+|_smtp-open-relay: Server doesn't seem to be an open relay, all tests failed</div>
 
-<p>Now we found user exist with name <code>msfadmin</code>:</p>
+                <p>Now we found an existing user named <code>msfadmin</code>:</p>
 
-<div class="terminal">
-<span class="prompt">┌──(root㉿omar)-[/home/mesalam]</span>
+                <div class="terminal-box"><span class="prompt">┌──(root㉿omar)-[/home/mesalam]</span>
 <span class="prompt">└─#</span> smtp-user-enum -M VRFY -t 192.168.68.129 -u msfadmin
 
 ----------------------------------------------------------
@@ -384,34 +473,30 @@ Mode ..................... VRFY
 Target TCP port .......... 25
 ######## Scan started at Sun Aug 23 07:14:26 2026 #########
 192.168.68.129: msfadmin exists
-######## Scan completed at Sun Aug 23 07:14:26 2026 #########
-</div>
+######## Scan completed at Sun Aug 23 07:14:26 2026 #########</div>
 
-<!-- PORT 53 -->
-<h2><span class="port-tag">PORT 53</span> DNS</h2>
-<p>Now we have service with version after some enumeration e found that we wouldn't reach RCE through this service, but there are some CVEs that cause us to perform cash poising and others that cause DDoS attacks:</p>
-<ul>
-  <li><code>CVE-2008–1447</code> — DNS Cache Poisoning</li>
-  <li><code>CVE-2011–2464</code> — Remote Denial of Service</li>
-  <li><code>CVE-2017–3136</code> — Remote DoS Vulnerability</li>
-</ul>
+                <!-- PORT 53 -->
+                <h2><span class="port-tag">PORT 53</span> DNS</h2>
+                <p>After enumeration, we found that RCE is not directly reachable through this service version, but there are known CVEs for DNS Cache Poisoning and Denial of Service:</p>
+                <ul>
+                    <li><code>CVE-2008–1447</code> — DNS Cache Poisoning</li>
+                    <li><code>CVE-2011–2464</code> — Remote Denial of Service</li>
+                    <li><code>CVE-2017–3136</code> — Remote DoS Vulnerability</li>
+                </ul>
 
-<!-- PORT 80 -->
-<h2><span class="port-tag">PORT 80</span> HTTP (Apache 2.2.8 / PHP 5.2.4)</h2>
-<p>And now we go to the service that most captivates the hearts of hackers 😂</p>
-<p>lets start with understand the service:</p>
+                <!-- PORT 80 -->
+                <h2><span class="port-tag">PORT 80</span> HTTP (Apache 2.2.8 / PHP 5.2.4)</h2>
+                <p>And now we go to the service that most captivates the hearts of hackers 😂</p>
+                <p>Let's start by understanding the Web stack structure:</p>
 
-<div class="tree">
-HTTP
+                <div class="tree-box">HTTP
 ├── Apache 2.2.8
 ├── Ubuntu
 ├── PHP 5.2.4    —→ Very Old
 ├── WebDAV enabled
-└── Title: Metasploitable2
-</div>
+└── Title: Metasploitable2</div>
 
-<div class="terminal">
-<span class="prompt">┌──(root㉿omar)-[/home/mesalam]</span>
+                <div class="terminal-box"><span class="prompt">┌──(root㉿omar)-[/home/mesalam]</span>
 <span class="prompt">└─#</span> nikto -h http://192.168.68.129/
 80/tcp
  └── Apache 2.2.8
@@ -424,94 +509,99 @@ HTTP
      ├── /icons/         → directory listing
      ├── TRACE enabled
      ├── MultiViews
-     └── #wp-config.php# → potential credential disclosure
-</div>
+     └── #wp-config.php# → potential credential disclosure</div>
 
-<p>Since we are conducting penetration testing at the network level, we will also look for vulnerabilities at the server level.</p>
-<div class="img-container">
-                    <img src="images/sploit10.png" alt="Proof of Concept Image 3">
+                <p>Since we are conducting penetration testing at the network level, we will also look for vulnerabilities at the server level.</p>
+                
+                <div class="img-container">
+                    <img src="images/sploit10.png" alt="Proof of Concept Image 10">
                 </div>
-<div class="callout callout-success">
-  Now we have found the vulnerability through Metasploit and obtained a shell ✅
-</div>
 
-<!-- PORT 111 -->
-<h2><span class="port-tag">PORT 111</span> rpcbind / NFS</h2>
-<p>Now we have service rpc with version 2 (RPC #100000)</p>
-  <div class="img-container">
-                    <img src="images/sploit11.png" alt="Proof of Concept Image 3">
+                <div class="impact-highlights">
+                    <ul>
+                        <li>Now we have found the vulnerability through Metasploit and obtained a shell ✅</li>
+                    </ul>
                 </div>
-  <p>Excellent, this result is very important because it revealed the RPC attack surface on the device:</p>
 
-<div class="tree">
-RPC Services
+                <!-- PORT 111 -->
+                <h2><span class="port-tag">PORT 111</span> rpcbind / NFS</h2>
+                <p>Now we have RPC service running version 2 (RPC #100000).</p>
+                
+                <div class="img-container">
+                    <img src="images/sploit11.png" alt="Proof of Concept Image 11">
+                </div>
+                
+                <p>Excellent, this result is very important because it revealed the RPC attack surface on the target device:</p>
+
+                <div class="tree-box">RPC Services
 ├── NFS        → 2049
 ├── mountd     → 56732 / 59240
 ├── nlockmgr   → 38662 / 46870
-└── status     → 40651 / 38082
-</div>
+└── status     → 40651 / 38082</div>
 
-<div class="terminal">
-<span class="prompt">┌──(root㉿omar)-[/home/mesalam]</span>
+                <div class="terminal-box"><span class="prompt">┌──(root㉿omar)-[/home/mesalam]</span>
 <span class="prompt">└─#</span> showmount -e 192.168.68.129
 Export list for 192.168.68.129:
-/ *
-</div>
+/ *</div>
 
-<p>This NFS misconfiguration is very dangerous because sharing <code>/</code> in full greatly expands access, and may allow the client to read system files, and possibly write as well depending on the export options.</p>
-<div class="img-container">
-                    <img src="images/sploit12.png" alt="Proof of Concept Image 3">
+                <p>This NFS misconfiguration is very dangerous because sharing <code>/</code> completely expands access, allowing reading and writing system files based on export permissions.</p>
+                
+                <div class="img-container">
+                    <img src="images/sploit12.png" alt="Proof of Concept Image 12">
                 </div>
-<p><strong>Meanings:</strong></p>
-<ul>
-  <li><strong>Read:</strong> You can read.</li>
-  <li><strong>Lookup:</strong> You can view names.</li>
-  <li><strong>Modify:</strong> Allows modification.</li>
-  <li><strong>Extend:</strong> Allows adding/extending files.</li>
-  <li><strong>Delete:</strong> Allows deletion.</li>
-  <li><strong>NoExecute:</strong> Files are not executed directly from the NFS mount with the execute permission.</li>
-</ul>
 
-<p>Therefore, the export is not just read-only; Nmap sees modification, write, and delete permissions on the exported file. This makes misconfiguration extremely dangerous.</p>
-<div class="img-container">
-                    <img src="images/sploit13.png" alt="Proof of Concept Image 3">
-                </div>
-<div class="callout callout-success">
-  <strong>The result we demonstrated:</strong><br>
-  - An external attacker without credentials can mount the <code>/</code> file system via NFS ✅<br>
-  - They can view the target filesystem from their machine ✅<br>
-  - We have evidence of broad privileges (Read, Modify, Delete...) from NFS enumeration ✅
-</div>
+                <p><strong>Privilege Definitions:</strong></p>
+                <ul>
+                    <li><strong>Read:</strong> You can read files.</li>
+                    <li><strong>Lookup:</strong> You can view file names.</li>
+                    <li><strong>Modify:</strong> Allows modification.</li>
+                    <li><strong>Extend:</strong> Allows adding/extending files.</li>
+                    <li><strong>Delete:</strong> Allows deletion.</li>
+                    <li><strong>NoExecute:</strong> Files are not executed directly from the NFS mount.</li>
+                </ul>
 
-<!-- PORT 139 / 445 -->
-<h2><span class="port-tag">PORT 139/445</span> NetBIOS-SSN / SMB</h2>
-  <div class="img-container">
-                    <img src="images/sploit14.png" alt="Proof of Concept Image 3">
+                <p>Therefore, the export is not just read-only; Nmap sees modification, write, and delete permissions on the exported file system.</p>
+                
+                <div class="img-container">
+                    <img src="images/sploit13.png" alt="Proof of Concept Image 13">
                 </div>
-<div class="tree">
-139/tcp → SMB/NetBIOS
+
+                <div class="impact-highlights">
+                    <ul>
+                        <li>An external attacker without credentials can mount the <code>/</code> filesystem via NFS ✅</li>
+                        <li>They can view the entire target filesystem from their machine ✅</li>
+                        <li>Broad privileges (Read, Modify, Delete) confirmed via NFS enumeration ✅</li>
+                    </ul>
+                </div>
+
+                <!-- PORT 139 / 445 -->
+                <h2><span class="port-tag">PORT 139/445</span> NetBIOS-SSN / SMB</h2>
+                
+                <div class="img-container">
+                    <img src="images/sploit14.png" alt="Proof of Concept Image 14">
+                </div>
+
+                <div class="tree-box">139/tcp → SMB/NetBIOS
 445/tcp → SMB
-  ↓
+ ↓
 Samba 3.0.20
-  ↓
-SMBv1 enabled | SMB signing disabled | Guest access observed
-</div>
+ ↓
+SMBv1 enabled | SMB signing disabled | Guest access observed</div>
 
-<p>Now lets try to do some tests with smbclient:</p>
+                <p>Now let's test using <code>smbclient</code>:</p>
 
-<div class="terminal">
-<span class="prompt">┌──(root㉿omar)-[/home/mesalam/alpha]</span>
+                <div class="terminal-box"><span class="prompt">┌──(root㉿omar)-[/home/mesalam/alpha]</span>
 <span class="prompt">└─#</span> smbclient -L //192.168.68.129 -N
 
 Anonymous login successful
 
-        Sharename       Type      Comment
-        ---------       ----      -------
-        print$          Disk      Printer Drivers
-        tmp             Disk      oh noes!
-        opt             Disk
-        IPC$            IPC       IPC Service (metasploitable server (Samba 3.0.20-Debian))
-        ADMIN$          IPC       IPC Service (metasploitable server (Samba 3.0.20-Debian))
+        Sharename        Type      Comment
+        ---------        ----      -------
+        print$           Disk      Printer Drivers
+        tmp              Disk      oh noes!
+        opt              Disk
+        IPC$             IPC       IPC Service (metasploitable server (Samba 3.0.20-Debian))
+        ADMIN$           IPC       IPC Service (metasploitable server (Samba 3.0.20-Debian))
 Reconnecting with SMB1 for workgroup listing.
 Anonymous login successful
 
@@ -520,117 +610,169 @@ Anonymous login successful
 
         Workgroup            Master
         ---------            -------
-        WORKGROUP            METASPLOITABLE
-</div>
+        WORKGROUP            METASPLOITABLE</div>
 
-<p>This is a very important result in SMB share enumeration, and the most important thing about it is that you were able to do an anonymous login.</p>
+                <p><strong>Key Takeaways:</strong></p>
+                <p><strong>1.</strong> <code>Anonymous login successful</code> — The server allows anonymous/guest SMB authentication.</p>
+                <p><strong>2.</strong> <code>tmp (oh noes!)</code> — Access allowed to a writable share named tmp.</p>
+                
+                <div class="img-container">
+                    <img src="images/sploit15.png" alt="Proof of Concept Image 15">
+                </div>
+                
+                <p>We accessed the SMB share called <code>tmp</code> using Anonymous access, confirming read and write access on the target share.</p>
 
-<p><strong>First result:</strong> <code>Anonymous login successful</code> — This means the server allowed anonymous/guest SMB authentication.</p>
-<p><strong>The most important one:</strong> <code>tmp (oh noes!)</code> — This share is called tmp, and its content and comments warrant further investigation.</p>
-<div class="img-container">
-                    <img src="images/sploit15.png" alt="Proof of Concept Image 3">
+                <!-- PORT 513 -->
+                <h2><span class="port-tag">PORT 513</span> Login (Rlogin)</h2>
+                <p>This is Rlogin, a legacy remote login protocol. Let's test accessing with the root user and no password.</p>
+                
+                <div class="img-container">
+                    <img src="images/sploit16.png" alt="Proof of Concept Image 16">
                 </div>
-<p>Okay, so we have accessed an SMB share called tmp using Anonymous access, and this is practical confirmation that the anonymous account is not only able to see the share, but is also able to read its contents.</p>
+                
+                <p>Nothing is easier than that!</p>
 
-<!-- PORT 513 -->
-<h2><span class="port-tag">PORT 513</span> Login (Rlogin)</h2>
-<p>This is Rlogin, which is a remote login protocol. Now lets try to acces with user root and no password</p>
-  <div class="img-container">
-                    <img src="images/sploit16.png" alt="Proof of Concept Image 3">
+                <!-- PORT 199 -->
+                <h2><span class="port-tag">PORT 199</span> Java-RMI</h2>
+                <p>Analyzing the service and querying Metasploit for Java-RMI deserialization/remote code execution modules.</p>
+                
+                <div class="img-container">
+                    <img src="images/sploit17.png" alt="Proof of Concept Image 17">
                 </div>
-  <p></p>Nothing is easier than that, really.</p>
 
-<!-- PORT 199 -->
-<h2><span class="port-tag">PORT 199</span> Java-RMI</h2>
-<p>First, try to find out what this service is and what its purpose is, and then search for vulnerabilities in Metasploit.</p>
-  <div class="img-container">
-                    <img src="images/sploit17.png" alt="Proof of Concept Image 3">
+                <div class="impact-highlights">
+                    <ul>
+                        <li>Shell obtained successfully ✅</li>
+                    </ul>
                 </div>
-<div class="callout callout-success">Shell ✅</div>
 
-<!-- PORT 3306 -->
-<h2><span class="port-tag">PORT 3306</span> MySQL</h2>
-  <div class="img-container">
-                    <img src="images/sploit18.png" alt="Proof of Concept Image 3">
+                <!-- PORT 3306 -->
+                <h2><span class="port-tag">PORT 3306</span> MySQL</h2>
+                
+                <div class="img-container">
+                    <img src="images/sploit18.png" alt="Proof of Concept Image 18">
                 </div>
-<p>Here, we performed Remote MySQL authentication on the target, and the connection was successful without needing a password ✅</p>
+                
+                <p>Remote MySQL authentication performed on the target machine; connected successfully without requiring a password ✅</p>
 
-<!-- PORT 3632 -->
-<h2><span class="port-tag">PORT 3632</span> distccd</h2>
-<p>First, I searched for this service on Metasploit to look for any vulnerabilities related to this vulnerability, and I found a single vulnerability and tried to exploit it.</p>
-  <div class="img-container">
-                    <img src="images/sploit19.png" alt="Proof of Concept Image 3">
+                <!-- PORT 3632 -->
+                <h2><span class="port-tag">PORT 3632</span> distccd</h2>
+                <p>Searching Metasploit for distccd execution vulnerabilities to launch an exploit payload.</p>
+                
+                <div class="img-container">
+                    <img src="images/sploit19.png" alt="Proof of Concept Image 19">
                 </div>
-<div class="callout callout-success">Finally, we succeeded in gain a session ✅</div>
 
-<!-- PORT 5432 -->
-<h2><span class="port-tag">PORT 5432</span> PostgreSQL</h2>
-<p>Now that we have a service and its version</p>
-  <p>we can start searching for it in Metasploit</p>
-  <div class="img-container">
-                    <img src="images/sploit20.png" alt="Proof of Concept Image 3">
+                <div class="impact-highlights">
+                    <ul>
+                        <li>Finally, we succeeded in gaining a session ✅</li>
+                    </ul>
                 </div>
-  <p>Now we found the vulnerability that allowed us to login with credentials</p>
-  <div class="img-container">
-                    <img src="images/sploit21.png" alt="Proof of Concept Image 3">
-                </div>
-  <p>  We have now used the discovered credentials for login.</p>
-  <div class="img-container">
-                    <img src="images/sploit22.png" alt="Proof of Concept Image 3">
-                </div>
-<div class="callout callout-success">We gain shell successfully ✅</div>
 
-<!-- PORT 5900 -->
-<h2><span class="port-tag">PORT 5900</span> VNC</h2>
-<p>First, we will search for vulnerabilities or credentials for this service</p>
-  <div class="img-container">
-                    <img src="images/sploit23.png" alt="Proof of Concept Image 3">
+                <!-- PORT 5432 -->
+                <h2><span class="port-tag">PORT 5432</span> PostgreSQL</h2>
+                <p>Identified PostgreSQL service version and mapped appropriate exploit modules in Metasploit framework.</p>
+                
+                <div class="img-container">
+                    <img src="images/sploit20.png" alt="Proof of Concept Image 20">
                 </div>
-  <p>We have now found the password for this service, and it is "password".</p>
-  <div class="img-container">
-                    <img src="images/sploit24.png" alt="Proof of Concept Image 3">
+                
+                <p>Discovered default database credentials for login authorization.</p>
+                
+                <div class="img-container">
+                    <img src="images/sploit21.png" alt="Proof of Concept Image 21">
                 </div>
-<div class="callout callout-success">Now we gain a shell from this service ✅</div>
-  
+                
+                <p>Authenticated using extracted credentials.</p>
+                
+                <div class="img-container">
+                    <img src="images/sploit22.png" alt="Proof of Concept Image 22">
+                </div>
 
-<!-- PORT 6667 -->
-<h2><span class="port-tag">PORT 6667</span> IRC (UnrealIRCD)</h2>
-<p>We will search for known vulnerabilities in this service on metasploite framework. Now we will search about the version of service:</p>
+                <div class="impact-highlights">
+                    <ul>
+                        <li>Gained shell successfully ✅</li>
+                    </ul>
+                </div>
 
-<div class="terminal">
-msf exploit(unix/webapp/twiki_history) > search UnrealIRCd
+                <!-- PORT 5900 -->
+                <h2><span class="port-tag">PORT 5900</span> VNC</h2>
+                <p>Enumerated VNC service authentication parameters to identify weak passwords.</p>
+                
+                <div class="img-container">
+                    <img src="images/sploit23.png" alt="Proof of Concept Image 23">
+                </div>
+                
+                <p>Recovered weak VNC password: <code>password</code>.</p>
+                
+                <div class="img-container">
+                    <img src="images/sploit24.png" alt="Proof of Concept Image 24">
+                </div>
+
+                <div class="impact-highlights">
+                    <ul>
+                        <li>Gained full control session via VNC ✅</li>
+                    </ul>
+                </div>
+
+                <!-- PORT 6667 -->
+                <h2><span class="port-tag">PORT 6667</span> IRC (UnrealIRCD)</h2>
+                <p>Searched for known backdoor exploits in UnrealIRCd service version using Metasploit:</p>
+
+                <div class="terminal-box">msf exploit(unix/webapp/twiki_history) > search UnrealIRCd
 
 Matching Modules
 ================
 
-   #  Name                                         Disclosure Date  Rank       Check  Description
-   -  ----                                         ---------------  ----       -----  -----------
-   0  exploit/unix/irc/unreal_ircd_3281_backdoor  2010-06-12       excellent  No     UnrealIRCD 3.2.8.1 Backdoor Command Execution
-</div>
-  <div class="img-container">
-                    <img src="images/sploit25.png" alt="Proof of Concept Image 3">
+   #  Name                                           Disclosure Date  Rank       Check  Description
+   -  ----                                           ---------------  ----       -----  -----------
+   0  exploit/unix/irc/unreal_ircd_3281_backdoor  2010-06-12       excellent  No     UnrealIRCD 3.2.8.1 Backdoor Command Execution</div>
+                
+                <div class="img-container">
+                    <img src="images/sploit25.png" alt="Proof of Concept Image 25">
                 </div>
 
-<div class="callout callout-success">We gain a root acces on the server from this service ✅</div>
-
-<!-- PORT 8180 -->
-<h2><span class="port-tag">PORT 8180</span> HTTP / Tomcat</h2>
-<p>Now we will attempt enumeration and try to find vulnerabilities in the Tomcat version to obtain a session through Metasploit.</p>
-  <div class="img-container">
-                    <img src="images/sploit26.png" alt="Proof of Concept Image 3">
+                <div class="impact-highlights">
+                    <ul>
+                        <li>Gained root access on the target server via backdoor exploit ✅</li>
+                    </ul>
                 </div>
-<div class="callout callout-success">After much research and many failed attempts, I finally got a session ✅</div>
 
-<!-- PORT 8787 -->
-<h2><span class="port-tag">PORT 8787</span> DRB</h2>
-<p>After many attempts, and after discovering that this service has an RCE vulnerability but couldn't find it in Metasploit (I found it through SearchSploit), I tried to add it to Metasploit and then attempt to exploit it to our advantage on the infected machine.</p>
-  <div class="img-container">
-                    <img src="images/sploit27.png" alt="Proof of Concept Image 3">
+                <!-- PORT 8180 -->
+                <h2><span class="port-tag">PORT 8180</span> HTTP / Tomcat</h2>
+                <p>Enumerating Apache Tomcat administration panel and brute-forcing administrative login credentials.</p>
+                
+                <div class="img-container">
+                    <img src="images/sploit26.png" alt="Proof of Concept Image 26">
                 </div>
-<div class="callout callout-success">Finally, it was exploited to obtain a root Shell ✅</div>
-  <div style="font-size: 7.5pt; color: #8b949e; font-style: italic; margin-bottom: 15px; font-family: 'JetBrains Mono', monospace;">
-  Dedicated to Mr. Limbo 
-</div>
+
+                <div class="impact-highlights">
+                    <ul>
+                        <li>Obtained a administrative session on Tomcat manager ✅</li>
+                    </ul>
+                </div>
+
+                <!-- PORT 8787 -->
+                <h2><span class="port-tag">PORT 8787</span> DRB</h2>
+                <p>Discovered Ruby Distributed Ruby (DRB) RCE vulnerability using SearchSploit, imported the module into Metasploit, and executed target exploitation.</p>
+                
+                <div class="img-container">
+                    <img src="images/sploit27.png" alt="Proof of Concept Image 27">
+                </div>
+
+                <div class="impact-highlights">
+                    <ul>
+                        <li>Successfully executed exploitation to gain root shell ✅</li>
+                    </ul>
+                </div>
+
+                <div class="conclusion-box">
+                    Dedicated to Mr. Limbo
+                </div>
+
+            </div>
+        </article>
+    </div>
 
 </body>
 </html>
