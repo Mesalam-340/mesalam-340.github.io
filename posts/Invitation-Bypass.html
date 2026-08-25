@@ -201,9 +201,7 @@
             <header class="article-header">
                 <h1 class="article-title">Bypassing Group Invitation Flow via Response Manipulation</h1>
                 <div class="article-meta">
-                    <span class="badge">Mesalam_17</span>
-                    <span>• 3 min read</span>
-                    <span>• Aug 25, 2026</span>
+
                 </div>
 
                 <div class="impact-highlights">
@@ -215,6 +213,9 @@
                 <h2>Initial Discovery 🔍</h2>
                 <p>During a security assessment on a web application, I analyzed a feature specifically designed to send invitations for users to join a group.</p>
                 <p>After cleaning up the request structure and removing unnecessary parameters, I began testing potential manipulation vectors on the endpoint.</p>
+                <div class="img-container">
+                    <img src="images/invi1.png" alt="Proof of Concept Image 3">
+                </div>
 
                 <h2>Payload Modification 🧪</h2>
                 <p>Initially, I tested scenarios like Host Header Injection and multi-email parameters, but then focused on how the application handles user states in the client UI.</p>
@@ -232,6 +233,9 @@
 
                 <h2>Response Tampering & Bypass ⚡</h2>
                 <p>Although changing parameters in the request didn't immediately update the back-end database state, I decided to test modifying the API response returned to the client.</p>
+                <div class="img-container">
+                    <img src="images/invi2.png" alt="Proof of Concept Image 3">
+                </div>
                 <p>If the front-end application relies strictly on API response payload verification rather than back-end database confirmation, tampering with the response payload would bypass the invitation logic.</p>
                 
                 <p>I intercepted and stripped out the restriction flags from the server response returned to the web browser application.</p>
@@ -239,6 +243,9 @@
                 <div class="conclusion-box">
                     <p><strong>Result & Impact:</strong></p>
                     <p>Upon returning to the user interface, the user target of the invitation was instantly promoted to a full active group member. The requirement for the target user to receive, accept, or confirm an email invitation was completely bypassed.</p>
+                </div>
+                <div class="img-container">
+                    <img src="images/invi3.png" alt="Proof of Concept Image 3">
                 </div>
 
                 <p style="margin-top: 30px; font-weight: bold; font-family: var(--font-code); color: var(--accent-green);">Bye 👋</p>
