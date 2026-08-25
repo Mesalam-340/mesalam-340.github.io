@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invitation Bypass Writeup | Omar Mesalam</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #12161f;
+            --card-bg: rgba(22, 28, 39, 0.85);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --accent-green: #10b981;
+            --accent-glow: rgba(16, 185, 129, 0.15);
+            --text-main: #f1f5f9;
+            --text-sub: #94a3b8;
+            --font-code: 'Fira Code', monospace;
+            --font-sans: 'Inter', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            line-height: 1.8;
+            padding-bottom: 60px;
+        }
+
+        .navbar {
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 0;
+            background: rgba(18, 22, 31, 0.9);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: var(--font-code);
+            font-weight: 700;
+            color: var(--text-main);
+            text-decoration: none;
+        }
+
+        .logo-accent { color: var(--accent-green); }
+
+        .back-btn {
+            color: var(--accent-green);
+            text-decoration: none;
+            font-family: var(--font-code);
+            font-size: 0.9rem;
+        }
+
+        .article-container {
+            max-width: 850px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .article-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 40px;
+        }
+
+        .article-header {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .article-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 12px;
+        }
+
+        .article-meta {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            font-family: var(--font-code);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .badge { color: var(--accent-green); }
+
+        .impact-highlights {
+            background: rgba(16, 185, 129, 0.05);
+            border-left: 4px solid var(--accent-green);
+            padding: 15px 20px;
+            margin: 25px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .impact-highlights ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .impact-highlights li {
+            font-family: var(--font-code);
+            font-size: 0.93rem;
+            color: #e2e8f0;
+            margin-bottom: 5px;
+        }
+
+        .impact-highlights li:last-child { margin-bottom: 0; }
+
+        .article-body h2 {
+            font-size: 1.3rem;
+            font-family: var(--font-code);
+            color: var(--accent-green);
+            margin: 35px 0 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .article-body p {
+            color: #cbd5e1;
+            font-size: 0.98rem;
+            margin-bottom: 18px;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: var(--font-code);
+            font-size: 0.9rem;
+            color: #e2e8f0;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        .img-container {
+            margin: 25px 0;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .img-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+        }
+
+        .conclusion-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 600px) {
+            .article-box { padding: 20px; }
+            .article-title { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo"><span class="logo-accent">&gt;</span> Omar Mesalam_</a>
+            <a href="../index.html" class="back-btn">&larr; Back to Writeups</a>
+        </div>
+    </header>
+
+    <div class="article-container">
+        <article class="article-box">
+            
+            <header class="article-header">
+                <h1 class="article-title">Bypassing Group Invitation Flow via Response Manipulation</h1>
+                <div class="article-meta">
+                    <span class="badge">Mesalam_17</span>
+                    <span>• 3 min read</span>
+                    <span>• Aug 25, 2026</span>
+                </div>
+
+                <div class="impact-highlights">
+                    <ul>
+                        <li>— Response Manipulation / Client-Side Trust</li>
+                        <li>— Unauthorized Privilege Assignment</li>
+                    </ul>
+                </div>
+            </header>
+
+            <div class="article-body">
+                
+                <h2>Initial Discovery 🔍</h2>
+                <p>During a security assessment on a web application, I analyzed a feature specifically designed to send invitations for users to join a group.</p>
+                <p>After cleaning up the request structure and removing unnecessary parameters, I began testing potential manipulation vectors on the endpoint.</p>
+
+                <h2>Payload Modification 🧪</h2>
+                <p>Initially, I tested scenarios like Host Header Injection and multi-email parameters, but then focused on how the application handles user states in the client UI.</p>
+                <p>I attempted to modify the request body to see if the application would treat an unconfirmed invited email as an active user:</p>
+
+<div class="code-block">
+<pre>{
+  "email": "example@gmail.com",
+  "user_type": "admin",
+  "status": "invited"
+}</pre>
+</div>
+
+                <p>The server responded with a <code>200 OK</code>. This was a clear indicator that the application might be handling state updates improperly across the front-end and back-end boundary.</p>
+
+                <h2>Response Tampering & Bypass ⚡</h2>
+                <p>Although changing parameters in the request didn't immediately update the back-end database state, I decided to test modifying the API response returned to the client.</p>
+                <p>If the front-end application relies strictly on API response payload verification rather than back-end database confirmation, tampering with the response payload would bypass the invitation logic.</p>
+                
+                <p>I intercepted and stripped out the restriction flags from the server response returned to the web browser application.</p>
+
+                <div class="conclusion-box">
+                    <p><strong>Result & Impact:</strong></p>
+                    <p>Upon returning to the user interface, the user target of the invitation was instantly promoted to a full active group member. The requirement for the target user to receive, accept, or confirm an email invitation was completely bypassed.</p>
+                </div>
+
+                <p style="margin-top: 30px; font-weight: bold; font-family: var(--font-code); color: var(--accent-green);">Bye 👋</p>
+
+            </div>
+
+        </article>
+    </div>
+
+</body>
+</html>
