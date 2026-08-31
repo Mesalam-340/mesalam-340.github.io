@@ -488,7 +488,7 @@ uid=0(root) gid=0(root) groups=0(root),33(www-data)
  
 <div class="impact-highlights">
 <ul>
-<li>Root accesss Gained ✅</li>
+<li>Root access Gained ✅</li>
 </ul>
 </div>
  
@@ -527,9 +527,9 @@ Port 22 on 192.168.68.130 is open:
 OpenSSH 6.6.1p1 on this target is not vulnerable to remote code execution (RCE) flaws. The known vulnerabilities and exploits associated with this version are limited to:
  
 1. Username Enumeration (CVE-2018-15473): Allows an attacker to check if specific usernames exist on the system based on timing or response differences during authentication.
-2. Local Privilege Escalation / Information Disclosure (< 7.4): Requires local accesss or specific misconfigurations (such as disabled privilege separation or agent forwarding misuse).</div>
+2. Local Privilege Escalation / Information Disclosure (< 7.4): Requires local access or specific misconfigurations (such as disabled privilege separation or agent forwarding misuse).</div>
  
-<p>I searched for known CVEs for this OpenSSH version. There's no direct RCE, but CVE-2018-15473 can be used for username enumeration. So the next step is to try enumerating valid usernames and see if we can find one to use for SSH accesss</p>
+<p>I searched for known CVEs for this OpenSSH version. There's no direct RCE, but CVE-2018-15473 can be used for username enumeration. So the next step is to try enumerating valid usernames and see if we can find one to use for SSH access</p>
  
 <p>I will tell him to try exploit it and i will search about it</p>
  
@@ -639,7 +639,7 @@ a/priv_esc_enum.py → b/priv_esc_enum.py
 Privilege escalation enumeration completed successfully.
  
 Key Findings:
-- Sudo Rights: The user vagrant has unrestricted sudo accesss with NOPASSWD:
+- Sudo Rights: The user vagrant has unrestricted sudo access with NOPASSWD:
   text
   User vagrant may run the following commands on metasploitable3-ub1404:
       (ALL : ALL) ALL
@@ -649,7 +649,7 @@ Key Findings:
   bash
   sudo su -</div>
  
-<p>Now that we have SSH accesss as <code>vagrant</code>, the model started enumerating the system for privilege escalation. It checked the sudo permissions, <code>/etc/passwd</code>, SUID binaries, and the OS version. The important finding was that <code>vagrant</code> has <code>NOPASSWD: ALL</code>, which means we can run any command as root without entering a password. So the next step is to use <code>sudo su -</code> and get a root shell.</p>
+<p>Now that we have SSH access as <code>vagrant</code>, the model started enumerating the system for privilege escalation. It checked the sudo permissions, <code>/etc/passwd</code>, SUID binaries, and the OS version. The important finding was that <code>vagrant</code> has <code>NOPASSWD: ALL</code>, which means we can run any command as root without entering a password. So the next step is to use <code>sudo su -</code> and get a root shell.</p>
  
 <p>Now we must test this Bible; it could be a false alert</p>
  
@@ -662,7 +662,7 @@ root@metasploitable3-ub1404:/home/vagrant#</div>
  
 <div class="impact-highlights">
 <ul>
-<li>Root accesss Gained ✅</li>
+<li>Root access Gained ✅</li>
 </ul>
 </div>
  
@@ -836,7 +836,7 @@ msf exploit(multi/http/phpmyadmin_preg_replace) > run
 [*] Grabbing CSRF token...
 [+] Retrieved token
 [*] Authenticating...
-[-] Exploit aborted due to failure: no-accesss: Authentication failed
+[-] Exploit aborted due to failure: no-access: Authentication failed
 [*] Exploit completed, but no session was created.
 msf exploit(multi/http/phpmyadmin_preg_replace) > set    PASSWORD   sploitme
 PASSWORD => sploitme
