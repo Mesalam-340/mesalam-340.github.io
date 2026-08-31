@@ -424,7 +424,7 @@ uid=33(www-data) gid=33(www-data) groups=33(www-data)</div>
  
 <div class="impact-highlights">
 <ul>
-<li>Initial access access On Server ✅</li>
+<li>Initial Access Gained On Server ✅</li>
 </ul>
 </div>
  
@@ -651,7 +651,7 @@ Key Findings:
  
 <p>Now that we have SSH access as <code>vagrant</code>, the model started enumerating the system for privilege escalation. It checked the sudo permissions, <code>/etc/passwd</code>, SUID binaries, and the OS version. The important finding was that <code>vagrant</code> has <code>NOPASSWD: ALL</code>, which means we can run any command as root without entering a password. So the next step is to use <code>sudo su -</code> and get a root shell.</p>
  
-<p>Now we must test this Bible; it could be a false alert</p>
+<p>Now we must test this finding; it could be a false alert</p>
  
 <div class="terminal-box">vagrant@metasploitable3-ub1404:~$ sudo su
 root@metasploitable3-ub1404:/home/vagrant# id
@@ -907,7 +907,7 @@ uid=1124(chewbacca) gid=100(users) groups=100(users),999(docker)</div>
  
 <div class="impact-highlights">
 <ul>
-<li>Now we have Shell Form Port 3500✅</li>
+<li>Now we have Shell From Port 3500 ✅</li>
 </ul>
 </div>
  
@@ -1003,7 +1003,7 @@ Nmap done: 1 IP address (1 host up) scanned in 0.40 seconds</div>
 ╭─ ⚕ Hermes ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
 The port 3306/tcp is open and running MySQL.
  
-acces is currently restricted by the host (the target rejects connection attempts from 192.168.68.128 with error code 1130), meaning the MySQL server is configured to deny remote connections from this source IP.
+Access is currently restricted by the host (the target rejects connection attempts from 192.168.68.128 with error code 1130), meaning the MySQL server is configured to deny remote connections from this source IP.
  
 Further enumeration via the mysql client is blocked at the authentication/handshake level due to this access control restriction.</div>
  
