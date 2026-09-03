@@ -319,10 +319,9 @@ li { margin-bottom: 6px; }
 <li>I sent 20 consecutive requests, and all of them were processed normally without triggering any rate-limit response</li>
 </ul>
 
-<p>At this point I started thinking about the format of the verification code. If it used letters, bruteforcing it would be much harder. If it used a combination of letters and numbers it would be even more difficult. However, if it was numbers only it could potentially be bruteforced. Since the code expires after only 10 minutes, the number of digits would be very important because it would directly affect how long it would take to brute-force the code</p>
+<p>At this point, I decided to inspect the verification code I received and verify its format. I found that it consisted of exactly five digits and contained numbers only</p>
 
 <ul>
-<li>So I decided to check the verification code itself and figure out its format and how many digits it contains</li>
    <div class="img-container">
                     <img src="images/rate6.png" alt="Proof of Concept Image 3">
                 </div>
