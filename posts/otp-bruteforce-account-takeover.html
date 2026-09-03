@@ -292,15 +292,30 @@ li { margin-bottom: 6px; }
 <div class="article-body">
 
 <p>While testing the application, I found the email verification feature during the sign-up flow. This report explains how a combination of a weak 5-digit OTP and the absence of rate limiting on the verification endpoint allowed a pre-account takeover, where an attacker can bind and verify an email address before its real owner ever creates an account</p>
+   <div class="img-container">
+                    <img src="images/rate1.png" alt="Proof of Concept Image 3">
+                </div>
 
 <h2><span class="port-tag">AUTH</span> Email Verification — OTP Brute Force</h2>
 
 <ul>
 <li>While testing the application for vulnerabilities I came across the email change feature</li>
+   <div class="img-container">
+                    <img src="images/rate2.png" alt="Proof of Concept Image 3">
+                </div>
 <li>I opened Burp Suite to intercept the requests and analyze how the verification flow works between the client and the server</li>
+   <div class="img-container">
+                    <img src="images/rate3.png" alt="Proof of Concept Image 3">
+                </div>
 <li>I found that when I entered my email address, the application sent a verification code I also noticed that the verification code expires after 10 minutes”</li>
 <li>So, I decided to try entering some random codes and see how the server responds</li>
+   <div class="img-container">
+                    <img src="images/rate4.png" alt="Proof of Concept Image 3">
+                </div>
 <li>Then, I decided to check whether the endpoint had any rate limiting in place</li>
+   <div class="img-container">
+                    <img src="images/rate5.png" alt="Proof of Concept Image 3">
+                </div>
 <li>I sent 20 consecutive requests, and all of them were processed normally without triggering any rate-limit response</li>
 </ul>
 
@@ -308,10 +323,22 @@ li { margin-bottom: 6px; }
 
 <ul>
 <li>So I decided to check the verification code itself and figure out its format and how many digits it contains</li>
+   <div class="img-container">
+                    <img src="images/rate6.png" alt="Proof of Concept Image 3">
+                </div>
 <li>I found that the verification code consists of only 5 digits, which makes it relatively easy to brute-force within the 10-minute expiration window</li>
+   <div class="img-container">
+                    <img src="images/rate7.png" alt="Proof of Concept Image 3">
+                </div>
 <li>Unfortunately, after several attempts I discovered that the code had to be within the range of <code>00000</code> to <code>03300</code> so that I could guess it before the 10minute timer expired</li>
 <li>I started guessing sequentially from 00000, and 03300 was the highest value I was able to reach within the 10 minute window</li>
+   <div class="img-container">
+                    <img src="images/rate8.png" alt="Proof of Concept Image 3">
+                </div>
 <li>Although it may take a while to demonstrate the impact, it should eventually work</li>
+   <div class="img-container">
+                    <img src="images/rate9.png" alt="Proof of Concept Image 3">
+                </div>
 </ul>
 
 <div class="impact-highlights">
@@ -323,6 +350,9 @@ li { margin-bottom: 6px; }
 <div class="impact-highlights-warning">
 <ul>
 <li>Since the verification code consists of only 5 digits and the endpoint has no rate limiting, an attacker could bruteforce the code within its time window and activate or take over any account just by knowing the victim's email, without needing their password or any interaction from them</li>
+   <div class="img-container">
+                    <img src="images/rate10.png" alt="Proof of Concept Image 3">
+                </div>
 </ul>
 </div>
 
