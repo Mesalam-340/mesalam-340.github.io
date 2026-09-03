@@ -319,13 +319,11 @@ li { margin-bottom: 6px; }
 <li>I sent 20 consecutive requests, and all of them were processed normally without triggering any rate-limit response</li>
 </ul>
 
-<p>At this point, I decided to inspect the verification code I received and verify its format. I found that it consisted of exactly five digits and contained numbers only</p>
-
 <ul>
    <div class="img-container">
                     <img src="images/rate6.png" alt="Proof of Concept Image 3">
                 </div>
-<li>I found that the verification code consists of only 5 digits, which makes it relatively easy to brute-force within the 10-minute expiration window</li>
+<li>At this point, I decided to inspect the verification code I received and verify its format. I found that it consisted of exactly five digits and contained numbers only, which makes it relatively easy to brute-force within the 10-minute expiration window</li>
    <div class="img-container">
                     <img src="images/rate7.png" alt="Proof of Concept Image 3">
                 </div>
