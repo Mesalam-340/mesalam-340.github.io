@@ -295,7 +295,7 @@ li { margin-bottom: 6px; }
 <p>During my reconnaissance of examble.com I discovered an endpoint at <code>/oauth/register</code>. It allows anyone to register a new OAuth application without any login or verification. The critical issue is that the system does not verify whether the person registering the app actually owns the redirect URI they provide. This allowed me to register a malicious client, hijack the authorization flow, and take over a victim's account through a stolen access token.</p>
 
 <div class="img-container">
-<img src="images/oauth1.png" alt="Proof of Concept Image">
+<img src="images/Oauth1.png" alt="Proof of Concept Image">
 </div>
 
 <h2><span class="port-tag">AUTH</span> Discovering the Open Registration Endpoint</h2>
@@ -371,7 +371,7 @@ https://examble.com/oauth/authorize?client_id=jIzKAksr30-lZTRoUjfBv--DUi6pwybL2J
 </ul>
 
 <div class="img-container">
-<img src="images/oauth2.png" alt="Proof of Concept Image">
+<img src="images/Oauth2.png" alt="Proof of Concept Image">
 </div>
 
 <ul>
@@ -385,7 +385,7 @@ https://examble.com/oauth/authorize?client_id=jIzKAksr30-lZTRoUjfBv--DUi6pwybL2J
 </ul>
 
 <div class="img-container">
-<img src="images/oauth3.png" alt="Proof of Concept Image">
+<img src="images/Oauth3.png" alt="Proof of Concept Image">
 </div>
 
 <ul>
@@ -445,7 +445,7 @@ https://examble.com/oauth/authorize?client_id=jIzKAksr30-lZTRoUjfBv--DUi6pwybL2J
 </ul>
 
 <div class="img-container">
-<img src="images/oauth4.png" alt="Proof of Concept Image">
+<img src="images/Oauth4.png" alt="Proof of Concept Image">
 </div>
 
 <div class="terminal-box">
@@ -463,7 +463,7 @@ curl -X POST "https://mcp.examble.com/" \
 </ul>
 
 <div class="img-container">
-<img src="images/oauth5.png" alt="Proof of Concept Image">
+<img src="images/Oauth5.png" alt="Proof of Concept Image">
 </div>
 
 <h2><span class="port-tag">IMPACT</span> Retrieving the Victim's Account Details</h2>
@@ -478,7 +478,7 @@ curl -X POST "https://mcp.examble.com/" \
 </ul>
 
 <div class="img-container">
-<img src="images/oauth6.png" alt="Proof of Concept Image">
+<img src="images/Oauth6.png" alt="Proof of Concept Image">
 </div>
 
 <ul>
@@ -513,7 +513,9 @@ curl -X POST "https://mcp.examble.com/" \
 <li>The decisive detail is <code>canceled_by: "Victim"</code> — the system recorded that the account owner themselves canceled the appointment, even though the cancellation was actually performed by the attacker from the terminal using a stolen access token</li>
 </ul>
 </div>
-
+<div class="img-container">
+<img src="images/Oauth7.png" alt="Proof of Concept Image">
+</div>
 </div>
 </article>
 </div>
