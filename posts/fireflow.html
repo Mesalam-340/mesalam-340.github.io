@@ -387,21 +387,21 @@ Nmap done: 1 IP address (1 host up) scanned in 521.46 seconds</pre>
 
     <p>The scan shows two open ports: port 443, which is running a web server, and port 22, which is running SSH. I asked the agent to check the SSH service on port 22 to identify its exact version, then search for any known CVEs associated with that version that could provide initial access to the machine, and to organize the findings into a table showing the CVE ID, a short description, and whether it could lead to authentication bypass or remote code execution.</p>
 
-    <div class="placeholder-img">🖼 image.png — agent's CVE summary table for OpenSSH 9.6p1</div>
+    <div class="placeholder-img">images/fireflow1.png — agent's CVE summary table for OpenSSH 9.6p1</div>
 
     <p>Unfortunately, most of the CVEs found do not provide a shell directly, and some of them actually require valid credentials to be used in the first place, which I do not have yet. I decide to shift my focus to port 443 and investigate the web application instead, since it is more likely to give an initial foothold.</p>
 
     <p>When I open the main site <code>fireflow.htb</code> and browse through it, clicking on a tab redirects me to the subdomain <code>flow.fireflow.htb</code>. I take this new subdomain and add it alongside the main domain in my hosts file so it resolves correctly as well.</p>
 
-    <div class="placeholder-img">🖼 image.png — redirect to flow.fireflow.htb</div>
+    <div class="placeholder-img">images/fireflow2.png — redirect to flow.fireflow.htb</div>
 
     <p>I ask the agent to run enumeration on the target covering files, directories, and subdomains, so I can map out the attack surface of the web application and find any hidden paths or endpoints that are not linked directly on the site.</p>
 
-    <div class="placeholder-img">🖼 image.png — enumeration results</div>
+    <div class="placeholder-img">images/fireflow3.png — enumeration results</div>
 
     <p>At this point I decide to focus on the subdomain. I find that the subdomain is still under construction, and it turns out to be an AI application.</p>
 
-    <div class="placeholder-img">🖼 image.png — subdomain under construction</div>
+    <div class="placeholder-img">images/fireflow4.png — subdomain under construction</div>
 
     <p>When I click on that icon it takes me to the page <code>langflow.org</code>, which turns out to be a software framework — specifically a low-code visual platform used for building AI applications and AI agents. This tells me the target machine is likely running an instance of Langflow, so I now know what technology I am dealing with and can start looking for known vulnerabilities specific to it.</p>
 
@@ -420,7 +420,7 @@ Nmap done: 1 IP address (1 host up) scanned in 521.46 seconds</pre>
 
     <p>I decide to verify this myself on Google and on well-known vulnerability databases to check whether it is actually applicable before acting on it. Once I confirm it matches, I ask the agent to attempt exploitation and to try running the <code>id</code> command on the system to confirm code execution, while I try to exploit it myself in parallel.</p>
 
-    <div class="placeholder-img">🖼 image.png — agent confirming id output</div>
+    <div class="placeholder-img">images/fireflow5.png — agent confirming id output</div>
   </section>
 
   <section>
@@ -534,7 +534,7 @@ OLDPWD=/</pre>
 
     <p>At this point I want to test whether the agent can search for this kind of sensitive information on the system and find it on its own without me giving it any hints or telling it where the file is located, so I ask it to search for any credentials and see whether it can actually reach them or not.</p>
 
-    <div class="placeholder-img">🖼 image.png — agent locating the credentials unaided</div>
+    <div class="placeholder-img">images/fireflow6.png — agent locating the credentials unaided</div>
 
     <p>These credentials are for logging into the Langflow admin interface at <code>flow.fireflow.htb</code>, not for a system-level account, so I don't use them further at this stage — I already have a shell through the RCE. What I still need is a username belonging to an actual person on the server, so I search inside <code>/etc/passwd</code>.</p>
 
@@ -739,7 +739,7 @@ content-type: application/json
 
     <p>I successfully obtain a normal JWT token that carries the role <code>user</code>.</p>
 
-    <div class="placeholder-img">🖼 image.png — decoded JWT (role: user)</div>
+    <div class="placeholder-img">images/fireflow6.png — decoded JWT (role: user)</div>
 
     <p>I check which tools can be accessed using the token I just created.</p>
 
@@ -1076,7 +1076,7 @@ EOF</pre>
 
     <p><span class="flag-hit">Now We Have Root Shell ✅</span></p>
 
-    <div class="placeholder-img">🖼 image.png — root flag confirmed</div>
+    <div class="placeholder-img">images/fireflow7.png — root flag confirmed</div>
   </section>
 
   <footer>
