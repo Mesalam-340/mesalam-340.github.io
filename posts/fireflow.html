@@ -837,9 +837,6 @@ mcp@mcp-server-54464cb475-29ztf:/app$</div>
 
 <p>I use the <code>nodes/proxy</code> permission to have the API server forward the request directly to the Kubelet running on the <code>fireflow</code> node and retrieve a list of all pods running on that node. I find several pods on a single node named <code>fireflow</code> — most notably <code>prometheus-prometheus-node-exporter-nmntq</code> in the <code>monitoring</code> namespace. This pod has mounts for <code>/proc</code>, <code>/sys</code>, and the node's root filesystem, making it an ideal target for exploitation and accessing host files.</p>
 
-<div class="img-container">
-<img src="images/fireflow8.png" alt="Pod list retrieved via nodes/proxy">
-</div>
 
 <h2><span class="port-tag">ROOT</span> Node Escape</h2>
 
@@ -941,7 +938,9 @@ EOF</div>
   </div>
 
 </div>
-
+<div class="img-container">
+<img src="images/fireflow8.png" alt="Pod list retrieved via nodes/proxy">
+</div>
 <div class="img-container">
 <img src="images/fireflow9.png" alt="Root flag confirmed">
 </div>
