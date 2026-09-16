@@ -333,11 +333,11 @@ li { margin-bottom: 6px; }
  
 <p>The issue lay in the fact that calling the endpoint designed for anonymously rejecting an invitation required the "invitation ID" information I should not have been able to access as a read-only member </p>
  <P>Consequently, I searched for an endpoint that might leak invitation IDs to a read-only member and found the following:</p>
+ 
+<div class="terminal-box">GET /api/v1/teams/{team_id}/invitations</div>
   <div class="img-container">
                     <img src="images/endpointsinjs8.png" alt="Proof of Concept Image 3">
                 </div>
- 
-<div class="terminal-box">GET /api/v1/teams/{team_id}/invitations</div>
  
 <p>By combining that ID with the anonymous rejection endpoint, I was able to cancel any team invitation using the read-only account — an action that the official (role-validated) endpoint correctly rejected.</p>
   <div class="img-container">
