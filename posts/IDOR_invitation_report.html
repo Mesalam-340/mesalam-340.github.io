@@ -284,7 +284,10 @@ li { margin-bottom: 6px; }
  
 <ul>
 <li><strong>The First Endpoint:</strong> Used for viewing invitation details anonymously via invitation ID.</li>
-  <div class="img-container">
+
+<div class="terminal-box">  GET /api/v1//invitations/&lt;invitation_id&gt;  </div>
+ 
+ <div class="img-container">
                     <img src="images/endpointsinjs2.png" alt="Proof of Concept Image 3">
                 </div>
 <li><strong>The Second Endpoint:</strong> Used for rejecting/canceling team invitations without authentication.</li>
@@ -292,6 +295,7 @@ li { margin-bottom: 6px; }
   <div class="img-container">
                     <img src="images/endpointsinjs3.png" alt="Proof of Concept Image 3">
                 </div>
+ <div class="terminal-box">  POST /api/v1//invitations/&lt;invitation_id&gt/reject-anonynously;  </div>
 <p>Judging by their naming, both endpoints take an invitation ID and don't appear to require the caller to be logged in or to actually be the invitee.</p>
  
 <h2><span class="port-tag">EXPLOIT</span> Exploitation & Chaining</h2>
