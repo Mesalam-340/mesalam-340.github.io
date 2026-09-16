@@ -461,11 +461,10 @@ curl -X POST "https://mcp.examble.com/" \
 <li>This means the attacker can now call any available MCP tool with this token: retrieve user info, list event types, list scheduled events, view invitees, and perform write actions such as creating, updating, or canceling events</li>
 </ul>
 
-<div class="img-container">
+<h2><span class="port-tag">IMPACT</span> Retrieving the Victim's Account Details</h2>
+            <div class="img-container">
 <img src="images/Oauth5.png" alt="Proof of Concept Image">
 </div>
-
-<h2><span class="port-tag">IMPACT</span> Retrieving the Victim's Account Details</h2>
 
 <p>The server returned the victim's account details in full: name, email, scheduling slug, scheduling URL, timezone, and organization URI — confirming valid, authenticated read access to the victim's account through the MCP interface.</p>
 
