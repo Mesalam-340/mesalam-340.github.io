@@ -299,9 +299,6 @@ li { margin-bottom: 6px; }
   <div class="img-container">
                     <img src="images/endpointsinjs4.png" alt="Proof of Concept Image 3">
                 </div>
-  <div class="img-container">
-                    <img src="images/endpointsinjs5.png" alt="Proof of Concept Image 3">
-                </div>
 <div class="terminal-box">GET /api/v1/invitations/&lt;invitation_id&gt;</div>
  
 <p>The server returned the invitation details — the invitee's email address, the inviter's name fields, and the inviter's team name — with zero authentication required, just by knowing the invitation ID.</p>
@@ -316,11 +313,13 @@ li { margin-bottom: 6px; }
  
 <p>The application only has two roles for team members: <strong>read-write</strong>, or <strong>read-only</strong>.</p>
    <div class="img-container">
-                    <img src="images/endpointsinjs6.png" alt="Proof of Concept Image 3">
+                    <img src="images/endpointsinjs5.png" alt="Proof of Concept Image 3">
                 </div>
  <p> I added a second account to the team and assigned it "read-only" permissions.</p>
  
- 
+ <div class="img-container">
+                    <img src="images/endpointsinjs6.png" alt="Proof of Concept Image 3">
+                </div>
 <p>Next, I attempted to delete an invitation I had sent using my primary account (as the owner) and discovered that the application's actual deletion endpoint differed from the one designated for anonymous operations; the format was:</p>
  
 <div class="terminal-box">DELETE /api/v1/teams/&lt;team_id&gt;/invitations/&lt;invitation_id&gt;</div>
@@ -330,7 +329,8 @@ li { margin-bottom: 6px; }
                     <img src="images/endpointsinjs7.png" alt="Proof of Concept Image 3">
                 </div>
  
-<p>The issue lay in the fact that calling the endpoint designed for anonymously rejecting an invitation required the "invitation ID" information I should not have been able to access as a read-only member. Consequently, I searched for an endpoint that might leak invitation IDs to a read-only member and found the following:</p>
+<p>The issue lay in the fact that calling the endpoint designed for anonymously rejecting an invitation required the "invitation ID" information I should not have been able to access as a read-only member </p>
+ <P>Consequently, I searched for an endpoint that might leak invitation IDs to a read-only member and found the following:</p>
   <div class="img-container">
                     <img src="images/endpointsinjs8.png" alt="Proof of Concept Image 3">
                 </div>
