@@ -270,7 +270,9 @@ li { margin-bottom: 6px; }
 </header>
  
 <div class="article-body">
- 
+ <div class="img-container">
+                    <img src="images/endpointsinjs1.png" alt="Proof of Concept Image 3">
+                </div>
 <div class="impact-highlights-warning">
 <p><strong>Overview:</strong> While hunting on the target application, I was collecting and analyzing the JS bundles served by the app when I came across a file referencing two invitation-related endpoints that were never triggered from any authenticated flow I had seen in the UI. This report explains how these "anonymous" invitation endpoints leak sensitive invitation data and — when chained with an invitation-listing endpoint available to a read-only team member — allow a low-privileged user to reject invitations they have no permission to manage.</p>
 </div>
@@ -281,15 +283,25 @@ li { margin-bottom: 6px; }
  
 <ul>
 <li><strong>The First Endpoint:</strong> Used for viewing invitation details anonymously via invitation ID.</li>
+  <div class="img-container">
+                    <img src="images/endpointsinjs2.png" alt="Proof of Concept Image 3">
+                </div>
 <li><strong>The Second Endpoint:</strong> Used for rejecting/canceling team invitations without authentication.</li>
 </ul>
- 
+  <div class="img-container">
+                    <img src="images/endpointsinjs3.png" alt="Proof of Concept Image 3">
+                </div>
 <p>Judging by their naming, both endpoints take an invitation ID and don't appear to require the caller to be logged in or to actually be the invitee.</p>
  
 <h2><span class="port-tag">EXPLOIT</span> Exploitation & Chaining</h2>
  
 <p>I created a team invitation to get a real invitation ID to test against, then sent a plain request to the GET endpoint with no session or authorization header at all.</p>
- 
+  <div class="img-container">
+                    <img src="images/endpointsinjs4.png" alt="Proof of Concept Image 3">
+                </div>
+  <div class="img-container">
+                    <img src="images/endpointsinjs5.png" alt="Proof of Concept Image 3">
+                </div>
 <div class="terminal-box">GET /api/v1/invitations/&lt;invitation_id&gt;</div>
  
 <p>The server returned the invitation details — the invitee's email address, the inviter's name fields, and the inviter's team name — with zero authentication required, just by knowing the invitation ID.</p>
@@ -304,18 +316,30 @@ li { margin-bottom: 6px; }
  
 <p>The application only has two roles for team members: <strong>read-write</strong>, or <strong>read-only</strong>. I added a second account to the team and assigned it "read-only" permissions.</p>
  
+  <div class="img-container">
+                    <img src="images/endpointsinjs6.png" alt="Proof of Concept Image 3">
+                </div>
+ 
 <p>Next, I attempted to delete an invitation I had sent using my primary account (as the owner) and discovered that the application's actual deletion endpoint differed from the one designated for anonymous operations; the format was:</p>
  
 <div class="terminal-box">DELETE /api/v1/teams/&lt;team_id&gt;/invitations/&lt;invitation_id&gt;</div>
  
 <p>When testing this endpoint with the "read-only" account, the deletion was successfully blocked, indicating that role-based restrictions were correctly applied in that instance.</p>
+  <div class="img-container">
+                    <img src="images/endpointsinjs7.png" alt="Proof of Concept Image 3">
+                </div>
  
 <p>The issue lay in the fact that calling the endpoint designed for anonymously rejecting an invitation required the "invitation ID" information I should not have been able to access as a read-only member. Consequently, I searched for an endpoint that might leak invitation IDs to a read-only member and found the following:</p>
+  <div class="img-container">
+                    <img src="images/endpointsinjs8.png" alt="Proof of Concept Image 3">
+                </div>
  
 <div class="terminal-box">GET /api/v1/teams/{team_id}/invitations</div>
  
 <p>By combining that ID with the anonymous rejection endpoint, I was able to cancel any team invitation using the read-only account — an action that the official (role-validated) endpoint correctly rejected.</p>
- 
+  <div class="img-container">
+                    <img src="images/endpointsinjs9.png" alt="Proof of Concept Image 3">
+                </div>
 <div class="impact-highlights">
 <ul>
 <li>Ultimately, I was able to delete or reject all team invitations using a read-only account ✅</li>
