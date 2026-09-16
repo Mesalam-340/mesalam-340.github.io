@@ -301,7 +301,9 @@ li { margin-bottom: 6px; }
                     <img src="images/endpointsinjs4.png" alt="Proof of Concept Image 3">
                 </div>
 
-<div class="terminal-box">GET /api/v1/invitations/&lt;invitation_id&gt;</div>
+<div class="terminal-box"> curl -s "https://examble.com/api/v1/invitaions/87af761b-5612-4c84-b27b-3c9a7e8fae3"
+{"invitee_exists": false, "invitee_email":"examble@gmail.com","inviter_first_name":null, 
+"inviter_last_name" : null,"inviter_team_name" :"Team","$request":"ac216cd1-ff56-4d57-b12e-9b78032fb9dd"};</div>
  
 <p>The server returned the invitation details — the invitee's email address, the inviter's name fields, and the inviter's team name — with zero authentication required, just by knowing the invitation ID.</p>
  
