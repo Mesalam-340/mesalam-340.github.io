@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IDOR in Anonymous Invitation Endpoints - Writeup</title>
+<!-- Fonts & Icons -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+ 
+<style>
+:root {
+--bg-dark: #12161f;
+--card-bg: rgba(22, 28, 39, 0.85);
+--border-color: rgba(255, 255, 255, 0.08);
+--accent-green: #10b981;
+--accent-blue: #58a6ff;
+--accent-red: #ff7b72;
+--accent-yellow: #f2cc60;
+--accent-purple: #d2a8ff;
+--accent-glow: rgba(16, 185, 129, 0.15);
+--text-main: #f1f5f9;
+--text-sub: #94a3b8;
+--font-code: 'Fira Code', monospace;
+--font-sans: 'Inter', sans-serif;
+}
+ 
+* { margin: 0; padding: 0; box-sizing: border-box; }
+ 
+body {
+background-color: var(--bg-dark);
+color: var(--text-main);
+font-family: var(--font-sans);
+line-height: 1.8;
+padding-bottom: 60px;
+}
+ 
+.navbar {
+border-bottom: 1px solid var(--border-color);
+padding: 16px 0;
+background: rgba(18, 22, 31, 0.9);
+position: sticky;
+top: 0;
+z-index: 100;
+backdrop-filter: blur(8px);
+}
+ 
+.nav-container {
+max-width: 900px;
+margin: 0 auto;
+padding: 0 20px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+ 
+.logo {
+font-family: var(--font-code);
+font-weight: 700;
+color: var(--text-main);
+text-decoration: none;
+}
+ 
+.logo-accent { color: var(--accent-green); }
+ 
+.back-btn {
+color: var(--accent-green);
+text-decoration: none;
+font-family: var(--font-code);
+font-size: 0.9rem;
+}
+ 
+.article-container {
+max-width: 850px;
+margin: 40px auto;
+padding: 0 20px;
+}
+ 
+.article-box {
+background: var(--card-bg);
+border: 1px solid var(--border-color);
+border-radius: 12px;
+padding: 40px;
+box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+ 
+.article-header {
+border-bottom: 1px solid var(--border-color);
+padding-bottom: 20px;
+margin-bottom: 30px;
+}
+ 
+.article-title {
+font-size: 1.8rem;
+font-weight: 700;
+line-height: 1.3;
+margin-bottom: 12px;
+}
+ 
+.article-meta {
+font-size: 0.85rem;
+color: var(--text-sub);
+font-family: var(--font-code);
+display: flex;
+gap: 15px;
+align-items: center;
+flex-wrap: wrap;
+}
+ 
+.badge { color: var(--accent-green); }
+ 
+.impact-highlights {
+background: rgba(16, 185, 129, 0.05);
+border-left: 4px solid var(--accent-green);
+padding: 15px 20px;
+margin: 25px 0;
+border-radius: 0 8px 8px 0;
+}
+ 
+.impact-highlights-warning {
+background: rgba(242, 204, 96, 0.05);
+border-left: 4px solid var(--accent-yellow);
+padding: 15px 20px;
+margin: 25px 0;
+border-radius: 0 8px 8px 0;
+}
+ 
+.impact-highlights ul {
+list-style: none;
+margin: 0;
+padding: 0;
+}
+ 
+.impact-highlights li {
+font-family: var(--font-code);
+font-size: 0.93rem;
+color: #e2e8f0;
+margin-bottom: 5px;
+}
+ 
+.impact-highlights-warning p {
+color: #e2e8f0;
+font-size: 0.95rem;
+margin-bottom: 10px;
+}
+ 
+.impact-highlights-warning p:last-child { margin-bottom: 0; }
+ 
+.impact-highlights-warning ul {
+list-style: none;
+margin: 0;
+padding: 0;
+}
+ 
+.impact-highlights-warning li {
+font-family: var(--font-code);
+font-size: 0.93rem;
+color: #e2e8f0;
+margin-bottom: 8px;
+}
+ 
+.article-body h2 {
+font-size: 1.3rem;
+font-family: var(--font-code);
+color: var(--accent-green);
+margin: 35px 0 15px 0;
+display: flex;
+align-items: center;
+gap: 10px;
+border-bottom: 1px solid var(--border-color);
+padding-bottom: 8px;
+}
+ 
+.port-tag {
+background-color: var(--accent-green);
+color: #0d1117;
+padding: 2px 8px;
+border-radius: 4px;
+font-family: var(--font-code);
+font-size: 0.85rem;
+font-weight: 600;
+}
+ 
+.article-body h3 {
+font-size: 1.05rem;
+font-family: var(--font-code);
+color: var(--accent-purple);
+margin: 20px 0 10px 0;
+}
+ 
+.article-body p {
+color: #cbd5e1;
+font-size: 0.98rem;
+margin-bottom: 18px;
+}
+ 
+.terminal-box {
+background: #0d1117;
+border: 1px solid var(--border-color);
+border-radius: 8px;
+padding: 15px 20px;
+font-family: var(--font-code);
+font-size: 0.88rem;
+color: #c9d1d9;
+margin: 20px 0;
+overflow-x: auto;
+white-space: pre-wrap;
+word-break: break-word;
+}
+ 
+.prompt { color: var(--accent-green); font-weight: bold; }
+.highlight { color: var(--accent-yellow); }
+.vulnerability { color: var(--accent-red); font-weight: bold; }
+ 
+.img-container {
+margin: 25px 0;
+text-align: center;
+background: rgba(0, 0, 0, 0.2);
+padding: 15px;
+border-radius: 8px;
+border: 1px solid var(--border-color);
+}
+ 
+.img-container img {
+max-width: 100%;
+height: auto;
+border-radius: 6px;
+}
+ 
+code {
+font-family: var(--font-code);
+background: rgba(255, 255, 255, 0.06);
+padding: 2px 6px;
+border-radius: 4px;
+color: var(--accent-green);
+font-size: 0.9em;
+}
+ 
+ul, ol {
+margin-bottom: 18px;
+padding-left: 20px;
+color: #cbd5e1;
+}
+ 
+li { margin-bottom: 6px; }
+ 
+@media (max-width: 600px) {
+.article-box { padding: 20px; }
+.article-title { font-size: 1.4rem; }
+}
+</style>
+</head>
+<body>
+<header class="navbar">
+<div class="nav-container">
+<a href="../index.html" class="logo"><span class="logo-accent">&gt;</span> Omar Mesalam_</a>
+<a href="../index.html" class="back-btn">&larr; Back to Writeups</a>
+</div>
+</header>
+ 
+<div class="article-container">
+<article class="article-box">
+ 
+<header class="article-header">
+<h1 class="article-title">IDOR in Anonymous Invitation Endpoints Leading to Invitation Disclosure and Unauthorized Deletion</h1>
+<div class="article-meta">
+</div>
+</header>
+ 
+<div class="article-body">
+ 
+<div class="impact-highlights-warning">
+<p><strong>Overview:</strong> While hunting on the target application, I was collecting and analyzing the JS bundles served by the app when I came across a file referencing two invitation-related endpoints that were never triggered from any authenticated flow I had seen in the UI. This report explains how these "anonymous" invitation endpoints leak sensitive invitation data and — when chained with an invitation-listing endpoint available to a read-only team member — allow a low-privileged user to reject invitations they have no permission to manage.</p>
+</div>
+ 
+<h2><span class="port-tag">RECON</span> Discovery & Analysis</h2>
+ 
+<p>While hunting on <code>example.com</code>, I was collecting the JS files served by the application and analyzing them for interesting endpoints. Inside one of the bundled files, <code>index-Cg7TdqSx.js</code>, I found two endpoints that caught my attention:</p>
+ 
+<ul>
+<li><strong>The First Endpoint:</strong> Used for viewing invitation details anonymously via invitation ID.</li>
+<li><strong>The Second Endpoint:</strong> Used for rejecting/canceling team invitations without authentication.</li>
+</ul>
+ 
+<p>Judging by their naming, both endpoints take an invitation ID and don't appear to require the caller to be logged in or to actually be the invitee.</p>
+ 
+<h2><span class="port-tag">EXPLOIT</span> Exploitation & Chaining</h2>
+ 
+<p>I created a team invitation to get a real invitation ID to test against, then sent a plain request to the GET endpoint with no session or authorization header at all.</p>
+ 
+<div class="terminal-box">GET /api/v1/invitations/&lt;invitation_id&gt;</div>
+ 
+<p>The server returned the invitation details — the invitee's email address, the inviter's name fields, and the inviter's team name — with zero authentication required, just by knowing the invitation ID.</p>
+ 
+<p>Next, I tested whether I could also cancel the invitation the same way, with no session at all:</p>
+ 
+<div class="terminal-box">DELETE /api/v1/invitations/&lt;invitation_id&gt;</div>
+ 
+<p>The invitation was rejected successfully, again completely unauthenticated.</p>
+ 
+<p>At this point the impact looked limited, since the invitation ID is a UUID and isn't something an attacker could realistically guess on its own. So I logged into the application normally and created a team of my own, which made me the team owner.</p>
+ 
+<p>The application only has two roles for team members: <strong>read-write</strong>, or <strong>read-only</strong>. I added a second account to the team and assigned it "read-only" permissions.</p>
+ 
+<p>Next, I attempted to delete an invitation I had sent using my primary account (as the owner) and discovered that the application's actual deletion endpoint differed from the one designated for anonymous operations; the format was:</p>
+ 
+<div class="terminal-box">DELETE /api/v1/teams/&lt;team_id&gt;/invitations/&lt;invitation_id&gt;</div>
+ 
+<p>When testing this endpoint with the "read-only" account, the deletion was successfully blocked, indicating that role-based restrictions were correctly applied in that instance.</p>
+ 
+<p>The issue lay in the fact that calling the endpoint designed for anonymously rejecting an invitation required the "invitation ID" information I should not have been able to access as a read-only member. Consequently, I searched for an endpoint that might leak invitation IDs to a read-only member and found the following:</p>
+ 
+<div class="terminal-box">GET /api/v1/teams/{team_id}/invitations</div>
+ 
+<p>By combining that ID with the anonymous rejection endpoint, I was able to cancel any team invitation using the read-only account — an action that the official (role-validated) endpoint correctly rejected.</p>
+ 
+<div class="impact-highlights">
+<ul>
+<li>Ultimately, I was able to delete or reject all team invitations using a read-only account ✅</li>
+</ul>
+</div>
+ 
+<div class="impact-highlights-warning">
+<p><strong>Conclusion:</strong> Since the invitation ID alone is sufficient to read and reject an invitation without authentication, and given that a team member with "read-only" access can enumerate and extract these IDs via a legitimate endpoint, a user with limited privileges can bypass the role-based access control system which protects the official deletion endpoint and cancel any pending team invitation.</p>
+</div>
+ 
+</div>
+</article>
+</div>
+</body>
+</html>
