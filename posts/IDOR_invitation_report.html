@@ -295,11 +295,12 @@ li { margin-bottom: 6px; }
 <p>Judging by their naming, both endpoints take an invitation ID and don't appear to require the caller to be logged in or to actually be the invitee.</p>
  
 <h2><span class="port-tag">EXPLOIT</span> Exploitation & Chaining</h2>
- 
-<p>I created a team invitation to get a real invitation ID to test against, then sent a plain request to the GET endpoint with no session or authorization header at all.</p>
+
  <div class="img-container">
                     <img src="images/endpointsinjs4.png" alt="Proof of Concept Image 3">
                 </div>
+ 
+<p>I created a team invitation to get a real invitation ID to test against, then sent a plain request to the GET endpoint with no session or authorization header at all.</p>
 
 <div class="terminal-box"> curl -s "https://examble.com/api/v1/invitaions/87af761b-5612-4c84-b27b-3c9a7e8fae3"
 {"invitee_exists": false, "invitee_email":"examble@gmail.com","inviter_first_name":null, 
