@@ -279,7 +279,8 @@ li { margin-bottom: 6px; }
  
 <h2><span class="port-tag">RECON</span> Discovery & Analysis</h2>
  
-<p>While hunting on <code>example.com</code>, I was collecting the JS files served by the application and analyzing them for interesting endpoints. Inside one of the bundled files, <code>index-Cg7TdqSx.js</code>, I found two endpoints that caught my attention:</p>
+<p>While hunting on <code>example.com</code>, I was collecting the JS files served by the application and analyzing them for interesting endpoints </p>
+ <p>Inside one of the bundled files, <code>index-Cg7TdqSx.js</code>, I found two endpoints that caught my attention:</p>
  
 <ul>
 <li><strong>The First Endpoint:</strong> Used for viewing invitation details anonymously via invitation ID.</li>
@@ -296,9 +297,7 @@ li { margin-bottom: 6px; }
 <h2><span class="port-tag">EXPLOIT</span> Exploitation & Chaining</h2>
  
 <p>I created a team invitation to get a real invitation ID to test against, then sent a plain request to the GET endpoint with no session or authorization header at all.</p>
-  <div class="img-container">
-                    <img src="images/endpointsinjs4.png" alt="Proof of Concept Image 3">
-                </div>
+
 <div class="terminal-box">GET /api/v1/invitations/&lt;invitation_id&gt;</div>
  
 <p>The server returned the invitation details — the invitee's email address, the inviter's name fields, and the inviter's team name — with zero authentication required, just by knowing the invitation ID.</p>
