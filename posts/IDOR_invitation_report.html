@@ -314,11 +314,12 @@ li { margin-bottom: 6px; }
  
 <p>At this point the impact looked limited, since the invitation ID is a UUID and isn't something an attacker could realistically guess on its own. So I logged into the application normally and created a team of my own, which made me the team owner.</p>
  
-<p>The application only has two roles for team members: <strong>read-write</strong>, or <strong>read-only</strong>. I added a second account to the team and assigned it "read-only" permissions.</p>
- 
-  <div class="img-container">
+<p>The application only has two roles for team members: <strong>read-write</strong>, or <strong>read-only</strong>.</p>
+   <div class="img-container">
                     <img src="images/endpointsinjs6.png" alt="Proof of Concept Image 3">
                 </div>
+ <p> I added a second account to the team and assigned it "read-only" permissions.</p>
+ 
  
 <p>Next, I attempted to delete an invitation I had sent using my primary account (as the owner) and discovered that the application's actual deletion endpoint differed from the one designated for anonymous operations; the format was:</p>
  
