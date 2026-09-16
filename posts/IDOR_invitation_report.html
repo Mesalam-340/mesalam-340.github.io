@@ -309,7 +309,8 @@ li { margin-bottom: 6px; }
  
 <p>Next, I tested whether I could also cancel the invitation the same way, with no session at all:</p>
  
-<div class="terminal-box">DELETE /api/v1/invitations/&lt;invitation_id&gt;</div>
+<div class="terminal-box"> curl -s -X POST "https://examble.com/api/v1/invitaions/87af761b-5612-4c84-b27b-3c9a7e8fae3/reject-anonynously"
+{"$request":"6e6a50d4-4f5d-5f5d-4ba9-b92e-c5ee4d2d15f5"}</div>
  
 <p>The invitation was rejected successfully, again completely unauthenticated.</p>
  
