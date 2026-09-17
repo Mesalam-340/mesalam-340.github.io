@@ -306,9 +306,18 @@ li { margin-bottom: 6px; }
       <div class="terminal-box"><span class="prompt">$</span> forms.examble.com</div>
 
       <p>
-        I created an account on this subdomain and found a full-featured <strong>form builder</strong>. Upon creating a form, the application assigned it a UUID-based ID — visible directly in the UI.
-      </p>
+        I created an account on this subdomain and found a full-featured <strong>form builder</strong></p>
 
+      <div class="img-container">
+                    <img src="images/formidor1.png" alt="Proof of Concept Image 3">
+                </div>
+      
+        <p>Upon creating a form, the application assigned it a UUID-based ID — visible directly in the UI </p>
+             
+      <div class="img-container">
+                    <img src="images/formidor2.png" alt="Proof of Concept Image 3">
+                </div>
+      
       <!-- EXPLOIT -->
       <h2><span class="port-tag">02</span> &nbsp;EXPLOIT</h2>
       <h3> Step 1 — Unauthenticated Form Data Access</h3>
@@ -348,10 +357,21 @@ li { margin-bottom: 6px; }
         I explored the application further and discovered a <strong>groups system</strong>, where an owner can invite other members to collaborate on forms within a shared workspace.
       </p>
 
+<div class="img-container">
+                    <img src="images/formidor3.png" alt="Proof of Concept Image 3">
+                </div>
+      
       <p>
-        I added a second account to a group as a regular member. As a member, clicking on any form reveals its UUID directly in the browser's URL bar — making it trivial to collect all form IDs shared within the group.
+        I added a second account to a group as a regular member</p>
+      <div class="img-container">
+                    <img src="images/formidor4.png" alt="Proof of Concept Image 3">
+                </div>
+        <p>As a member, clicking on any form reveals its UUID directly in the browser's URL bar — making it trivial to collect all form IDs shared within the group.
       </p>
 
+      <div class="img-container">
+                    <img src="images/formidor5.png" alt="Proof of Concept Image 3">
+                </div>
       <div class="impact-highlights">
         <ul>
           <li>✅ &nbsp;Group member can view all form UUIDs via the URL bar</li>
