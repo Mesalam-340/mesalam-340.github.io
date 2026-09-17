@@ -326,12 +326,12 @@ li { margin-bottom: 6px; }
         I created a test form, grabbed its UUID, and sent a request to the <code>/PC</code> endpoint <strong>with no session or authorization header</strong>:
       </p>
 
-      <div class="terminal-box"><span class="prompt">$</span> curl -i "<span class="highlight">https://forms.examble.com/api/form/4fc69355-dab0-4892-8777-bcdcba7f3836/PC</span>"</div>
+      <div class="terminal-box"><span class="prompt">$</span> curl -i "<span class="highlight">https://forms.examble.com/api/form/a28c6a6d-d9e1-4bfb-8c3c-a686ee194e17/PC</span>"</div>
 
       <p>The server returned the full form configuration — completely unauthenticated:</p>
 
       <div class="terminal-box">{
-  <span class="highlight">"name"</span>: "alpha form-test",
+  <span class="highlight">"name"</span>: "alpha-test",
   <span class="highlight">"properties"</span>: {
     "notifySubscribers": <span class="vulnerability">true</span>,
     "css": null,
