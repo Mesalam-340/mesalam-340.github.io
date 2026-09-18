@@ -381,9 +381,7 @@ li { margin-bottom: 6px; }
 
 <h3>Step 3 — Enumerable IDs ⇒ Persistent, Scalable Access</h3>
 
-<p>The final piece is the identifier scheme. <code>testSessionId</code> is an 8–9 digit monotonically increasing integer, with no guessing, no privilege, and no rate limiting observed on the read path during this testing. The ownership scoping seen on campaign-level endpoints (<code>NotInOwningCompany</code>) is entirely absent here.</p>
-
-<p>A user who obtains any one <code>testSessionId</code> — from a shared dashboard link, an invite artifact, or a leaked export — can walk the integer space and read other companies' candidate reports, including submitted code and anti-cheat data, with zero re-authentication, indefinitely.</p>
+<p>The final step involves the identifier system. The session identifier <code>testSessionId</code> is a sequentially incrementing 8-digit integer; a simple Python script can be used to send requests with change id from 00000000 to 99999999, thereby allowing us to guess all report IDs.</p>
 
 <div class="impact-highlights">
 <ul>
