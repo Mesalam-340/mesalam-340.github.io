@@ -280,7 +280,7 @@ li { margin-bottom: 6px; }
 <div class="article-body">
 
 <div class="impact-highlights-warning">
-<p><strong>Overview:</strong> While testing <code>examble.com</code> (CoderPad Screen), I was collecting JS bundles served by the application and reverse-engineering the backend API surface from the webpack modules. I came across an RPC method, <code>Report/findByTestSessionId</code>, that fetches a full candidate assessment report by a numeric session ID. The application also exposes a public demo campaign for prospects to preview reports, which reveals that these session IDs are plain sequential integers. By combining that with the fact that the report endpoint never authenticates the caller, any unauthenticated user can retrieve full candidate reports — name/email, submitted source code, anti-cheat telemetry — across the sequential ID space.</p>
+<p><strong>Overview:</strong> While testing <code>examble.com</code> , I was collecting JS bundles served by the application and reverse-engineering the backend API surface from the webpack modules. I came across an RPC method, <code>Report/findByTestSessionId</code>, that fetches a full candidate assessment report by a numeric session ID. The application also exposes a public demo campaign for prospects to preview reports, which reveals that these session IDs are plain sequential integers. By combining that with the fact that the report endpoint never authenticates the caller, any unauthenticated user can retrieve full candidate reports — name/email, submitted source code, anti-cheat telemetry — across the sequential ID space.</p>
 </div>
 
 <h2><span class="port-tag">RECON</span> Discovery & Analysis</h2>
