@@ -389,11 +389,6 @@ li { margin-bottom: 6px; }
 </ul>
 </div>
 
-<div class="impact-highlights-warning">
-<p><strong>Conclusion:</strong> Since <code>findByTestSessionId</code> (and its sibling <code>findByCampaignIdAndCandidateGlobalId</code>) resolves and returns candidate reports without authenticating or scoping the caller, and since the identifiers are sequential integers, an unauthenticated user can read any candidate's detailed report across tenants. The backend demonstrably possesses the authorization primitives to stop this (<code>ValidUserRequired</code>, <code>NotInOwningCompany</code>) and simply never applies them on these two methods.</p>
-<p><strong>Scope of the proof (stated honestly):</strong> all successful data retrievals used IDs belonging to CoderPad's deliberately-public demo campaign; no real customer candidate was fetched, in order to stay within program rules. The differential above proves the authorization gap exists in code/behavior — the vendor should confirm by repeating Step 1 with a <code>testSessionId</code> generated inside a real (active-plan) campaign.</p>
-<p><strong>Suggested fix:</strong> require an authenticated recruiter session on <code>Report/findByTestSessionId</code> and <code>Report/findByCampaignIdAndCandidateGlobalId</code>; enforce owning-company scoping (the same check used by <code>Campaign/findById</code>); special-case the demo campaign explicitly instead of bypassing auth globally; consider non-sequential, high-entropy test-session identifiers.</p>
-</div>
 
 </div>
 </article>
