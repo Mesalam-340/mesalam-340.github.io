@@ -220,24 +220,3 @@ a:hover {
         justify-content: center;
     }
 }
-
-/* ==========================================
-   تنسيق إطار الصور (أضفه هنا في نهاية الملف)
-   ========================================== */
-.img-container {
-    background-color: #21252b;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    padding: 12px;
-    max-width: 100%;
-    overflow: hidden;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    margin: 20px 0;
-}
-
-.img-container img {
-    width: 100%;
-    height: auto;
-    display: block;
-    border-radius: 4px;
-}
