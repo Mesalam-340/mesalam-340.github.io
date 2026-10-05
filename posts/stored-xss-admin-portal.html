@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stored XSS in Admin Portal via dangerouslySetInnerHTML in Delete-Confirmation | Omar Mesalam</title>
+
+<!-- Fonts & Icons -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+:root {
+--bg-dark: #12161f;
+--card-bg: rgba(22, 28, 39, 0.85);
+--border-color: rgba(255, 255, 255, 0.08);
+--accent-green: #10b981;
+--accent-blue: #58a6ff;
+--accent-red: #ff7b72;
+--accent-yellow: #f2cc60;
+--accent-purple: #d2a8ff;
+--accent-glow: rgba(16, 185, 129, 0.15);
+--text-main: #f1f5f9;
+--text-sub: #94a3b8;
+--font-code: 'Fira Code', monospace;
+--font-sans: 'Inter', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+background-color: var(--bg-dark);
+color: var(--text-main);
+font-family: var(--font-sans);
+line-height: 1.8;
+padding-bottom: 60px;
+}
+
+.navbar {
+border-bottom: 1px solid var(--border-color);
+padding: 16px 0;
+background: rgba(18, 22, 31, 0.9);
+position: sticky;
+top: 0;
+z-index: 100;
+backdrop-filter: blur(8px);
+}
+
+.nav-container {
+max-width: 900px;
+margin: 0 auto;
+padding: 0 20px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+
+.logo {
+font-family: var(--font-code);
+font-weight: 700;
+color: var(--text-main);
+text-decoration: none;
+}
+
+.logo-accent { color: var(--accent-green); }
+
+.back-btn {
+color: var(--accent-green);
+text-decoration: none;
+font-family: var(--font-code);
+font-size: 0.9rem;
+}
+
+.article-container {
+max-width: 850px;
+margin: 40px auto;
+padding: 0 20px;
+}
+
+.article-box {
+background: var(--card-bg);
+border: 1px solid var(--border-color);
+border-radius: 12px;
+padding: 40px;
+box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.article-header {
+border-bottom: 1px solid var(--border-color);
+padding-bottom: 20px;
+margin-bottom: 30px;
+}
+
+.article-title {
+font-size: 1.8rem;
+font-weight: 700;
+line-height: 1.3;
+margin-bottom: 12px;
+}
+
+.article-meta {
+font-size: 0.85rem;
+color: var(--text-sub);
+font-family: var(--font-code);
+display: flex;
+gap: 15px;
+align-items: center;
+flex-wrap: wrap;
+}
+
+.badge { color: var(--accent-green); }
+
+.impact-highlights {
+background: rgba(16, 185, 129, 0.05);
+border-left: 4px solid var(--accent-green);
+padding: 15px 20px;
+margin: 25px 0;
+border-radius: 0 8px 8px 0;
+}
+
+.impact-highlights-warning {
+background: rgba(242, 204, 96, 0.05);
+border-left: 4px solid var(--accent-yellow);
+padding: 15px 20px;
+margin: 25px 0;
+border-radius: 0 8px 8px 0;
+}
+
+.impact-highlights ul {
+list-style: none;
+margin: 0;
+padding: 0;
+}
+
+.impact-highlights li {
+font-family: var(--font-code);
+font-size: 0.93rem;
+color: #e2e8f0;
+margin-bottom: 5px;
+}
+
+.impact-highlights-warning ul {
+list-style: none;
+margin: 0;
+padding: 0;
+}
+
+.impact-highlights-warning li {
+font-family: var(--font-code);
+font-size: 0.93rem;
+color: #e2e8f0;
+margin-bottom: 5px;
+}
+
+.article-body h2 {
+font-size: 1.3rem;
+font-family: var(--font-code);
+color: var(--accent-green);
+margin: 35px 0 15px 0;
+display: flex;
+align-items: center;
+gap: 10px;
+border-bottom: 1px solid var(--border-color);
+padding-bottom: 8px;
+}
+
+.port-tag {
+background-color: var(--accent-green);
+color: #0d1117;
+padding: 2px 8px;
+border-radius: 4px;
+font-family: var(--font-code);
+font-size: 0.85rem;
+font-weight: 600;
+}
+
+.article-body h3 {
+font-size: 1.05rem;
+font-family: var(--font-code);
+color: var(--accent-purple);
+margin: 20px 0 10px 0;
+}
+
+.article-body p {
+color: #cbd5e1;
+font-size: 0.98rem;
+margin-bottom: 18px;
+}
+
+.terminal-box {
+background: #0d1117;
+border: 1px solid var(--border-color);
+border-radius: 8px;
+padding: 15px 20px;
+font-family: var(--font-code);
+font-size: 0.88rem;
+color: #c9d1d9;
+margin: 20px 0;
+overflow-x: auto;
+white-space: pre-wrap;
+word-break: break-word;
+}
+
+.prompt { color: var(--accent-green); font-weight: bold; }
+.highlight { color: var(--accent-yellow); }
+.vulnerability { color: var(--accent-red); font-weight: bold; }
+
+.tree-box {
+font-family: var(--font-code);
+background-color: #0d1117;
+border: 1px solid var(--border-color);
+border-radius: 8px;
+padding: 15px;
+color: var(--accent-blue);
+font-size: 0.88rem;
+margin: 20px 0;
+white-space: pre;
+overflow-x: auto;
+}
+
+.img-container {
+margin: 25px 0;
+text-align: center;
+background: rgba(0, 0, 0, 0.2);
+padding: 15px;
+border-radius: 8px;
+border: 1px solid var(--border-color);
+}
+
+.img-container img {
+max-width: 100%;
+height: auto;
+border-radius: 6px;
+}
+
+.conclusion-box {
+background: rgba(255, 255, 255, 0.03);
+border: 1px solid var(--border-color);
+padding: 20px;
+border-radius: 8px;
+margin-top: 30px;
+font-family: var(--font-code);
+font-size: 0.85rem;
+color: var(--text-sub);
+font-style: italic;
+}
+
+code {
+font-family: var(--font-code);
+background: rgba(255, 255, 255, 0.06);
+padding: 2px 6px;
+border-radius: 4px;
+color: var(--accent-green);
+font-size: 0.9em;
+}
+
+ul, ol {
+margin-bottom: 18px;
+padding-left: 20px;
+color: #cbd5e1;
+}
+
+li { margin-bottom: 6px; }
+
+@media (max-width: 600px) {
+.article-box { padding: 20px; }
+.article-title { font-size: 1.4rem; }
+}
+</style>
+</head>
+<body>
+<header class="navbar">
+<div class="nav-container">
+            <a href="/index.html" class="logo"><span class="logo-accent">&gt;</span> Back to Writeups </a>
+</div>
+</header>
+
+<div class="article-container">
+<article class="article-box">
+
+<header class="article-header">
+<h1 class="article-title">Stored XSS in Admin Portal via dangerouslySetInnerHTML in Delete-Confirmation (Events &amp; Actions)</h1>
+<div class="article-meta">
+<span class="badge">Omar Mesalam</span>
+<span>• Bug Bounty</span>
+<span>• Stored XSS</span>
+</div>
+</header>
+
+<div class="article-body">
+  <div class="img-container">
+                    <img src="images/stored-xss-images/xss.png" alt="Proof of Concept Image 1">
+                </div>
+
+<h2><span class="port-tag">XSS</span> Initial Discovery 🔍</h2>
+
+<p>I was testing the admin portal and found a feature called Events &amp; Actions that allows any account member (not just admins) to create an Action, such as a webhook. This Action has a free-text field called <code>name</code> that gets stored server-side as-is via:</p>
+
+<div class="terminal-box"><span class="prompt">POST</span> /api/keysets/{subscribe_key}/actions</div>
+
+<p>I noticed that this <code>name</code> field is returned in the response exactly as submitted, with no sanitization or escaping. So I decided to test what would happen if I injected HTML into it instead of a normal string</p>
+<div class="img-container">
+                    <img src="images/stored-xss-images/xss1.png" alt="Proof of Concept Image 1">
+                </div>
+
+<h2><span class="port-tag">XSS</span> Payload Modification</h2>
+
+<p>I sent the following request while logged in as a regular (non-admin) account member:</p>
+
+<div class="terminal-box"><span class="prompt">POST</span> https://admin.example.com/api/keysets/sub-c-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/actions
+Content-Type: application/json
+Cookie: __Host-Admin-Id=...; __Host-Admin-Token=...
+
+{
+  "name": "<span class="vulnerability">&lt;img/src=x onerror=alert(document.domain)&gt;</span>",
+  "category": "webhook",
+  "configuration": {
+    "target": "https://example.com/hook",
+    "additionalHeaders": {},
+    "retryEnabled": false,
+    "BatchConfig": { "batchingEnabled": false }
+  },
+  "eventListeners": []
+}</div>
+
+<p>I got back a <code>201 Created</code>, and the value was stored exactly as sent:</p>
+
+<div class="terminal-box">"name": "<span class="vulnerability">&lt;img/src=x onerror=alert(document.domain)&gt;</span>"</div>
+
+<p>This meant any part of the UI that displays the Action's name would render it as real HTML instead of plain text.</p>
+<div class="img-container">
+                    <img src="images/stored-xss-images/xss2.png" alt="Proof of Concept Image 1">
+                </div>
+
+<h2><span class="port-tag">XSS</span> Response Tampering &amp; Trigger ⚡</h2>
+
+<p>The next question was: where exactly does this name get rendered without escaping?</p>
+
+<p>I went to the Events &amp; Actions page in the UI:</p>
+
+<div class="terminal-box">/account/&lt;account_id&gt;/app/&lt;app_id&gt;/key/&lt;key_id&gt;/events-and-actions</div>
+
+<p>And found the row listing the Action with the name <code>&lt;img/src=x onerror=alert(document.domain)&gt;</code> displayed literally. I clicked the row's Delete button (<code>data-tracking-id="BUTTON-delete"</code>), which opened a delete-confirmation dialog. The problem is that this dialog renders its message using <code>dangerouslySetInnerHTML</code>, with no sanitization at all:</p>
+
+<div class="terminal-box">&lt;p&gt;Are you sure you want to delete <span class="vulnerability">&lt;img src="x" onerror="alert(document.domain)"&gt;</span>?&lt;/p&gt;</div>
+
+<p>Since <code>src="x"</code> doesn't resolve to a real image, the <code>onerror</code> handler fires immediately on render — popping an alert box showing <code>admin.example.com</code></p>
+
+<p>I confirmed this twice in production, against my own test tenant:</p>
+
+<ol>
+<li>Automated: injected <code>&lt;img/src=x onerror=window.__xssfired=1&gt;</code> and confirmed the handler ran (<code>window.__xssfired === 1</code>)</li>
+<li>Manual: injected <code>&lt;img/src=x onerror=alert(document.domain)&gt;</code> and actually clicked Delete, triggering the alert</li>
+</ol>
+
+<p>No third-party customer data was accessed, and the test records were removed after verification</p>
+<div class="img-container">
+                    <img src="images/stored-xss-images/xss3.png" alt="Proof of Concept Image 1">
+                </div>
+
+<h2><span class="port-tag">XSS</span> Result &amp; Impact</h2>
+
+<p>This is a Stored XSS on the admin portal's own origin (<code>admin.example.com</code>). Any low-privilege member can plant the payload, and if any other user — including an account owner or operator — later opens Delete on that same Action, the code executes inside their session, with no interaction required beyond them trying to delete or clean up a record</p>
+
+<p>This opens the door to:</p>
+
+<ul>
+<li>Reading full keysets, including secret keys, via <code>GET /api/keys?app_id=&lt;id&gt;</code></li>
+<li>Registering OAuth clients or abusing a consent loopback to mint org-scoped tokens</li>
+<li>Modifying account and service settings</li>
+<li>Defacing or persistently disrupting the admin UI</li>
+</ul>
+
+<p>In short: full privilege escalation — a low-privilege member can reach owner-level impact just by waiting for the owner to try deleting something</p>
+
+<div class="impact-highlights-warning">
+<ul>
+<li>However, unfortunately, the vulnerability was classified as a duplicate</li>
+</ul>
+</div>
+
+<div class="conclusion-box">
+Bye 👋
+</div>
+<div class="img-container">
+                    <img src="images/stored-xss-images/xss4.png" alt="Proof of Concept Image 1">
+                </div>
+
+</div>
+</article>
+</div>
+</body>
+</html>
