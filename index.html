@@ -280,6 +280,21 @@
         <main>
             <h2 class="section-title"><i class="fa-solid fa-terminal"></i> Latest Writeups</h2>
             
+<!-- Stored XSS in Admin Portal via dangerouslySetInnerHTML in Delete-Confirmation -->
+<article class="post-card">
+    <div class="post-meta">
+        <span class="badge">[Web Security]</span>
+        <span class="post-category"><i class="fa-solid fa-bug"></i> Bug Bounty</span>
+    </div>
+    <h3 class="post-title">
+        <a href="posts/stored-xss-admin-portal.html">Stored XSS in Admin Portal via dangerouslySetInnerHTML in Delete-Confirmation (Events & Actions)</a>
+    </h3>
+    <p class="post-excerpt">
+    A real-world writeup showing how an unsanitized free-text field in the Events & Actions feature, combined with a delete-confirmation dialog rendered via dangerouslySetInnerHTML, allowed a low-privilege account member to plant a Stored XSS payload that executes in the session of any user who later tries to delete it — opening the door to full privilege escalation on the admin portal</p>
+    <a href="posts/stored-xss-admin-portal.html" class="read-more">
+        Read Writeup <i class="fa-solid fa-arrow-right"></i>
+    </a>
+</article>
             
             <!-- IDOR in Form Configuration Endpoint -->
 <article class="post-card">
