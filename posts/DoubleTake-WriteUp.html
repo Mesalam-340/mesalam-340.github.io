@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DoubleTake - HTB WriteUp</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap');
+
+        :root {
+            --bg: #0d1117;
+            --card: #161b22;
+            --border: #30363d;
+            --text: #e6edf3;
+            --muted: #8b949e;
+            --accent: #58a6ff;
+            --green: #3fb950;
+            --red: #f85149;
+            --orange: #d29922;
+            --purple: #bc8cff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #58a6ff, #bc8cff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .meta {
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin: 45px 0 18px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--border);
+            color: var(--accent);
+        }
+
+        p {
+            margin-bottom: 16px;
+            color: #c9d1d9;
+            font-size: 1.05rem;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 22px 26px;
+            margin: 25px 0;
+        }
+
+        .highlight {
+            background: #1c2128;
+            border-left: 4px solid var(--accent);
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .warning {
+            background: #2d1b00;
+            border-left: 4px solid var(--orange);
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .success {
+            background: #0d2818;
+            border-left: 4px solid var(--green);
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        pre, code {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        pre {
+            background: #0d1117;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 18px;
+            overflow-x: auto;
+            margin: 18px 0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        code {
+            background: #21262d;
+            padding: 2px 7px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            color: #ff7b72;
+        }
+
+        .cmd {
+            color: var(--green);
+        }
+
+        .placeholder {
+            background: #21262d;
+            border: 2px dashed var(--border);
+            border-radius: 10px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            font-size: 0.95rem;
+            margin: 20px 0;
+        }
+
+        .flag {
+            background: #0d2818;
+            border: 1px solid var(--green);
+            color: var(--green);
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 500;
+            display: inline-block;
+            margin: 10px 0;
+        }
+
+        footer {
+            margin-top: 60px;
+            padding-top: 25px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        strong {
+            color: #e6edf3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>DoubleTake</h1>
+            <div class="meta">Hack The Box • WriteUp</div>
+        </header>
+
+        <h2>DoubleTake - HTB - WriteUp</h2>
+
+        <div class="placeholder">[ photo ]</div>
+
+        <p>Now we will test the Agent after starting</p>
+
+        <div class="placeholder">[ photo ]</div>
+
+        <p>Now the host is up lets start</p>
+
+        <div class="placeholder">[ photo ]</div>
+
+        <p>Now we know that there are two ports open<br>
+        Now I will tell the agent to start testing port 22, and I will take a look at port 80</p>
+
+        <div class="placeholder">[ photo ]</div>
+
+        <p>I found that there’s a page requiring auth to log in<br>
+        Now I think maybe I’ll try putting <code>X-Forwarded-Host</code> — maybe it would bypass it<br>
+        Unfortunately that didn’t work, now let’s go back to the agent</p>
+
+        <div class="placeholder">[ photo ]</div>
+
+        <p>The version is recent, so I think it’s unlikely a vulnerability exists here, but if we find this path completely blocked, we will definitely come back to it<br>
+        I think the only option we can consider is to do enumeration<br>
+        And while we do that, I will open a new tab to fuzz and enumerate the web page<br>
+        Since this room is new, and I think I’ve seen an SSH vulnerability that recently appeared and was being discussed in the security community on Twitter, why don’t we search for it? This room might have been updated I think it was called <strong>“SSHole”</strong></p>
+
+        <div class="placeholder">[ photo ]</div>
+
+        <p>I think we should take a look at it</p>
+
+        <div class="placeholder">[ photo ]</div>
+
+        <p>Fortunately, this idea came to us, otherwise we would have wasted a lot of time<br>
+        Now let’s try it</p>
+
+        <div class="placeholder">[ photo ]</div>
+
+        <div class="success">
+            Now we’ve gained access
+        </div>
+
+        <pre><span class="cmd">7f906e0ee8ec:/home/bob$ cat user.txt</span>
+cat: can't open 'user.txt': Permission denied
+<span class="cmd">7f906e0ee8ec:/home/bob$</span></pre>
+
+        <p>But we don’t have permission to read the flag<br>
+        I asked the agent to discover more about the server we’re on now and tell me what it finds</p>
+
+        <div class="placeholder">[ photo ]</div>
+
+        <p>Now we have the first flag I understand how it did it<br>
+        It just searched for files and folders and found browser specific files that stored login information; they were base64 encoded, so it decoded them and found Bob’s credentials<br>
+        Now let’s log in with this credential</p>
+
+        <div class="placeholder">[ photo ]</div>
+
+        <p>Now we ask the agent to scan the server for the path to root privileges</p>
+
+        <div class="placeholder">[ photo ]</div>
+
+        <div class="card">
+            The report illustrates how the user 'bob' escalates privileges to root by abusing a web application feature that extracts uploaded tar archives with root-level permissions. This allows him to plant an SUID binary that grants root access within the container. However, since the final root flag is not present within the container at all, the next step would be to exploit the same Docker deployment integration to pivot to the host machine or another container
+        </div>
+
+        <p>Now I ask the agent to use this path to read the root flag</p>
+
+        <div class="placeholder">[ photo ]</div>
+
+        <div class="warning">
+            <strong>💡 Docker 29.5.0</strong> resolves the archive-decompression binary (xz) from the container’s overlay instead of the host, running it as host root with <code>CAP_SYS_ADMIN</code>
+        </div>
+
+        <p>This describes a security vulnerability in Docker related to a container escape — moving from privileges within a container to privileges on the host system</p>
+
+        <p>Ultimately, the agent is just an assistant that saves us time and effort, but we must stay on top of every step it takes actively following along to make sure it doesn’t get stuck in a loop, while fully understanding where it’s probing, why, and whether the logic it’s following actually makes sense</p>
+
+        <footer>
+            DoubleTake - Hack The Box WriteUp
+        </footer>
+    </div>
+</body>
+</html>
